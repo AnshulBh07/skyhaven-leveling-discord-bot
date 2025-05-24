@@ -17,11 +17,11 @@ const eventHandler = (client: Client) => {
 
     if (!eventName) continue;
 
-    client.on(eventName, async (args) => {
+    client.on(eventName, async (...args) => {
       // iterate over event files and execute them
       for (const eventFile of eventFiles) {
         const { execute } = await import(eventFile);
-        await execute(client, args);
+        await execute(client, ...args);
       }
     });
   }

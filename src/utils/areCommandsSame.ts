@@ -71,16 +71,7 @@ export const areCommandsSame = (
 ) => {
   const isNameSame = localCommand.name === appCommand.name;
   const isDescriptionSame = localCommand.description === appCommand.description;
+  const optionsSame = areOptionsSame(localCommand.options, appCommand.options);
 
-  if (
-    (localCommand.options && !appCommand.options) ||
-    (appCommand.options && !localCommand.options)
-  )
-    return false;
-
-  if (localCommand.options && appCommand.options) {
-    if (!areOptionsSame(localCommand.options, appCommand.options)) return false;
-  }
-
-  return isNameSame && isDescriptionSame;
+  return isNameSame && isDescriptionSame && optionsSame;
 };

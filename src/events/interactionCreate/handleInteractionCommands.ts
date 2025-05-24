@@ -4,20 +4,36 @@ import {
   Client,
   GuildMember,
   Interaction,
+  MessageFlags,
   PermissionResolvable,
 } from "discord.js";
 import getLocalCommands from "../../utils/getLocalCommands";
-import { config } from "../../data/config";
+import Config from "../../models/configSchema";
 
 export const execute = async (client: Client, interaction: Interaction) => {
   try {
-    const { devsID } = config;
     if (!interaction.isChatInputCommand()) return;
+
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+
+    const guild = await Config.findOne({ serverID: interaction.guildId });
+
+    if (!guild) {
+      interaction.editReply("No guild/server found.");
+      return;
+    }
+
+    if (guild.blacklistedChannels.includes(interaction.channelId)) {
+      interaction.editReply("Commands are not allowed in this channel.");
+      return;
+    }
+
+    const devsID = guild.devsIDs;
 
     const localCommands = await getLocalCommands();
 
     if (!localCommands) {
-      interaction.reply("No commands found");
+      interaction.editReply("No commands found");
       throw new Error("No commands found locally");
     }
 
@@ -33,7 +49,9 @@ export const execute = async (client: Client, interaction: Interaction) => {
 
       //   check devs only
       if (!devsID.includes(memberID)) {
-        interaction.reply("❌ You don't have access to this command.");
+        interaction.editReply({
+          content: "❌ You don't have access to this command.",
+        });
         return;
       }
     }
@@ -50,9 +68,9 @@ export const execute = async (client: Client, interaction: Interaction) => {
             permission as PermissionResolvable
           )
         ) {
-          interaction.reply(
-            "You do not have permissions needed to run this command."
-          );
+          interaction.editReply({
+            content: "You do not have permissions needed to run this command.",
+          });
           break;
         }
       }

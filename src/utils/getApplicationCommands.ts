@@ -7,6 +7,7 @@ const getApplicationCommands = async (client: Client, guildID: string) => {
         "Client application not initialized. Ensure 'ready' event has fired."
       );
     }
+
     if (guildID) {
       const guild = await client.guilds.fetch(guildID);
       return guild.commands.fetch();

@@ -1,4 +1,5 @@
 import {
+  ChannelType,
   ChatInputCommandInteraction,
   Client,
   PermissionResolvable,
@@ -16,13 +17,14 @@ export interface IOptions {
   min_value?: number;
   max_value?: number;
   required?: boolean;
+  channel_types?: ChannelType[];
   choices?: choices[];
 }
 
 export interface ICommandObj {
   name: string;
   description: string;
-  options?: IOptions[];
+  options: IOptions[];
   type?: number;
   nsfw?: boolean;
   isDeleted?: boolean;
@@ -33,4 +35,21 @@ export interface ICommandObj {
     client: Client,
     interaction: ChatInputCommandInteraction
   ) => Promise<void> | void;
+}
+
+export interface ILevelRoles {
+  minLevel: number;
+  maxLevel: number;
+  roleID: string;
+}
+
+export interface IConfig {
+  serverID: string;
+  botID: string;
+  devsIDs: string[];
+  blacklistedChannels: string[];
+  ignoredChannels: string[];
+  levelRoles: ILevelRoles[];
+  notificationChannelID: string;
+  xpCooldown: number;
 }

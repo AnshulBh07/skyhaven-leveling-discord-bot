@@ -1,0 +1,42 @@
+***** PHASE 1 *****
+🎯 CORE FEATURES: DISCORD LEVELING SYSTEM
+
+1. 📈 XP & LEVELING SYSTEM
+   - Users gain XP based on message activity (with cooldown to prevent spam farming).
+   - XP-to-level formula (e.g. `XP = 5 * level² + 50 * level + 100`) determines level-ups.
+   - Level-up detection and notification in a dedicated channel.
+
+2. 🛠️ ADMIN COMMANDS
+   - `/set-channel` – Set the notification channel for level-up messages.
+   - `/ignore-channel` – Prevent XP gain in specified channels.
+   - `/listen-channel` - Removes a channel from ignore list.
+   - `/blacklist-channel` – Block all command usage in a channel.
+
+3. 🧍 USER COMMANDS
+   - `/rank` – Display user level, XP, and rank.
+   - `/leaderboard` – Show top users in the server by level.
+
+4. 🗃️ DATABASE INTEGRATION
+   - Store user data (XP, levels) and guild settings in MongoDB for persistence.
+
+5. 🚫 RESTRICTIONS
+   - No XP from:
+     - Bots
+     - Slash commands
+     - Ignored or blacklisted channels
+     - Non-text channels (e.g. voice)
+   - Commands cannot be used in blacklisted channels.
+   - Anti-spam cooldown applied per user per guild.
+
+📜 LEVEL ROLES — SKYHAVEN 🏰
+
+| Level Range | Role Name            |
+|-------------|----------------------|
+| 1–5         | Certified Lurker     |
+| 6–10        | Yapmaster Apprentice |
+| 11–20       | Message Goblin       |
+| 21–30       | Keyboard Crusader    |
+| 31–50       | Legendary Typist     |
+| 51–69       | The Yapfather        |
+| 70+         | Chat Ascendant       |
+

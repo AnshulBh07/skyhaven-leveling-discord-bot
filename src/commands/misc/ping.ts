@@ -3,9 +3,10 @@ import { ICommandObj } from "../../utils/interfaces";
 const commandObj: ICommandObj = {
   name: "ping",
   description: "a test ping command",
+  options: [],
 
-  callback: (client,interaction) => {
-    interaction.reply(`Pong! in ${client.ws.ping}`)
+  callback: (client, interaction) => {
+    interaction.editReply(`Pong! in ${client.ws.ping}`);
   },
 };
 
