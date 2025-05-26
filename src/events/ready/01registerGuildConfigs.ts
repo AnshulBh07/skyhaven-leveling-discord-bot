@@ -56,12 +56,14 @@ export const levelRoles: LevelRole[] = [
 ];
 
 // if a certain guild config is not present in config we will create it
-export const execute = async (client: Client, guild: Guild) => {
+export const execute = async (client: Client) => {
   try {
-    const guildId = guild.id;
-    const adminId = guild.ownerId;
+    const guildId = "1375348405630402582";
+    const adminId = "419373088614907904";
 
     const existingGuild = await Config.findOne({ serverID: guildId });
+
+    const guild = client.guilds.cache.find((guild) => guild.id === guildId);
 
     if (!guild || existingGuild || !client.user) return;
 
@@ -112,13 +114,14 @@ export const execute = async (client: Client, guild: Guild) => {
       ignoredChannels: [],
       levelRoles: levelRolesConfig,
       notificationChannelID: "",
-      xpCooldown: 20000,
+      xpCooldown: 5000,
       xpFromEmojis: true,
       xpFromReactions: true,
       xpFromAttachments: true,
       xpFromEmbeds: true,
       xpFromStickers: true,
       xpFromText: true,
+      users: [],
     };
 
     const newConfig = new Config(configOptions);

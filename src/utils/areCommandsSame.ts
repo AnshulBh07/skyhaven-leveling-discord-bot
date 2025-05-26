@@ -1,13 +1,13 @@
 import {
   ApplicationCommand,
-  ApplicationCommandOption,
   ApplicationCommandOptionData,
   ApplicationCommandOptionType,
+  ApplicationCommandOption,
 } from "discord.js";
-import { ICommandObj, IOptions } from "./interfaces";
+import { ICommandObj } from "./interfaces";
 
 const areOptionsSame = (
-  localOptions: IOptions[],
+  localOptions: ApplicationCommandOptionData[],
   appOptions: ApplicationCommandOption[]
 ): boolean => {
   if (localOptions.length !== appOptions.length) return false;
@@ -30,19 +30,18 @@ const areOptionsSame = (
     )
       return false;
 
-    // Check if type supports choices (e.g., STRING, INTEGER, NUMBER)
     const supportsChoices = [
       ApplicationCommandOptionType.String,
       ApplicationCommandOptionType.Integer,
       ApplicationCommandOptionType.Number,
     ].includes(opt1.type);
 
+    // Type narrowing based on known valid types for `choices`
     if (supportsChoices) {
-      const localChoices = opt1.choices ?? [];
+      const localChoices =
+        "choices" in opt1 && Array.isArray(opt1.choices) ? opt1.choices : [];
       const appChoices =
-        "choices" in opt2 && Array.isArray((opt2 as any).choices)
-          ? (opt2 as any).choices
-          : [];
+        "choices" in opt2 && Array.isArray(opt2.choices) ? opt2.choices : [];
 
       if (localChoices.length !== appChoices.length) return false;
 
@@ -64,14 +63,17 @@ const areOptionsSame = (
   return true;
 };
 
-// only compare name,description and choices
 export const areCommandsSame = (
   localCommand: ICommandObj,
   appCommand: ApplicationCommand
-) => {
+): boolean => {
   const isNameSame = localCommand.name === appCommand.name;
   const isDescriptionSame = localCommand.description === appCommand.description;
-  const optionsSame = areOptionsSame(localCommand.options, appCommand.options);
+
+  const localOptions = [...(localCommand.options ?? [])];
+  const appOptions = appCommand.options ?? [];
+
+  const optionsSame = areOptionsSame(localOptions, appOptions);
 
   return isNameSame && isDescriptionSame && optionsSame;
 };

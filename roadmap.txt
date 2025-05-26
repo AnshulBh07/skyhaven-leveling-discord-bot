@@ -6,12 +6,6 @@
    - XP-to-level formula (e.g. `XP = 5 * level² + 50 * level + 100`) determines level-ups.
    - Level-up detection and notification in a dedicated channel.
 
-2. 🛠️ ADMIN COMMANDS
-   - `/set-channel` – Set the notification channel for level-up messages.
-   - `/ignore-channel` – Prevent XP gain in specified channels.
-   - `/listen-channel` - Removes a channel from ignore list.
-   - `/blacklist-channel` – Block all command usage in a channel.
-
 3. 🧍 USER COMMANDS
    - `/rank` – Display user level, XP, and rank.
    - `/leaderboard` – Show top users in the server by level.
@@ -39,4 +33,27 @@
 | 31–50       | Legendary Typist     |
 | 51–69       | The Yapfather        |
 | 70+         | Chat Ascendant       |
+
+
+***** PHASE 2 *****
+👤 ECONOMY AND ADMIN COMMANDS
+
+1. 🛠️ ADMIN COMMANDS
+All of the following are subcommands under: /xpconfig
+
+   - `/xpconfig notif-channel`         → Set the notification channel for level-up messages.
+   - `/xpconfig ignore-channel`        → Prevent XP gain in specified channels.
+   - `/xpconfig listen-channel`        → Remove a channel from the ignore list.
+   - `/xpconfig blacklist-channel`     → Block all command usage in a channel.
+   - `/xpconfig whitelist-channel`     → Remove a channel from the blacklist.
+   - `/xpconfig view`                  → View the current server configuration for the bot.
+
+
+2. 💰 ECONOMY COMMANDS
+   - `/setxp @user <amount>`           → Set a user's XP to a specific amount.
+   - `/addxp @user <amount>`           → Add XP to a user.
+   - `/removexp @user <amount>`        → Removes specified amount of xp from user.
+   - `/resetxp @user`                  → Reset a user's XP and level.
+   - `/setlevel @user <level>`         → Set a user's level manually.
+   - `/resetserverxp`                  → Reset XP and levels for **all users** in the server.
 

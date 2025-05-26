@@ -1,9 +1,10 @@
 // a generic function that handles messageCreate events
 import { Client, Message } from "discord.js";
 import Config from "../../models/configSchema";
-import UserStats from "../../models/userStatsSchema";
+import UserStats from "../../models/userSchema";
 import { getNextLvlXP } from "../../utils/getNextLevelXP";
 import { rolePromotionMessages } from "../../data/helperArrays";
+import { countEmojis } from "../../utils/countEmojis";
 
 export const execute = async (client: Client, message: Message) => {
   try {
@@ -11,12 +12,21 @@ export const execute = async (client: Client, message: Message) => {
 
     if (!guildID) return;
 
-    const guildConfig = await Config.findOne({ serverID: guildID }).lean();
+    const guildConfig = await Config.findOne({ serverID: guildID });
 
     if (!guildConfig) return;
 
-    const { ignoredChannels, notificationChannelID, xpCooldown, levelRoles } =
-      guildConfig;
+    const {
+      ignoredChannels,
+      notificationChannelID,
+      xpCooldown,
+      levelRoles,
+      xpFromAttachments,
+      xpFromEmbeds,
+      xpFromEmojis,
+      xpFromStickers,
+      xpFromText,
+    } = guildConfig;
 
     // check for restrictions
     if (
@@ -25,9 +35,26 @@ export const execute = async (client: Client, message: Message) => {
       ignoredChannels.includes(message.channel.id) ||
       !message.channel.isTextBased() ||
       notificationChannelID.length === 0
-    ) {
+    )
       return;
-    }
+
+    const hasText = message.content.length > 0;
+    // images and gifs are sent as attachments from local machine
+    // gifs can also be sent as embeds
+    const hasImagesOrGifs =
+      message.attachments.some(
+        (attachment) =>
+          attachment.contentType?.startsWith("image/") ||
+          attachment.contentType?.startsWith(".gif")
+      ) || message.embeds.some((embed) => embed.data.type?.startsWith("gif"));
+
+    const hasVideo =
+      message.attachments.some((attachment) =>
+        attachment.contentType?.startsWith("video")
+      ) || message.embeds.some((embed) => embed.data.type?.startsWith("video"));
+
+    const hasEmojis = countEmojis(message.content) > 0;
+    const hasStickers = message.stickers.size > 0;
 
     // if message does not exist in userstates make one
     let user = await UserStats.findOne({ userID: message.author.id });
@@ -45,9 +72,15 @@ export const execute = async (client: Client, message: Message) => {
         lastMessageTimestamp: new Date(),
         lastPromotionTimestamp: new Date(),
         currentRole: roleConfig.roleID,
+        totalXp: 0,
       });
 
       await user.save();
+
+      if (!guildConfig.users.includes(user._id)) {
+        guildConfig.users.push(user._id);
+        await guildConfig.save();
+      }
 
       // assign role to user
       await message.member?.roles.add(roleConfig.roleID);
@@ -61,11 +94,24 @@ export const execute = async (client: Client, message: Message) => {
 
     // generate xp for user and check level upgrade
     const xpGain = Math.min(
-      Math.max(5, Math.floor(message.content.length / 10)),
+      Math.max(
+        5,
+        Math.floor(message.content.length - countEmojis(message.content) / 10)
+      ),
       25
     );
-    const currXp = user.xp + xpGain;
+
+    // might need to work on this logic again later as xp gain is negligible can ignore it for now
+    const currXp =
+      user.xp +
+      (hasText && xpFromText ? xpGain : 0) +
+      (hasEmojis && xpFromEmojis ? countEmojis(message.content) * 2 : 0) +
+      (hasImagesOrGifs && (xpFromAttachments || xpFromEmbeds) ? 5 : 0) +
+      (hasVideo && (xpFromAttachments || xpFromEmbeds) ? 10 : 0) +
+      (hasStickers && xpFromStickers ? 10 : 0);
     const xpForNextLevel = getNextLvlXP(user.level);
+
+    user.totalXp += currXp - user.xp;
 
     let promotionFlag = false;
     let lvlupMessage = "";
@@ -140,6 +186,11 @@ export const execute = async (client: Client, message: Message) => {
           await notifChannel.send({ content: lvlupMessage });
         }
       }
+    } else {
+      // no level up but we still have to update user
+      user.xp = currXp;
+      user.lastMessageTimestamp = new Date();
+      await user.save();
     }
   } catch (err) {
     console.error(err);

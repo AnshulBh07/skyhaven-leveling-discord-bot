@@ -1,3 +1,5 @@
+import { ISubcommand } from "../utils/interfaces";
+
 export const rolePromotionMessages: string[] = [
   "🗣️ {user} just wouldn't shut up—so we gave them the mighty **{role}** title. Chaos certified.",
   "📢 {user} monologued into legend status. Welcome to **{role}**, you vocal menace.",
@@ -39,5 +41,6 @@ export const rolePromotionMessages: string[] = [
   "🧊 {user} froze the chat with savage takes. New title: **{role}**.",
   "🐝 {user} buzzed into high society. Welcome to the **{role}** hive.",
   "🚽 {user} talked so long, we renamed the voice chat to Bathroom. Enjoy **{role}**.",
-  "☠️ {user}'s voice scared the skeletons. Graveyard certified: **{role}**."
+  "☠️ {user}'s voice scared the skeletons. Graveyard certified: **{role}**.",
 ];
+

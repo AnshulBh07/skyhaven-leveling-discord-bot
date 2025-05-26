@@ -5,20 +5,25 @@ import path from "path";
 const getAllFiles = (directory: string, foldersOnly = false) => {
   let fileNames: string[] = [];
 
-  const files = fs.readdirSync(directory, { withFileTypes: true });
+  // creating a dfs code because our file system is a sort of n-ary tree which has children nodes
+  // only if parent is a folder/directory
+  const dfs = (src: string) => {
+    const files = fs.readdirSync(src, { withFileTypes: true });
 
-  //   check for each file in files whether it is a folder or not
-  for (const file of files) {
-    // create file path
-    const filePath = path.join(directory, file.name);
+    for (const node of files) {
+      const fullPath = path.join(src, node.name);
 
-    if (foldersOnly) {
-      if (file.isDirectory()) fileNames.push(filePath);
-    } else {
-      if (file.isFile()) fileNames.push(filePath);
+      if (node.isDirectory()) {
+        if (foldersOnly) fileNames.push(fullPath);
+        // recursively go to subfolders and files
+        dfs(fullPath);
+      } else {
+        if (!foldersOnly) fileNames.push(fullPath);
+      }
     }
-  }
+  };
 
+  dfs(directory);
   return fileNames;
 };
 

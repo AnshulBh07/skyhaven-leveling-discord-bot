@@ -1,4 +1,4 @@
-import { Client, Guild } from "discord.js";
+import { Client } from "discord.js";
 import getLocalCommands from "../../utils/getLocalCommands";
 import getApplicationCommands from "../../utils/getApplicationCommands";
 import { areCommandsSame } from "../../utils/areCommandsSame";
@@ -22,7 +22,7 @@ export const execute = async (client: Client) => {
       );
       return;
     }
-
+    
     for (const localCommand of localCommands) {
       const { isDeleted, callback, ...command } = localCommand;
       // check if local command exists in application command

@@ -2,6 +2,7 @@ import { Client, Guild } from "discord.js";
 import getLocalCommands from "../../utils/getLocalCommands";
 import getApplicationCommands from "../../utils/getApplicationCommands";
 import { areCommandsSame } from "../../utils/areCommandsSame";
+import { subcommandsMap } from "../../data/helperArrays";
 
 export const execute = async (client: Client, guild: Guild) => {
   try {
@@ -18,8 +19,6 @@ export const execute = async (client: Client, guild: Guild) => {
       return;
     }
 
-    // console.log(guildID);
-    // console.log(appCommands);
 
     for (const localCommand of localCommands) {
       const { isDeleted, callback, ...command } = localCommand;
