@@ -28,7 +28,7 @@ const LevelingConfig = new Schema(
     xpFromEmbeds: { type: Boolean, default: true },
     xpFromStickers: { type: Boolean, default: true },
   },
-  { timestamps: true, _id: false }
+  { timestamps: false, _id: false }
 );
 
 const ConfigSchema = new Schema(
@@ -37,11 +37,12 @@ const ConfigSchema = new Schema(
     botID: { type: String, required: true, default: "" },
     devsIDs: { type: [String], required: true, default: [] },
     levelConfig: { type: LevelingConfig, required: true },
-    users: {
-      type: [mongoose.Schema.Types.ObjectId],
-      ref: "User",
-      default: [],
-    },
+    users: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   { timestamps: true }
 );

@@ -53,7 +53,6 @@ All of the following are subcommands under: /xpconfig
    - `/setxp @user <amount>`           → Set a user's XP to a specific amount.
    - `/addxp @user <amount>`           → Add XP to a user.
    - `/removexp @user <amount>`        → Removes specified amount of xp from user.
-   - `/resetxp @user`                  → Reset a user's XP and level.
    - `/setlevel @user <level>`         → Set a user's level manually.
    - `/resetserverxp`                  → Reset XP and levels for **all users** in the server.
 

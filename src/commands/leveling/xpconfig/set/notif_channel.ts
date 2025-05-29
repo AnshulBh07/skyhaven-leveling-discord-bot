@@ -26,6 +26,14 @@ const init = async (): Promise<ISubcommand | undefined> => {
         const ans_channel = interaction.options.getChannel("channel");
         if (!ans_channel) return;
 
+        // first check if the channel is text based or not
+        if (ans_channel.type !== 0) {
+          interaction.editReply(
+            "Selected channel is not a test based channel."
+          );
+          return;
+        }
+
         // channel shouldn't be in blacklisted channels
         const guildConfig = await Config.findOne({ serverID: guild_id });
 
@@ -39,7 +47,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
         // fetch guild from db and update it there
         guildConfig.levelConfig.notificationChannelID = ans_channel.id;
         await guildConfig.save();
-        
+
         interaction.editReply({
           content: `Set channel <#${ans_channel.id}> as notification channel.`,
         });

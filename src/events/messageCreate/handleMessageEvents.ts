@@ -1,10 +1,11 @@
 // a generic function that handles messageCreate events
 import { Client, Message } from "discord.js";
 import Config from "../../models/configSchema";
-import UserStats from "../../models/userSchema";
 import { getNextLvlXP } from "../../utils/getNextLevelXP";
 import { rolePromotionMessages } from "../../data/helperArrays";
 import { countEmojis } from "../../utils/countEmojis";
+import User from "../../models/userSchema";
+import { IUser } from "../../utils/interfaces";
 
 export const execute = async (client: Client, message: Message) => {
   try {
@@ -26,7 +27,7 @@ export const execute = async (client: Client, message: Message) => {
       xpFromEmojis,
       xpFromStickers,
       xpFromText,
-    } = guildConfig;
+    } = guildConfig.levelConfig;
 
     // check for restrictions
     if (
@@ -57,23 +58,32 @@ export const execute = async (client: Client, message: Message) => {
     const hasStickers = message.stickers.size > 0;
 
     // if message does not exist in userstates make one
-    let user = await UserStats.findOne({ userID: message.author.id });
+    let user = await User.findOne({ userID: message.author.id });
 
     if (!user) {
       const roleConfig = levelRoles.find((level) => level.minLevel == 1);
+      const user_nickname = message.guild?.members.cache.find(
+        (guild_member) => guild_member.id === message.author.id
+      )?.nickname;
 
       if (!roleConfig) return;
 
-      user = new UserStats({
+      const userOptions: IUser = {
         userID: message.author.id,
         serverID: guildID,
-        xp: 0,
-        level: 1,
-        lastMessageTimestamp: new Date(),
-        lastPromotionTimestamp: new Date(),
-        currentRole: roleConfig.roleID,
-        totalXp: 0,
-      });
+        username: message.author.username,
+        nickname: user_nickname ?? "",
+        leveling: {
+          xp: 0,
+          level: 1,
+          lastMessageTimestamp: new Date(),
+          lastPromotionTimestamp: new Date(),
+          currentRole: roleConfig.roleID,
+          totalXp: 0,
+        },
+      };
+
+      user = new User(userOptions);
 
       await user.save();
 
@@ -89,7 +99,8 @@ export const execute = async (client: Client, message: Message) => {
 
     // check whether user is on cooldown or not
     const currTime = new Date().getTime();
-    const cooldownExpTime = user.lastMessageTimestamp.getTime() + xpCooldown;
+    const cooldownExpTime =
+      user.leveling.lastMessageTimestamp.getTime() + xpCooldown;
     if (currTime < cooldownExpTime) return;
 
     // generate xp for user and check level upgrade
@@ -103,15 +114,19 @@ export const execute = async (client: Client, message: Message) => {
 
     // might need to work on this logic again later as xp gain is negligible can ignore it for now
     const currXp =
-      user.xp +
+      user.leveling.xp +
       (hasText && xpFromText ? xpGain : 0) +
       (hasEmojis && xpFromEmojis ? countEmojis(message.content) * 2 : 0) +
       (hasImagesOrGifs && (xpFromAttachments || xpFromEmbeds) ? 5 : 0) +
       (hasVideo && (xpFromAttachments || xpFromEmbeds) ? 10 : 0) +
       (hasStickers && xpFromStickers ? 10 : 0);
-    const xpForNextLevel = getNextLvlXP(user.level);
+    const xpForNextLevel = getNextLvlXP(user.leveling.level);
 
-    user.totalXp += currXp - user.xp;
+    user.leveling.totalXp += currXp - user.leveling.xp;
+    user.nickname =
+      message.guild?.members.cache.find(
+        (guild_member) => guild_member.id === message.author.id
+      )?.nickname ?? "";
 
     let promotionFlag = false;
     let lvlupMessage = "";
@@ -120,12 +135,13 @@ export const execute = async (client: Client, message: Message) => {
     if (currXp > xpForNextLevel) {
       const newRoleConfig = levelRoles.find(
         (level) =>
-          level.minLevel! <= user.level + 1 && level.maxLevel! >= user.level + 1
+          level.minLevel! <= user.leveling.level + 1 &&
+          level.maxLevel! >= user.leveling.level + 1
       );
 
       if (!newRoleConfig) return;
 
-      if (newRoleConfig.roleID !== user.currentRole) {
+      if (newRoleConfig.roleID !== user.leveling.currentRole) {
         promotionFlag = true;
 
         const allRelatedRoles = levelRoles.map((role) => {
@@ -154,10 +170,10 @@ export const execute = async (client: Client, message: Message) => {
           .replace("{role}", role.name);
       }
 
-      user.level++;
-      user.lastMessageTimestamp = new Date();
-      user.xp = 0;
-      user.currentRole = newRoleConfig.roleID;
+      user.leveling.level++;
+      user.leveling.lastMessageTimestamp = new Date();
+      user.leveling.xp = 0;
+      user.leveling.currentRole = newRoleConfig.roleID;
 
       await user.save();
 
@@ -169,29 +185,30 @@ export const execute = async (client: Client, message: Message) => {
       if (notifChannel && notifChannel.isTextBased()) {
         await notifChannel.send({
           content: `🎉 <@${message.author.id}> leveled up! **Level ${
-            user.level - 1
-          } ⟶ ${user.level}**`,
+            user.leveling.level - 1
+          } ⟶ ${user.leveling.level}**`,
         });
 
         // add promotion debounce
         if (promotionFlag) {
-          const lastPromotionTime = user.lastPromotionTimestamp.getTime();
+          const lastPromotionTime =
+            user.leveling.lastPromotionTimestamp.getTime();
           const currentTime = new Date().getTime();
           const cooldown = 5000;
 
           if (currentTime < lastPromotionTime + cooldown) return;
 
-          user.lastPromotionTimestamp = new Date(currentTime);
-          await user.save();
+          user.leveling.lastPromotionTimestamp = new Date(currentTime);
           await notifChannel.send({ content: lvlupMessage });
         }
       }
     } else {
       // no level up but we still have to update user
-      user.xp = currXp;
-      user.lastMessageTimestamp = new Date();
-      await user.save();
+      user.leveling.xp = currXp;
+      user.leveling.lastMessageTimestamp = new Date();
     }
+
+    await user.save();
   } catch (err) {
     console.error(err);
   }

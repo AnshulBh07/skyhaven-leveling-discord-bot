@@ -55,8 +55,8 @@ const init = async (): Promise<ICommandObj | ISubcommand | undefined> => {
       .map(([_, subcommand]) => subcommand.data);
 
     return {
-      name: "botconfig",
-      description: "Configure server settings",
+      name: "xpconfig",
+      description: "Configure server setting for leveling system",
       options: [
         ...(viewSubcommand ? [{ ...viewSubcommand.data }] : []),
         {

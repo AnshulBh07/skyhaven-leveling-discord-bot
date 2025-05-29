@@ -22,7 +22,7 @@ export const execute = async (client: Client) => {
       );
       return;
     }
-    
+
     for (const localCommand of localCommands) {
       const { isDeleted, callback, ...command } = localCommand;
       // check if local command exists in application command

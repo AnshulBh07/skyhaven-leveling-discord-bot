@@ -5,6 +5,7 @@ import {
   Client,
   PermissionResolvable,
 } from "discord.js";
+import { Document, ObjectId } from "mongoose";
 
 // interface choices {
 //   name: string;
@@ -39,22 +40,51 @@ export interface ILevelRoles {
   roleID: string;
 }
 
-export interface IConfig {
-  serverID: string;
-  botID: string;
-  devsIDs: string[];
-  blacklistedChannels: string[];
-  ignoredChannels: string[];
+interface ILevelConfig {
   levelRoles: ILevelRoles[];
   notificationChannelID: string;
+  blacklistedChannels: string[];
+  ignoredChannels: string[];
   xpCooldown: number;
   xpFromEmojis: boolean;
   xpFromReactions: boolean;
   xpFromText: boolean;
+  xpFromStickers: boolean;
   xpFromAttachments: boolean;
   xpFromEmbeds: boolean;
-  xpFromStickers: boolean;
-  users:string[]; //stores object ids of users
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+interface ILeveling {
+  xp: number;
+  totalXp: number;
+  level: number;
+  lastMessageTimestamp: Date;
+  lastPromotionTimestamp: Date;
+  currentRole: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface IUser {
+  userID: string;
+  serverID: string;
+  username: string;
+  nickname: string;
+  leveling: ILeveling;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface IConfig {
+  serverID: string;
+  botID: string;
+  devsIDs: string[];
+  levelConfig: ILevelConfig;
+  users: ObjectId[] | IUser[];
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface ISubcommand {
@@ -65,4 +95,11 @@ export interface ISubcommand {
     client: Client,
     interaction: ChatInputCommandInteraction
   ) => Promise<void> | void;
+}
+
+export interface ICardRankData {
+  currentXp: number;
+  requiredXp: number;
+  rank: number;
+  level: number;
 }

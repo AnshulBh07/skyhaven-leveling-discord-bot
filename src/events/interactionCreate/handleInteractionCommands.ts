@@ -16,19 +16,23 @@ export const execute = async (client: Client, interaction: Interaction) => {
 
     await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
-    const guild = await Config.findOne({ serverID: interaction.guildId });
+    const guildConfig = await Config.findOne({ serverID: interaction.guildId });
 
-    if (!guild) {
+    if (!guildConfig) {
       interaction.editReply("No guild/server found.");
       return;
     }
 
-    if (guild.blacklistedChannels.includes(interaction.channelId)) {
+    if (
+      guildConfig.levelConfig.blacklistedChannels.includes(
+        interaction.channelId
+      )
+    ) {
       interaction.editReply("Commands are not allowed in this channel.");
       return;
     }
 
-    const devsID = guild.devsIDs;
+    const devsID = guildConfig.devsIDs;
 
     const localCommands = await getLocalCommands();
 
@@ -69,9 +73,9 @@ export const execute = async (client: Client, interaction: Interaction) => {
           )
         ) {
           interaction.editReply({
-            content: "You do not have permissions needed to run this command.",
+            content: `You need the ${permission} to run this command.`,
           });
-          break;
+          return;
         }
       }
     }
