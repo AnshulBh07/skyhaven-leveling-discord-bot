@@ -1,13 +1,9 @@
-import {
-  ApplicationCommandOptionType,
-  PermissionFlagsBits,
-  PermissionResolvable,
-} from "discord.js";
+import { ApplicationCommandOptionType, PermissionFlagsBits } from "discord.js";
 import { ICommandObj, ILevelRoles } from "../../../utils/interfaces";
 import Config from "../../../models/configSchema";
 import { getLvlFromXP } from "../../../utils/getLevelFromXp";
 import User from "../../../models/userSchema";
-import { promoteUser } from "../../../utils/promoteUser";
+import { generateLvlNotif } from "../../../utils/generateLvlNotif";
 
 const init = async (): Promise<ICommandObj | undefined> => {
   try {
@@ -35,17 +31,19 @@ const init = async (): Promise<ICommandObj | undefined> => {
 
       callback: async (client, interaction) => {
         try {
+          await interaction.deferReply();
+
           const targetUser = interaction.options.getUser("user");
           const amount = interaction.options.getNumber("amount");
           const guildId = interaction.guildId;
 
           if (!targetUser || !amount || !guildId || targetUser.bot) {
-            interaction.editReply("Invalid inputs.");
+            await interaction.editReply("Invalid inputs.");
             return;
           }
 
           if (amount > 5000) {
-            interaction.editReply(
+            await interaction.editReply(
               "Cannot add more than 5000 XP points at once."
             );
             return;
@@ -55,16 +53,16 @@ const init = async (): Promise<ICommandObj | undefined> => {
           const guildConfig = await Config.findOne({ serverID: guildId });
 
           if (!user) {
-            interaction.editReply("No user found.");
+            await interaction.editReply("No user found.");
             return;
           }
 
           if (!guildConfig) {
-            interaction.editReply("No guild found.");
+            await interaction.editReply("No guild found.");
             return;
           }
 
-          const { levelRoles } = guildConfig.levelConfig;
+          const { levelRoles, notificationChannelID } = guildConfig.levelConfig;
 
           user.leveling.xp += amount;
           const finalLevel = getLvlFromXP(user.leveling.totalXp + amount);
@@ -78,44 +76,28 @@ const init = async (): Promise<ICommandObj | undefined> => {
             };
           });
 
-          if (finalLevel > user.leveling.level) {
-            const { isPromoted, promotionMessage } = await promoteUser(
+          const notifChannel = interaction.guild?.channels.cache.find(
+            (channel) => channel.id === notificationChannelID
+          );
+
+          if (prevLevel !== finalLevel)
+            await generateLvlNotif(
               user,
-              interaction,
-              lvlRolesArray,
+              targetUser,
+              prevLevel,
               finalLevel,
-              targetUser
+              lvlRolesArray,
+              notifChannel,
+              interaction
             );
-
-            const notifChannel = interaction.guild?.channels.cache.find(
-              (channel) =>
-                channel.id === guildConfig.levelConfig.notificationChannelID
-            );
-
-            if (notifChannel && notifChannel.isTextBased()) {
-              // send level up message
-              await notifChannel.send({
-                content: `🎉 <@${targetUser.id}> leveled up! **Level ${prevLevel} ⟶ ${finalLevel}**`,
-              });
-
-              if (isPromoted) {
-                const lastPromotionTime =
-                  user.leveling.lastPromotionTimestamp.getTime();
-                const currentTime = new Date().getTime();
-                const cooldown = 5000;
-
-                if (currentTime < lastPromotionTime + cooldown) return;
-
-                user.leveling.lastPromotionTimestamp = new Date(currentTime);
-                await notifChannel.send({ content: promotionMessage });
-              }
-            }
-          }
+          else user.leveling.xp += amount;
 
           user.leveling.totalXp += amount;
 
           await user.save();
-          interaction.editReply(`Added ${amount} XP to <@${targetUser.id}>`);
+          await interaction.editReply(
+            `Added ${amount} XP to <@${targetUser.id}>`
+          );
         } catch (err) {
           console.error(err);
           return;

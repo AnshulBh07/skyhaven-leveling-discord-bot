@@ -21,6 +21,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
       },
 
       callback: async (client, interaction) => {
+        await interaction.deferReply();
         // get the channel from options
         const ans_channel = interaction.options.getChannel("channel");
         const guild_id = interaction.guildId;
@@ -28,14 +29,14 @@ const init = async (): Promise<ISubcommand | undefined> => {
         const guildConfig = await Config.findOne({ serverID: guild_id });
 
         if (!guildConfig || !ans_channel) {
-          interaction.editReply("Bot error.");
+          await interaction.editReply("Bot error.");
           return;
         }
 
         let ignoredChannels = guildConfig.levelConfig.ignoredChannels;
 
         if (ignoredChannels.includes(ans_channel.id)) {
-          interaction.editReply("Channel already present in ignore list.");
+          await interaction.editReply("Channel already present in ignore list.");
           return;
         }
 
@@ -43,7 +44,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
         guildConfig.levelConfig.ignoredChannels = ignoredChannels;
         await guildConfig.save();
 
-        interaction.editReply(`Added <#${ans_channel.id}> to ignore list.`);
+        await interaction.editReply(`Added <#${ans_channel.id}> to ignore list.`);
       },
     };
   } catch (err) {

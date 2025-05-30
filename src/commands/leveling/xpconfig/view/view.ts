@@ -15,13 +15,17 @@ const init = async (): Promise<ICommandObj | ISubcommand | undefined> => {
 
       callback: async (client, interaction) => {
         try {
+          await interaction.deferReply({ flags: "Ephemeral" });
+
           const guildId = interaction.guildId ?? "";
           const config = await Config.findOne({ serverID: guildId });
 
           const levelConfig = config?.levelConfig;
 
           if (!config || !levelConfig) {
-            interaction.editReply("⚠️ No configuration found for this server");
+            await interaction.editReply(
+              "⚠️ No configuration found for this server"
+            );
             return;
           }
 
@@ -104,7 +108,7 @@ const init = async (): Promise<ICommandObj | ISubcommand | undefined> => {
               text: "Use /config set to modify these settings.",
             });
 
-          interaction.editReply({ embeds: [embed] });
+          await interaction.editReply({ embeds: [embed] });
         } catch (err) {
           console.error(err);
         }

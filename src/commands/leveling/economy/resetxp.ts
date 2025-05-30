@@ -7,6 +7,8 @@ import { ICommandObj, ILevelRoles } from "../../../utils/interfaces";
 import Config from "../../../models/configSchema";
 import User from "../../../models/userSchema";
 import { demoteUser } from "../../../utils/demoteUser";
+import { generateLvlUpCard } from "../../../canvas/generateLevelUpCard";
+import { generateLvlNotif } from "../../../utils/generateLvlNotif";
 
 const init = async (): Promise<ICommandObj | undefined> => {
   try {
@@ -27,18 +29,20 @@ const init = async (): Promise<ICommandObj | undefined> => {
 
       callback: async (client, interaction) => {
         try {
+          await interaction.deferReply();
+          
           const targetUser = interaction.options.getUser("user");
           const guildID = interaction.guildId;
 
           if (!targetUser || !guildID || targetUser.bot) {
-            interaction.editReply("Invalid command.");
+            await interaction.editReply("Invalid command.");
             return;
           }
 
           const guildConfig = await Config.findOne({ serverID: guildID });
 
           if (!guildConfig) {
-            interaction.editReply("No guild found.");
+            await interaction.editReply("No guild found.");
             return;
           }
 
@@ -54,52 +58,32 @@ const init = async (): Promise<ICommandObj | undefined> => {
           const user = await User.findOne({ userID: targetUser.id });
 
           if (!user) {
-            interaction.editReply("No user found");
+            await interaction.editReply("No user found");
             return;
           }
 
-          const currLevel = user.leveling.level;
+          const prevLevel = user.leveling.level;
+          const finalLevel = 1;
 
-          //   demotion occurs
-          if (currLevel > 1) {
-            const { isDemoted, demotionMessage } = await demoteUser(
+          const notifChannel = interaction.guild?.channels.cache.find(
+            (channel) => channel.id === notificationChannelID
+          );
+
+          if (prevLevel !== finalLevel)
+            await generateLvlNotif(
               user,
+              targetUser,
+              prevLevel,
+              finalLevel,
               lvlRolesArr,
-              1,
-              interaction,
-              targetUser
+              notifChannel,
+              interaction
             );
-
-            // send level down or role demotion notices
-            const notifChannel = interaction.guild?.channels.cache.find(
-              (channel) => channel.id === notificationChannelID
-            );
-
-            if (notifChannel && notifChannel.isTextBased()) {
-              await notifChannel.send({
-                content: `<@${
-                  targetUser.id
-                }> has leveled down. 😔 **Level ${currLevel} ⟶ ${1}**`,
-              });
-
-              if (isDemoted) {
-                const lastPromotionTime =
-                  user.leveling.lastPromotionTimestamp.getTime();
-                const currentTime = new Date().getTime();
-                const cooldown = 5000;
-
-                if (currentTime < lastPromotionTime + cooldown) return;
-
-                user.leveling.lastPromotionTimestamp = new Date(currentTime);
-                await notifChannel.send({ content: demotionMessage });
-              }
-            }
-          }
 
           user.leveling.xp = 0;
           user.leveling.totalXp = 0;
           await user.save();
-          interaction.editReply(
+          await interaction.editReply(
             `⚠️ <@${targetUser.id}> xp is reduced to dust.`
           );
         } catch (err) {

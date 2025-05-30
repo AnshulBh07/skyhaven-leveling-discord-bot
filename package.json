@@ -22,8 +22,11 @@
   },
   "dependencies": {
     "@types/mongoose": "^5.11.96",
+    "canvas": "^3.1.0",
+    "colorthief": "^2.6.0",
     "discord-arts": "^0.7.1",
     "discord.js": "^14.19.3",
-    "mongoose": "^8.15.0"
+    "mongoose": "^8.15.0",
+    "node-fetch": "^3.3.2"
   }
 }

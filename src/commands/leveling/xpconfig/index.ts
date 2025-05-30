@@ -73,7 +73,7 @@ const init = async (): Promise<ICommandObj | ISubcommand | undefined> => {
           interaction.options.getSubcommandGroup(false);
 
         if (!subcommandName) {
-          interaction.editReply("Subcommand not found.");
+          await interaction.reply("Subcommand not found.");
           return;
         }
 
@@ -83,7 +83,7 @@ const init = async (): Promise<ICommandObj | ISubcommand | undefined> => {
         const subcommand = subcommandsMap.get(subCmdKey.replace("-", "_"));
 
         if (!subcommand) {
-          await interaction.editReply(
+          await interaction.reply(
             `Subcommand "${subcommandName}" not found.`
           );
           return;

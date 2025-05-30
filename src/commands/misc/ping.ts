@@ -7,8 +7,8 @@ const init = async (): Promise<ICommandObj | ISubcommand | undefined> => {
       description: "a test ping command",
       options: [],
 
-      callback: (client, interaction) => {
-        interaction.editReply(`Pong! in ${client.ws.ping}ms`);
+      callback: async (client, interaction) => {
+        await interaction.reply(`Pong! in ${client.ws.ping}ms`);
       },
     };
   } catch (err) {

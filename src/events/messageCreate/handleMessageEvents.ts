@@ -6,6 +6,7 @@ import { rolePromotionMessages } from "../../data/helperArrays";
 import { countEmojis } from "../../utils/countEmojis";
 import User from "../../models/userSchema";
 import { IUser } from "../../utils/interfaces";
+import { generateLvlUpCard } from "../../canvas/generateLevelUpCard";
 
 export const execute = async (client: Client, message: Message) => {
   try {
@@ -183,10 +184,19 @@ export const execute = async (client: Client, message: Message) => {
       );
 
       if (notifChannel && notifChannel.isTextBased()) {
+        const targetUser = await message.author.fetch();
+
+        const lvlUpCard = await generateLvlUpCard(
+          targetUser,
+          user.leveling.level - 1,
+          user.leveling.level
+        );
+
         await notifChannel.send({
           content: `🎉 <@${message.author.id}> leveled up! **Level ${
             user.leveling.level - 1
           } ⟶ ${user.leveling.level}**`,
+          files: lvlUpCard ? [lvlUpCard] : [],
         });
 
         // add promotion debounce

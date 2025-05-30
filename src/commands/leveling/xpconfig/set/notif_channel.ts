@@ -21,6 +21,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
       },
 
       callback: async (client, interaction) => {
+        await interaction.deferReply();
         const guild_id = interaction.guildId;
 
         const ans_channel = interaction.options.getChannel("channel");
@@ -28,7 +29,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
 
         // first check if the channel is text based or not
         if (ans_channel.type !== 0) {
-          interaction.editReply(
+          await interaction.editReply(
             "Selected channel is not a test based channel."
           );
           return;
@@ -38,7 +39,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
         const guildConfig = await Config.findOne({ serverID: guild_id });
 
         if (!guildConfig) {
-          interaction.editReply({
+          await interaction.editReply({
             content: "Something went wrong.",
           });
           return;
@@ -48,7 +49,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
         guildConfig.levelConfig.notificationChannelID = ans_channel.id;
         await guildConfig.save();
 
-        interaction.editReply({
+        await interaction.editReply({
           content: `Set channel <#${ans_channel.id}> as notification channel.`,
         });
       },

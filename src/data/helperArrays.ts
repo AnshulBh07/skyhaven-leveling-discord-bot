@@ -145,3 +145,84 @@ export const roleDemotionMessages: string[] = [
   "🚫 {user} hit max silence. Auto-demoted from **{oldRole}** to **{newRole}**.",
   "🫧 {user} faded into background bubbles. **{oldRole}** popped, now floating as **{newRole}**.",
 ];
+
+export const darkBackgroundColors = [
+  "#0d1117", // GitHub dark
+  "#1a1a1a", // Neutral dark
+  "#18191c", // Discord dark
+  "#101820", // Deep blue-gray
+  "#1e1e2e", // Midnight violet-gray
+  "#121212", // Android dark theme
+  "#1c1f26", // Soft black
+  "#141d26", // Bluish black
+  "#23272a", // Discord's sidebar
+  "#2c2f33", // Discord's classic background
+  "#202225", // Discord dark gray
+  "#1b1b2f", // Dark navy
+  "#161b22", // GitHub code background
+  "#0e0e10", // Twitch background
+  "#2f3136", // Discord chat background
+];
+
+export const lightBackgroundColors = [
+  "#ffffff", // Pure White
+  "#fdfdfd", // Almost White
+  "#fcfcfc", // Soft White
+  "#fafafa", // Light Grayish White
+  "#f8f8f8", // Subtle Off-White
+  "#f5f5f5", // Smoke White (CSS: Whitesmoke)
+  "#f2f2f2", // Very Light Gray
+  "#f0f0f0", // Neutral White-Gray
+  "#eeeeee", // Pale Gray
+  "#ebebeb", // Warm Gray Tint
+  "#eaeaea", // Muted Light Gray
+  "#e8e8e8", // Gentle Grayish White
+  "#f6f8fa", // GitHub Background White
+  "#edf2f7", // Tailwind 'gray-100'
+  "#f7f7f7", // Light Gray White
+];
+
+export const rolePromotionGifs: string[][] = [
+  [
+    "https://media.tenor.com/kJS0W9pqUDQAAAAM/lurking-creeping.gif",
+    "https://media.tenor.com/TbKly4oJOBgAAAAM/anthony-anderson-looking.gif",
+    "https://i.gifer.com/GRDF.gif",
+    "https://media2.giphy.com/media/OCOYbqiXzkxMI/200w.gif?cid=6c09b952jk1a0azl53x64ns8fy6jeoht7j93jwdom4xglwq9&ep=v1_gifs_search&rid=200w.gif&ct=g",
+  ],
+  [
+    "https://media.tenor.com/MDxs9sUkJ_AAAAAM/wizard-dance.gif",
+    "https://media.tenor.com/iCFNj4B9zQUAAAAM/dwight.gif",
+    "https://media.tenor.com/xXNYv9q9HZEAAAAM/stan-twitter-leobylaw.gif",
+    "https://www.hubspot.com/hs-fs/hubfs/receiving%20redundant%20phone%20calls.gif?width=480&height=269&name=receiving%20redundant%20phone%20calls.gif",
+  ],
+  [
+    "https://i.pinimg.com/originals/88/10/64/881064cfb0167713e5b726335f7ae23f.gif",
+    "https://64.media.tumblr.com/af30c5f46a6554063a71f9d105cc588b/tumblr_p9j0mn85mu1rrkahjo1_540.gifv",
+    "https://64.media.tumblr.com/35ebcb06d0f8779378f613abf9bc1558/b329276fd89b8684-cf/s500x750/c1dadb37f033e59e7d5d4d6e9850ff529c6d15a6.gif",
+  ],
+  [
+    "https://media.tenor.com/iCqG_iT-h48AAAAM/bills-ugh.gif",
+    "https://media.tenor.com/1MSxCprd3MgAAAAM/working.gif",
+    "https://media.giphy.com/media/XIqCQx02E1U9W/giphy.gif",
+    "https://i.pinimg.com/originals/4a/e5/d5/4ae5d5d0b85a157c6dac7f6a17bb3078.gif",
+    "https://i.makeagif.com/media/5-26-2015/DkgsXO.gif",
+    "https://media.tenor.com/dPLWf7LikXoAAAAM/typing-gif.gif",
+  ],
+  [
+    "https://cdn.mos.cms.futurecdn.net/Z7Rv4K4aVfzDzJnHPJXPF8.gif",
+    "https://codaio.imgix.net/docs/4IMyNAs4pF/blobs/bl-8D8x1g0Vjh/740de5d14aba235bc82ca6fb7636782cd8cf625e59b394351437d720e4925cd27ac5b519cad104c29e813f1a7aa7324f130add2c31496a30ec63ea7fe0fec6a6cce82787b8aaf3d4ca59488d11bf2fc129feb59c6c0dd7a73cf381a78a14963673d44d6c?fit=crop&ar=1.91%3A1&fm=jpg",
+    "https://media.tenor.com/CbWKthhbhEoAAAAM/insane-fast-typing-cat.gif",
+  ],
+  [
+    "https://media.tenor.com/rCsC_pOIquQAAAAM/cage-priest.gif",
+    "https://media.tenor.com/j_X4pXUKVJkAAAAM/face-off-faceoff.gif",
+    "https://i.gifer.com/ERqp.gif",
+  ],
+  [
+    "https://media.tenor.com/-2V6pcNfhpMAAAAM/homer-simpson-levitating.gif",
+    "https://media.tenor.com/2q7RCZAr-4gAAAAM/ascending-energy.gif",
+    "https://media.tenor.com/qU7kKSP7JgsAAAAM/big-brain-lateralus.gif",
+    "https://media.tenor.com/cX60Qs5wNN8AAAAM/vine-ascend.gif",
+    "https://media.tenor.com/v05kjibQ_ZQAAAAM/ascend-winnie-the-pooh-ascend.gif",
+  ],
+];

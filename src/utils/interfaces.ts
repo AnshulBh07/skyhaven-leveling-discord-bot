@@ -103,3 +103,9 @@ export interface ICardRankData {
   rank: number;
   level: number;
 }
+
+export interface ILevelCardUserData {
+  user_id: string;
+  previous_level: number;
+  current_level: number;
+}

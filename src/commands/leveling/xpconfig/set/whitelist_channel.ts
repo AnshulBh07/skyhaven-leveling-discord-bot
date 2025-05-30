@@ -21,6 +21,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
       },
 
       callback: async (client, interaction) => {
+        await interaction.deferReply();
         // get the channel from options
         const ans_channel = interaction.options.getChannel("channel");
         const guild_id = interaction.guildId;
@@ -28,14 +29,14 @@ const init = async (): Promise<ISubcommand | undefined> => {
         const guildConfig = await Config.findOne({ serverID: guild_id });
 
         if (!guildConfig || !ans_channel) {
-          interaction.editReply("Bot error.");
+          await interaction.editReply("Bot error.");
           return;
         }
 
         let blacklistedChannels = guildConfig.levelConfig.blacklistedChannels;
 
         if (!blacklistedChannels.includes(ans_channel.id)) {
-          interaction.editReply("Channel is not blacklisted.");
+          await interaction.editReply("Channel is not blacklisted.");
           return;
         }
 
@@ -45,7 +46,9 @@ const init = async (): Promise<ISubcommand | undefined> => {
         guildConfig.levelConfig.blacklistedChannels = blacklistedChannels;
         await guildConfig.save();
 
-        interaction.editReply(`Removed <#${ans_channel.id}> from blacklist.`);
+        await interaction.editReply(
+          `Removed <#${ans_channel.id}> from blacklist.`
+        );
       },
     };
   } catch (err) {

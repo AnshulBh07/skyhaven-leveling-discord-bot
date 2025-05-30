@@ -9,6 +9,9 @@ import { getLvlFromXP } from "../../../utils/getLevelFromXp";
 import { promoteUser } from "../../../utils/promoteUser";
 import Config from "../../../models/configSchema";
 import { demoteUser } from "../../../utils/demoteUser";
+import { generateLvlUpCard } from "../../../canvas/generateLevelUpCard";
+import { generateLvlNotif } from "../../../utils/generateLvlNotif";
+import { getNextLvlXP } from "../../../utils/getNextLevelXP";
 
 const init = async (): Promise<ICommandObj | undefined> => {
   try {
@@ -35,6 +38,8 @@ const init = async (): Promise<ICommandObj | undefined> => {
 
       callback: async (client, interaction) => {
         try {
+          await interaction.deferReply();
+          
           const targetUser = interaction.options.getUser("user");
           const amount = interaction.options.getNumber("amount");
           const guildConfig = await Config.findOne({
@@ -42,7 +47,7 @@ const init = async (): Promise<ICommandObj | undefined> => {
           });
 
           if (!targetUser || !amount || !guildConfig || targetUser.bot) {
-            interaction.editReply("Invalid command.");
+            await interaction.editReply("Invalid command.");
             return;
           }
 
@@ -59,7 +64,7 @@ const init = async (): Promise<ICommandObj | undefined> => {
           const user = await User.findOne({ userID: targetUser.id });
 
           if (!user) {
-            interaction.editReply("No user found.");
+            await interaction.editReply("No user found.");
             return;
           }
 
@@ -70,66 +75,32 @@ const init = async (): Promise<ICommandObj | undefined> => {
             (channel) => channel.id === notificationChannelID
           );
 
-          if (levelAfter > levelBefore) {
-            const { isPromoted, promotionMessage } = await promoteUser(
+          if (levelAfter !== levelBefore)
+            await generateLvlNotif(
               user,
-              interaction,
-              lvlRolesArray,
+              targetUser,
+              levelBefore,
               levelAfter,
-              targetUser
+              lvlRolesArray,
+              notifChannel,
+              interaction
             );
 
-            if (notifChannel && notifChannel.isTextBased()) {
-              // send level up message
-              await notifChannel.send({
-                content: `🎉 <@${targetUser.id}> leveled up! **Level ${levelBefore} ⟶ ${levelAfter}**`,
-              });
+          // calculate leftover amount of xp for user
+          let userLevel = user.leveling.level;
+          let sum = 0;
 
-              if (isPromoted) {
-                const lastPromotionTime =
-                  user.leveling.lastPromotionTimestamp.getTime();
-                const currentTime = new Date().getTime();
-                const cooldown = 5000;
+          while (--userLevel) {
+            const xp = getNextLvlXP(userLevel);
+            sum += xp;
+          }
 
-                if (currentTime < lastPromotionTime + cooldown) return;
-
-                user.leveling.lastPromotionTimestamp = new Date(currentTime);
-                await notifChannel.send({ content: promotionMessage });
-              }
-            }
-          } else if (levelAfter < levelBefore) {
-            const { isDemoted, demotionMessage } = await demoteUser(
-              user,
-              lvlRolesArray,
-              levelAfter,
-              interaction,
-              targetUser
-            );
-
-            if (notifChannel && notifChannel.isTextBased()) {
-              await notifChannel.send({
-                content: `<@${targetUser.id}> has leveled down. 😔 **Level ${levelBefore} ⟶ ${levelAfter}**`,
-              });
-
-              if (isDemoted) {
-                const lastPromotionTime =
-                  user.leveling.lastPromotionTimestamp.getTime();
-                const currentTime = new Date().getTime();
-                const cooldown = 5000;
-
-                if (currentTime < lastPromotionTime + cooldown) return;
-
-                user.leveling.lastPromotionTimestamp = new Date(currentTime);
-                await notifChannel.send({ content: demotionMessage });
-              }
-            }
-          } else user.leveling.xp = 0;
-
+          user.leveling.xp = amount - sum;
           user.leveling.totalXp = amount;
 
           await user.save();
-          interaction.editReply(
-            `XP set to ${amount} for current level of <@${user.userID}>`
+          await interaction.editReply(
+            `XP set to ${amount} for <@${user.userID}>`
           );
         } catch (err) {
           console.error(err);

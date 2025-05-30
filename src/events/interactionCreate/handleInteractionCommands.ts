@@ -14,12 +14,13 @@ export const execute = async (client: Client, interaction: Interaction) => {
   try {
     if (!interaction.isChatInputCommand()) return;
 
-    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
-
     const guildConfig = await Config.findOne({ serverID: interaction.guildId });
 
     if (!guildConfig) {
-      interaction.editReply("No guild/server found.");
+      await interaction.reply({
+        content: "No guild/server found.",
+        flags: "Ephemeral",
+      });
       return;
     }
 
@@ -28,7 +29,10 @@ export const execute = async (client: Client, interaction: Interaction) => {
         interaction.channelId
       )
     ) {
-      interaction.editReply("Commands are not allowed in this channel.");
+      await interaction.reply({
+        content: "Commands are not allowed in this channel.",
+        flags: "Ephemeral",
+      });
       return;
     }
 
@@ -37,7 +41,7 @@ export const execute = async (client: Client, interaction: Interaction) => {
     const localCommands = await getLocalCommands();
 
     if (!localCommands) {
-      interaction.editReply("No commands found");
+      await interaction.reply({ content: "No commands found", flags: "Ephemeral" });
       throw new Error("No commands found locally");
     }
 
@@ -53,8 +57,9 @@ export const execute = async (client: Client, interaction: Interaction) => {
 
       //   check devs only
       if (!devsID.includes(memberID)) {
-        interaction.editReply({
+        await interaction.reply({
           content: "❌ You don't have access to this command.",
+          flags: "Ephemeral",
         });
         return;
       }
@@ -72,8 +77,9 @@ export const execute = async (client: Client, interaction: Interaction) => {
             permission as PermissionResolvable
           )
         ) {
-          interaction.editReply({
+          await interaction.reply({
             content: `You need the ${permission} to run this command.`,
+            flags: "Ephemeral",
           });
           return;
         }
