@@ -122,6 +122,11 @@ export const execute = async (client: Client) => {
         xpFromReactions: true,
         xpFromStickers: true,
         xpFromText: true,
+        xpFromVoice: true,
+      },
+      moderationConfig: {
+        welcomeChannelID: "",
+        welcomeMessage: "",
       },
       users: [],
     };

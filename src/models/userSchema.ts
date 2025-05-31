@@ -3,7 +3,9 @@ import { Schema, model } from "mongoose";
 const Leveling = new Schema(
   {
     xp: { type: Number, default: 0 },
+    voiceXp: { type: Number, default: 0 },
     totalXp: { type: Number, default: 0 },
+    xpPerDay: { type: Map, of: Number, defaultL: {}, required: true },
     level: { type: Number, default: 1 },
     lastMessageTimestamp: { type: Date, default: null },
     lastPromotionTimestamp: { type: Date, default: null },

@@ -1,13 +1,14 @@
-import { ChatInputCommandInteraction, User } from "discord.js";
+import { ChatInputCommandInteraction, Client, User } from "discord.js";
 import { ILevelRoles, IUser } from "./interfaces";
 import { roleDemotionMessages } from "../data/helperArrays";
 
 export const demoteUser = async (
+  client: Client,
   user: IUser,
   levelRoles: ILevelRoles[],
   finalLevel: number,
-  interaction: ChatInputCommandInteraction,
-  targetUser: User
+  targetUser: User,
+  guildID: string
 ) => {
   let isDemoted = false,
     demotionMessage = "";
@@ -21,21 +22,22 @@ export const demoteUser = async (
   if (!newRoleID)
     return { isDemoted: isDemoted, demotionMessage: demotionMessage };
 
+  // fetch guild and member data
+  const guild = await client.guilds.fetch(guildID);
+  const guild_member = await guild.members.fetch(targetUser.id);
+
   // demotion occured
   if (prevRoleID !== newRoleID) {
     isDemoted = true;
 
-    const allRelatedRoles = levelRoles.map((role) => role.roleID);
-    // get all current roles of member
-    const guild_member = interaction.guild?.members.cache.find(
-      (member) => member.id === targetUser.id
-    );
+    // check if the guild has the new role
+    const newRole = guild.roles.cache.find((role) => role.id === newRoleID);
+    const oldRole = guild.roles.cache.find((role) => role.id === prevRoleID);
 
-    if (!guild_member) {
-      interaction.editReply("Invalid guild member.");
+    if (!newRole || !oldRole)
       return { isDemoted: isDemoted, demotionMessage: demotionMessage };
-    }
 
+    const allRelatedRoles = levelRoles.map((role) => role.roleID);
     const memberRoles = guild_member.roles.cache.map((role) => role.id);
 
     for (const role of allRelatedRoles) {
@@ -44,16 +46,6 @@ export const demoteUser = async (
 
     await guild_member.roles.add(newRoleID);
     user.leveling.currentRole = newRoleID;
-
-    const oldRole = interaction.guild?.roles.cache.find(
-      (role) => role.id === prevRoleID
-    );
-    const newRole = interaction.guild?.roles.cache.find(
-      (role) => role.id === newRoleID
-    );
-
-    if (!newRole || !oldRole)
-      return { isDemoted: isDemoted, demotionMessage: demotionMessage };
 
     demotionMessage = roleDemotionMessages[
       Math.floor(Math.random() * roleDemotionMessages.length)

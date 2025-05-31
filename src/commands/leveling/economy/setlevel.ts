@@ -37,7 +37,7 @@ const init = async (): Promise<ICommandObj | undefined> => {
       callback: async (client, interaction) => {
         try {
           await interaction.deferReply();
-          
+
           const targetUser = interaction.options.getUser("user");
           const targetLevel = interaction.options.getNumber("level");
           const guildID = interaction.guildId;
@@ -72,13 +72,14 @@ const init = async (): Promise<ICommandObj | undefined> => {
 
           if (prevLevel !== targetLevel)
             await generateLvlNotif(
+              client,
               user,
               targetUser,
               prevLevel,
               targetLevel,
               lvlRolesArr,
               notifChannel,
-              interaction
+              guildID
             );
 
           await user.save();

@@ -5,7 +5,7 @@ import {
   Client,
   PermissionResolvable,
 } from "discord.js";
-import { Document, ObjectId } from "mongoose";
+import {  ObjectId } from "mongoose";
 
 // interface choices {
 //   name: string;
@@ -52,6 +52,7 @@ interface ILevelConfig {
   xpFromStickers: boolean;
   xpFromAttachments: boolean;
   xpFromEmbeds: boolean;
+  xpFromVoice: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -59,6 +60,8 @@ interface ILevelConfig {
 interface ILeveling {
   xp: number;
   totalXp: number;
+  voiceXp: number;
+  xpPerDay: Map<string, number>;
   level: number;
   lastMessageTimestamp: Date;
   lastPromotionTimestamp: Date;
@@ -77,11 +80,17 @@ export interface IUser {
   updatedAt?: Date;
 }
 
+interface IModerationConfig {
+  welcomeMessage: string;
+  welcomeChannelID: string;
+}
+
 export interface IConfig {
   serverID: string;
   botID: string;
   devsIDs: string[];
   levelConfig: ILevelConfig;
+  moderationConfig: IModerationConfig;
   users: ObjectId[] | IUser[];
   createdAt?: Date;
   updatedAt?: Date;

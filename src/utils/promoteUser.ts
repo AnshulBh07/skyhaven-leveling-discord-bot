@@ -1,13 +1,14 @@
-import { ChatInputCommandInteraction, User } from "discord.js";
+import { ChatInputCommandInteraction, Client, User } from "discord.js";
 import { ILevelRoles, IUser } from "./interfaces";
 import { rolePromotionMessages } from "../data/helperArrays";
 
 export const promoteUser = async (
+  client: Client,
   user: IUser,
-  interaction: ChatInputCommandInteraction,
   levelRoles: ILevelRoles[],
   finalLevel: number,
-  targetUser: User
+  targetUser: User,
+  guildID: string
 ) => {
   // check if a role update has occured
   const prevRoleID = user.leveling.currentRole;
@@ -18,6 +19,10 @@ export const promoteUser = async (
 
   const newRoleID = newRole?.roleID ?? prevRoleID;
 
+  // fetch guild and member data
+  const guild = await client.guilds.fetch(guildID);
+  const guild_member = await guild.members.fetch(targetUser.id);
+
   let isPromoted = false;
   let promotionMessage = "";
 
@@ -25,19 +30,12 @@ export const promoteUser = async (
     // new role acquired
     isPromoted = true;
 
-    const role = interaction.guild?.roles.cache.find(
-      (role) => role.id === newRoleID
-    );
+    const role = guild.roles.cache.find((role) => role.id === newRoleID);
 
     if (!role)
       return { isPromoted: isPromoted, promotionMessage: promotionMessage };
 
     const allRelatedRoles = levelRoles.map((role) => role.roleID); //all the roles from bot
-    const guild_member = await interaction.guild?.members.fetch(targetUser.id);
-
-    if (!guild_member)
-      return { isPromoted: isPromoted, promotionMessage: promotionMessage };
-
     const memberRoles = guild_member.roles.cache.map((role) => role.id);
 
     // delete all prev roles

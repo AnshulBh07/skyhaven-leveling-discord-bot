@@ -11,7 +11,7 @@ const LevelRolesSchema = new Schema(
     maxLevel: { type: Number, requird: true },
     roleID: { type: String, required: true },
   },
-  { timestamps: false, _id: false }
+  { timestamps: false, _id: false, _v: false }
 );
 
 const LevelingConfig = new Schema(
@@ -27,8 +27,18 @@ const LevelingConfig = new Schema(
     xpFromAttachments: { type: Boolean, default: true },
     xpFromEmbeds: { type: Boolean, default: true },
     xpFromStickers: { type: Boolean, default: true },
+    xpFromVoice: { type: Boolean, default: true },
   },
-  { timestamps: false, _id: false }
+  { timestamps: false, _id: false, _v: false }
+);
+
+const moderationConfig = new Schema(
+  {
+    welcomeMessage: { type: String, default: "" },
+    welcomeChannelID: { type: String, default: "" },
+    welcomeBackMessage: { type: String, default: "" },
+  },
+  { timestamps: false, _id: false, _v: false }
 );
 
 const ConfigSchema = new Schema(
@@ -37,6 +47,7 @@ const ConfigSchema = new Schema(
     botID: { type: String, required: true, default: "" },
     devsIDs: { type: [String], required: true, default: [] },
     levelConfig: { type: LevelingConfig, required: true },
+    moderationConfig: { type: moderationConfig, required: true },
     users: [
       {
         type: mongoose.Schema.Types.ObjectId,

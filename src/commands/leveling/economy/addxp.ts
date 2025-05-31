@@ -82,13 +82,14 @@ const init = async (): Promise<ICommandObj | undefined> => {
 
           if (prevLevel !== finalLevel)
             await generateLvlNotif(
+              client,
               user,
               targetUser,
               prevLevel,
               finalLevel,
               lvlRolesArray,
               notifChannel,
-              interaction
+              guildId
             );
           else user.leveling.xp += amount;
 

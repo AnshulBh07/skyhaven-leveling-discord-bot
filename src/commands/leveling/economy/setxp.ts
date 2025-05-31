@@ -39,14 +39,21 @@ const init = async (): Promise<ICommandObj | undefined> => {
       callback: async (client, interaction) => {
         try {
           await interaction.deferReply();
-          
+
           const targetUser = interaction.options.getUser("user");
           const amount = interaction.options.getNumber("amount");
           const guildConfig = await Config.findOne({
             serverID: interaction.guildId,
           });
+          const guildID = interaction.guildId;
 
-          if (!targetUser || !amount || !guildConfig || targetUser.bot) {
+          if (
+            !targetUser ||
+            !amount ||
+            !guildConfig ||
+            targetUser.bot ||
+            !guildID
+          ) {
             await interaction.editReply("Invalid command.");
             return;
           }
@@ -77,13 +84,14 @@ const init = async (): Promise<ICommandObj | undefined> => {
 
           if (levelAfter !== levelBefore)
             await generateLvlNotif(
+              client,
               user,
               targetUser,
               levelBefore,
               levelAfter,
               lvlRolesArray,
               notifChannel,
-              interaction
+              guildID
             );
 
           // calculate leftover amount of xp for user

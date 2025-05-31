@@ -7,8 +7,6 @@ import { ICardRankData, ICommandObj, IUser } from "../../../utils/interfaces";
 import Config from "../../../models/configSchema";
 import { generateRankCard } from "../../../canvas/generateRankCard";
 import { getNextLvlXP } from "../../../utils/getNextLevelXP";
-import { generateBackground } from "../../../canvas/utils/generateBackground";
-import { generateLvlUpCard } from "../../../canvas/generateLevelUpCard";
 
 const init = async (): Promise<ICommandObj | undefined> => {
   try {

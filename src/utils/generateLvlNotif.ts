@@ -1,5 +1,6 @@
 import {
   ChatInputCommandInteraction,
+  Client,
   GuildBasedChannel,
   User,
 } from "discord.js";
@@ -11,28 +12,28 @@ import { rolePromotionGifs } from "../data/helperArrays";
 
 // this function will only generate notifs and cards if the level changes
 export const generateLvlNotif = async (
+  client: Client,
   user: IUser,
   targetUser: User,
   prevLevel: number,
   finalLevel: number,
   lvlRolesArr: ILevelRoles[],
   notifChannel: GuildBasedChannel | undefined,
-  interaction: ChatInputCommandInteraction
+  guildID: string
 ) => {
   try {
-    const fullUser = await interaction.client.users.fetch(user.userID, {
-      force: true,
-    });
+    const fullUser = await targetUser.fetch(true);
     const lvlCard = await generateLvlUpCard(fullUser, prevLevel, finalLevel);
 
     if (prevLevel < finalLevel) {
       // user levels up
       const { isPromoted, promotionMessage } = await promoteUser(
+        client,
         user,
-        interaction,
         lvlRolesArr,
         finalLevel,
-        targetUser
+        targetUser,
+        guildID
       );
 
       if (notifChannel && notifChannel.isTextBased()) {
@@ -69,11 +70,12 @@ export const generateLvlNotif = async (
     } else if (prevLevel > finalLevel) {
       // user loses a level
       const { isDemoted, demotionMessage } = await demoteUser(
+        client,
         user,
         lvlRolesArr,
         finalLevel,
-        interaction,
-        targetUser
+        targetUser,
+        guildID
       );
 
       if (notifChannel && notifChannel.isTextBased()) {
