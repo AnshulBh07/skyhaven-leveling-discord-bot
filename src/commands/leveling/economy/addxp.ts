@@ -4,6 +4,7 @@ import Config from "../../../models/configSchema";
 import { getLvlFromXP } from "../../../utils/getLevelFromXp";
 import User from "../../../models/userSchema";
 import { generateLvlNotif } from "../../../utils/generateLvlNotif";
+import { getDateString } from "../../../utils/getDateString";
 
 const init = async (): Promise<ICommandObj | undefined> => {
   try {
@@ -67,6 +68,11 @@ const init = async (): Promise<ICommandObj | undefined> => {
           user.leveling.xp += amount;
           const finalLevel = getLvlFromXP(user.leveling.totalXp + amount);
           const prevLevel = user.leveling.level;
+          const dateStr = getDateString(new Date());
+          user.leveling.xpPerDay.set(
+            dateStr,
+            (user.leveling.xpPerDay.get(dateStr) || 0) + amount
+          );
 
           const lvlRolesArray: ILevelRoles[] = levelRoles.map((role) => {
             return {

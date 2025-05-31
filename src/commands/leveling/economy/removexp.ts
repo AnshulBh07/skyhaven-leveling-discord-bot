@@ -10,6 +10,7 @@ import User from "../../../models/userSchema";
 import { demoteUser } from "../../../utils/demoteUser";
 import { generateLvlUpCard } from "../../../canvas/generateLevelUpCard";
 import { generateLvlNotif } from "../../../utils/generateLvlNotif";
+import { getDateString } from "../../../utils/getDateString";
 
 const init = async (): Promise<ICommandObj | undefined> => {
   try {
@@ -80,6 +81,13 @@ const init = async (): Promise<ICommandObj | undefined> => {
           user.leveling.xp = newCurrXp;
 
           user.leveling.totalXp = newTotalXp;
+
+          const dateStr = getDateString(new Date());
+          const currPerDay = user.leveling.xpPerDay.get(dateStr) || 0;
+          user.leveling.xpPerDay.set(
+            dateStr,
+            currPerDay - amount > 0 ? currPerDay - amount : 0
+          );
 
           const finalLevel = getLvlFromXP(newTotalXp);
           const lvlRolesArray: ILevelRoles[] = levelRoles.map((role) => {

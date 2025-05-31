@@ -17,7 +17,7 @@ const init = async (): Promise<ICommandObj | undefined> => {
   try {
     return {
       name: "setxp",
-      description: "Set a user's XP to a specific amount",
+      description: "Set a user's text XP to a specific amount",
       options: [
         {
           name: "user",

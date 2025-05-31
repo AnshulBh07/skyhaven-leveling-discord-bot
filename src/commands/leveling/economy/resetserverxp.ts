@@ -24,7 +24,7 @@ const init = async (): Promise<ICommandObj | undefined> => {
       callback: async (client, interaction) => {
         try {
           await interaction.deferReply();
-          
+
           const guildID = interaction.guildId;
           const guildConfig = await Config.findOne({ serverID: guildID });
 
@@ -113,6 +113,8 @@ const init = async (): Promise<ICommandObj | undefined> => {
                     "leveling.level": 1,
                     "leveling.currentRole": basicRoleId,
                     "leveling.lastPromotionTimestamp": new Date(),
+                    "leveling.voiceXp": 0,
+                    "leveling.xpPerDay": new Map<string, number>(),
                   },
                 }
               );

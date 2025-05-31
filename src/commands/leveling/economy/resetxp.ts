@@ -9,12 +9,13 @@ import User from "../../../models/userSchema";
 import { demoteUser } from "../../../utils/demoteUser";
 import { generateLvlUpCard } from "../../../canvas/generateLevelUpCard";
 import { generateLvlNotif } from "../../../utils/generateLvlNotif";
+import { getDateString } from "../../../utils/getDateString";
 
 const init = async (): Promise<ICommandObj | undefined> => {
   try {
     return {
       name: "resetxp",
-      description: "Reset a user's XP and level to 1",
+      description: "Reset a user's text XP, voice XP and level to 1",
       options: [
         {
           name: "user",
@@ -83,6 +84,10 @@ const init = async (): Promise<ICommandObj | undefined> => {
 
           user.leveling.xp = 0;
           user.leveling.totalXp = 0;
+          user.leveling.voiceXp = 0;
+          const dateStr = getDateString(new Date());
+          user.leveling.xpPerDay.set(dateStr, 0);
+
           await user.save();
           await interaction.editReply(
             `⚠️ <@${targetUser.id}> xp is reduced to dust.`

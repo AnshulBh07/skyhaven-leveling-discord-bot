@@ -1,14 +1,11 @@
-import {
-  ChatInputCommandInteraction,
-  Client,
-  GuildBasedChannel,
-  User,
-} from "discord.js";
+import { Client, GuildBasedChannel, User } from "discord.js";
 import { ILevelRoles, IUser } from "./interfaces";
 import { generateLvlUpCard } from "../canvas/generateLevelUpCard";
 import { promoteUser } from "./promoteUser";
 import { demoteUser } from "./demoteUser";
 import { rolePromotionGifs } from "../data/helperArrays";
+
+const pendingUsers = new Set<string>();
 
 // this function will only generate notifs and cards if the level changes
 export const generateLvlNotif = async (
@@ -21,6 +18,11 @@ export const generateLvlNotif = async (
   notifChannel: GuildBasedChannel | undefined,
   guildID: string
 ) => {
+  // lock mutex logic to avoid slow gif load
+  if (pendingUsers.has(targetUser.id)) return;
+
+  pendingUsers.add(targetUser.id);
+
   try {
     const fullUser = await targetUser.fetch(true);
     const lvlCard = await generateLvlUpCard(fullUser, prevLevel, finalLevel);
@@ -57,6 +59,7 @@ export const generateLvlNotif = async (
           if (currentTime < lastPromotionTime + cooldown) return;
 
           user.leveling.lastPromotionTimestamp = new Date(currentTime);
+
           await notifChannel.send({
             content: promotionMessage,
             files: [
@@ -99,5 +102,7 @@ export const generateLvlNotif = async (
     }
   } catch (err) {
     console.error(err);
+  } finally {
+    pendingUsers.delete(targetUser.id);
   }
 };

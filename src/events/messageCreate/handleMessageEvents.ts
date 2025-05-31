@@ -1,16 +1,13 @@
 // a generic function that handles messageCreate events
 import { Client, Message } from "discord.js";
 import Config from "../../models/configSchema";
-import { getNextLvlXP } from "../../utils/getNextLevelXP";
-import { rolePromotionMessages } from "../../data/helperArrays";
 import { countEmojis } from "../../utils/countEmojis";
 import User from "../../models/userSchema";
-import { ILevelRoles, IUser } from "../../utils/interfaces";
-import { generateLvlUpCard } from "../../canvas/generateLevelUpCard";
+import { ILevelRoles } from "../../utils/interfaces";
 import { createNewUser } from "../../utils/createNewUser";
 import { getLvlFromXP } from "../../utils/getLevelFromXp";
 import { generateLvlNotif } from "../../utils/generateLvlNotif";
-import { channel } from "diagnostics_channel";
+import { getDateString } from "../../utils/getDateString";
 
 export const execute = async (client: Client, message: Message) => {
   try {
@@ -81,7 +78,7 @@ export const execute = async (client: Client, message: Message) => {
         5,
         Math.floor(message.content.length - countEmojis(message.content) / 10)
       ),
-      25
+      200
     );
 
     const totalXpGainFromMessage =
@@ -97,6 +94,11 @@ export const execute = async (client: Client, message: Message) => {
     );
 
     user.leveling.totalXp += totalXpGainFromMessage;
+    const dateStr = getDateString(new Date());
+    user.leveling.xpPerDay.set(
+      dateStr,
+      (user.leveling.xpPerDay.get(dateStr) || 0) + totalXpGainFromMessage
+    );
     user.nickname =
       message.guild?.members.cache.find(
         (guild_member) => guild_member.id === message.author.id

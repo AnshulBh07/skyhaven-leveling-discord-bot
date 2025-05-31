@@ -1,3 +1,7 @@
+----------------------------------------------------------------------------------------------
+                                       LEVELING SYSTEM
+----------------------------------------------------------------------------------------------
+
 ***** PHASE 1 *****
 🎯 CORE FEATURES: DISCORD LEVELING SYSTEM
 
@@ -89,3 +93,21 @@ All of the following are subcommands under: /xpconfig
    - Libraries used: `canvas`, `node-fetch`
    - All elements rendered to canvas before combining into a final image
    - Error-handling for missing avatars or broken URLs
+
+
+***** PHASE 4 *****
+🎧 VOICE XP SYSTEM
+
+1. 🎙️ VOICE CHAT XP
+   - Users gain XP by participating in voice channels.
+   - XP is awarded periodically while meeting all the below conditions.
+
+2. ✅ VOICE XP CONDITIONS
+   - At least **2 or more** legitimate (non-bot) members must be present in the voice channel.
+   - The user must **not be self-muted**.
+   - The user must **not be self-deafened**.
+   - The user must **not be server-muted or server-deafened**.
+
+3. 🏆 LEADERBOARD INTEGRATION
+   - Voice XP is stored alongside message XP and used in the `/leaderboard` command.
+   - Encourages active participation in both text and voice channels.

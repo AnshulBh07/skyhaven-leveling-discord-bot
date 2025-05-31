@@ -10,6 +10,7 @@ import { promoteUser } from "../../../utils/promoteUser";
 import { demoteUser } from "../../../utils/demoteUser";
 import { generateLvlUpCard } from "../../../canvas/generateLevelUpCard";
 import { generateLvlNotif } from "../../../utils/generateLvlNotif";
+import { getNextLvlXP } from "../../../utils/getNextLevelXP";
 
 const init = async (): Promise<ICommandObj | undefined> => {
   try {
@@ -69,6 +70,11 @@ const init = async (): Promise<ICommandObj | undefined> => {
           const notifChannel = interaction.guild?.channels.cache.find(
             (channel) => channel.id === notificationChannelID
           );
+
+          // calculate base xp for this level and set the total xp to it
+          let sum = 0;
+          for (let i = 1; i < targetLevel; i++) sum += getNextLvlXP(i);
+          user.leveling.totalXp = sum + 1;
 
           if (prevLevel !== targetLevel)
             await generateLvlNotif(

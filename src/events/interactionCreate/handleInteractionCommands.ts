@@ -3,11 +3,12 @@ import {
   Client,
   GuildMember,
   Interaction,
-  MessageFlags,
   PermissionResolvable,
 } from "discord.js";
 import getLocalCommands from "../../utils/getLocalCommands";
 import Config from "../../models/configSchema";
+import { guildConfigCheck } from "../../utils/configurationCheck";
+import { IConfig } from "../../utils/interfaces";
 
 export const execute = async (client: Client, interaction: Interaction) => {
   try {
@@ -18,6 +19,19 @@ export const execute = async (client: Client, interaction: Interaction) => {
     if (!guildConfig) {
       await interaction.reply({
         content: "No guild/server found.",
+        flags: "Ephemeral",
+      });
+      return;
+    }
+
+    if (
+      !guildConfigCheck(guildConfig as unknown as IConfig) &&
+      interaction.command &&
+      interaction.command.name !== "xpconfig"
+    ) {
+      await interaction.reply({
+        content:
+          "⚠️ This server isn't configured yet.\nPlease run `/xpconfig` to initialize the bot before using any other commands.",
         flags: "Ephemeral",
       });
       return;
@@ -40,7 +54,10 @@ export const execute = async (client: Client, interaction: Interaction) => {
     const localCommands = await getLocalCommands();
 
     if (!localCommands) {
-      await interaction.reply({ content: "No commands found", flags: "Ephemeral" });
+      await interaction.reply({
+        content: "No commands found",
+        flags: "Ephemeral",
+      });
       throw new Error("No commands found locally");
     }
 

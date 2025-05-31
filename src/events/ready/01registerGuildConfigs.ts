@@ -2,6 +2,7 @@
 import { Client, ColorResolvable, Guild } from "discord.js";
 import Config from "../../models/configSchema";
 import { IConfig, ILevelRoles } from "../../utils/interfaces";
+import { createNewUser } from "../../utils/createNewUser";
 
 type LevelRole = {
   name: string;
@@ -63,9 +64,18 @@ export const execute = async (client: Client) => {
 
     const existingGuild = await Config.findOne({ serverID: guildId });
 
-    const guild = client.guilds.cache.find((guild) => guild.id === guildId);
+    const guild = await client.guilds.fetch(guildId);
+    const guild_members = Array.from(guild.members.cache.entries()).map(
+      ([_, member]) => member.user
+    );
 
-    if (!guild || existingGuild || !client.user) return;
+    // register fresh user for all guild members
+    for (const member of guild_members) {
+      // no bots to register
+      if (!member.bot) await createNewUser(client, guildId, member.id, true);
+    }
+
+    if (!guild || !client.user || existingGuild) return;
 
     // create level roles
     const levelRolesConfig: ILevelRoles[] = await Promise.all(

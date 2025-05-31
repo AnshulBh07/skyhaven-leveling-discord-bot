@@ -6,7 +6,8 @@ import { ILevelRoles, IUser } from "./interfaces";
 export const createNewUser = async (
   client: Client,
   guildID: string,
-  userID: string
+  userID: string,
+  initialConfig = false
 ) => {
   try {
     const guildConfig = await Config.findOne({ serverID: guildID }).populate({
@@ -62,7 +63,7 @@ export const createNewUser = async (
         totalXp: 0,
         voiceXp: 0,
         xpPerDay: new Map<string, number>(),
-        level: 0,
+        level: 1,
         lastMessageTimestamp: new Date(),
         lastPromotionTimestamp: new Date(),
         currentRole: basicRole.roleID,
@@ -76,7 +77,8 @@ export const createNewUser = async (
       if (
         welcomeChannel &&
         welcomeChannel.isTextBased() &&
-        welcomeMessage.length > 0
+        welcomeMessage.length > 0 &&
+        !initialConfig
       ) {
         await welcomeChannel.send({
           content:
@@ -85,7 +87,10 @@ export const createNewUser = async (
       }
     } else {
       // if the user is in user schema but not in guild
-      const user = await User.findOne({ userID: userID });
+      const user = await User.findOneAndUpdate(
+        { userID: userID },
+        { $set: options }
+      );
 
       if (user) {
         await Config.findOneAndUpdate(
@@ -104,7 +109,8 @@ export const createNewUser = async (
       if (
         welcomeChannel &&
         welcomeChannel.isTextBased() &&
-        welcomeMessage.length > 0
+        welcomeMessage.length > 0 &&
+        !initialConfig
       ) {
         await welcomeChannel.send({ content: welcomeMessage });
       }

@@ -9,7 +9,8 @@ myIntents.add(
   IntentsBitField.Flags.GuildMembers,
   IntentsBitField.Flags.GuildMessages,
   IntentsBitField.Flags.MessageContent,
-  IntentsBitField.Flags.GuildPresences
+  IntentsBitField.Flags.GuildPresences,
+  IntentsBitField.Flags.GuildVoiceStates
 );
 
 // create a bot instance
@@ -21,7 +22,7 @@ const envFile = `.env.${process.env.NODE_ENV || "development"}`;
 
 dotenv.config({ path: envFile });
 
-eventHandler(bot)
+eventHandler(bot);
 
 // connect to db and initialise bot
 const main = async () => {
