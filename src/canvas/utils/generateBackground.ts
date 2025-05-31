@@ -1,31 +1,39 @@
 import { createCanvas } from "canvas";
-import { lightenHexColor } from "./getLigherShade";
-import { User } from "discord.js";
 import { getLuminance } from "./getLuminance";
+import { adjustHexColorBrightness } from "./adjustHexShades";
 
 type placedBubble = { x: number; y: number; radius: number };
 
-export const generateBackground = (
-  user: User,
-  bgColor: string,
-  baseColor: string
-) => {
+export const generateBackground = (bgColor: string, baseColor: string) => {
   const canvas = createCanvas(800, 180);
   const ctx = canvas.getContext("2d");
 
-  const percentagesArr = [50, 60, 80, 90, 75, 95];
-  const bubblesColors = percentagesArr.map((perc) =>
-    lightenHexColor(baseColor, perc)
-  );
+  const luminance = getLuminance(baseColor);
+  const percOffset = 20;
+  const percentagesArr = [50, 60, 70, 90, 75, 95, 83];
+  const bubblesColors = (
+    luminance < 0.5
+      ? percentagesArr
+      : percentagesArr.map((perc) => perc + percOffset)
+  ).map((perc) => adjustHexColorBrightness(baseColor, perc));
 
   // base for card
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = "#ffffff";
+  ctx.beginPath();
+  ctx.roundRect(0, 0, 850, 250, 15);
+  ctx.closePath();
+  ctx.fill();
+
+  // tint for base
+  ctx.globalAlpha = 0.1;
   ctx.fillStyle = bgColor;
   ctx.beginPath();
   ctx.roundRect(0, 0, 850, 250, 15);
+  ctx.closePath();
   ctx.fill();
 
   const placedBubbles: placedBubble[] = [];
-  const luminance = getLuminance(bgColor);
 
   // bubbles on card
   bubblesColors.forEach((color) => {
@@ -69,7 +77,7 @@ export const generateBackground = (
 
   //   frame for level transition
   ctx.globalAlpha = 0.6;
-  ctx.fillStyle = luminance > 0.5 ? "#ffffff" : "#080808";
+  ctx.fillStyle = "#ffffff";
   ctx.beginPath();
   ctx.roundRect(425, 20, 350, 140, 12);
   ctx.fill();

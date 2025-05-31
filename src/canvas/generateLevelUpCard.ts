@@ -1,13 +1,10 @@
 import { AttachmentBuilder, User } from "discord.js";
 import { generateBackground } from "./utils/generateBackground";
-import { getLuminance } from "./utils/getLuminance";
-import {
-  darkBackgroundColors,
-  lightBackgroundColors,
-} from "../data/helperArrays";
 import { generateLvlTransition } from "./utils/generateLvlTransition";
 import { createCanvas } from "canvas";
 import { generateAvatar } from "./utils/generateAvatar";
+import { getDominantColor } from "./utils/getDominantColor";
+import { makeColorReadableOnWhite } from "./utils/adjustHexShades";
 
 export const generateLvlUpCard = async (
   user: User,
@@ -17,26 +14,14 @@ export const generateLvlUpCard = async (
   try {
     const canvas = createCanvas(800, 180);
     const ctx = canvas.getContext("2d");
+    const avatarUrl = user.displayAvatarURL({ extension: "jpg", size: 256 });
+    const dominantColor = await getDominantColor(avatarUrl);
 
-    const baseColor = !user.accentColor
-      ? "#0051a8"
-      : `#${user.accentColor.toString(16).padStart(6, "0")}`;
+    const baseColor = makeColorReadableOnWhite(dominantColor, 60);
 
-    const luminance = getLuminance(baseColor);
+    const bgColor = "#ffffff";
 
-    const lightTheme =
-      lightBackgroundColors[
-        Math.floor(Math.random() * lightBackgroundColors.length)
-      ];
-
-    const darkTheme =
-      darkBackgroundColors[
-        Math.floor(Math.random() * darkBackgroundColors.length)
-      ];
-
-    const bgColor = luminance > 0.5 ? darkTheme : lightTheme;
-
-    const bgCanvas = generateBackground(user, bgColor, baseColor);
+    const bgCanvas = generateBackground(dominantColor, baseColor);
     const lvlTransitionCanvas = generateLvlTransition(
       previous_level,
       current_level,

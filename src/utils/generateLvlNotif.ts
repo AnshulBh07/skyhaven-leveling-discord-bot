@@ -20,7 +20,9 @@ export const generateLvlNotif = async (
   interaction: ChatInputCommandInteraction
 ) => {
   try {
-    const fullUser = await targetUser.fetch();
+    const fullUser = await interaction.client.users.fetch(user.userID, {
+      force: true,
+    });
     const lvlCard = await generateLvlUpCard(fullUser, prevLevel, finalLevel);
 
     if (prevLevel < finalLevel) {

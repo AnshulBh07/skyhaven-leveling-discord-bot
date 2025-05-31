@@ -31,10 +31,10 @@ export const generateAvatar = async (
     const borderWidth = 5;
     // name/usertag
     ctx.fillStyle = baseColor;
-    ctx.font = "bold 45px 'Segoe UI', sans-serif";
-    ctx.textAlign = "center";
+    ctx.font = "bold 40px 'Segoe UI', sans-serif";
+    ctx.textAlign = "left";
     ctx.textBaseline = "middle";
-    ctx.fillText(user.tag, 260, 85);
+    ctx.fillText(user.tag, 170, 85);
 
     // image background for border
     ctx.globalAlpha = 1;

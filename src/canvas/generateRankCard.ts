@@ -2,7 +2,6 @@ import { Guild, User } from "discord.js";
 import { discordBadges, xpBarColors } from "../data/helperArrays";
 import { Profile } from "discord-arts";
 import { ICardRankData } from "../utils/interfaces";
-import { levelRoles } from "../events/ready/01registerGuildConfigs";
 
 export const generateRankCard = async (
   user: User,
