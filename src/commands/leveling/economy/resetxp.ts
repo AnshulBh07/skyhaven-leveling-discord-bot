@@ -85,8 +85,8 @@ const init = async (): Promise<ICommandObj | undefined> => {
           user.leveling.xp = 0;
           user.leveling.totalXp = 0;
           user.leveling.voiceXp = 0;
-          const dateStr = getDateString(new Date());
-          user.leveling.xpPerDay.set(dateStr, 0);
+          user.leveling.textXp = 0;
+          user.leveling.xpPerDay = new Map<string, number>();
 
           await user.save();
           await interaction.editReply(

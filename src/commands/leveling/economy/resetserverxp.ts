@@ -23,8 +23,6 @@ const init = async (): Promise<ICommandObj | undefined> => {
 
       callback: async (client, interaction) => {
         try {
-          await interaction.deferReply();
-
           const guildID = interaction.guildId;
           const guildConfig = await Config.findOne({ serverID: guildID });
 
@@ -46,18 +44,20 @@ const init = async (): Promise<ICommandObj | undefined> => {
                 .setStyle(ButtonStyle.Secondary)
             );
 
-          await interaction.editReply({
+          await interaction.reply({
             content:
               "**⚠️ This will reset XP and level data for _all users_ in this server.**\nAre you sure you want to proceed?",
             components: [buttonsRow],
           });
 
-          const collector =
-            interaction.channel?.createMessageComponentCollector({
-              componentType: ComponentType.Button,
-              time: 30_000,
-              filter: (btnInt) => btnInt.user.id === interaction.user.id,
-            });
+          // always attach collector to reply for that particular message only or the collector will listen to all the inetractions on that channel causing malfunction
+          const reply = await interaction.fetchReply();
+
+          const collector = reply.createMessageComponentCollector({
+            componentType: ComponentType.Button,
+            time: 30_000,
+            filter: (btnInt) => btnInt.user.id === interaction.user.id,
+          });
 
           // collect user input from buttons
           collector?.on("collect", async (btnInt) => {
@@ -114,6 +114,7 @@ const init = async (): Promise<ICommandObj | undefined> => {
                     "leveling.currentRole": basicRoleId,
                     "leveling.lastPromotionTimestamp": new Date(),
                     "leveling.voiceXp": 0,
+                    "leveling.textXp": 0,
                     "leveling.xpPerDay": new Map<string, number>(),
                   },
                 }

@@ -77,10 +77,14 @@ const init = async (): Promise<ICommandObj | undefined> => {
             user.leveling.totalXp - amount > 0
               ? user.leveling.totalXp - amount
               : 0;
+          const newTextXp =
+            user.leveling.textXp - amount > 0
+              ? user.leveling.textXp - amount
+              : 0;
 
           user.leveling.xp = newCurrXp;
-
           user.leveling.totalXp = newTotalXp;
+          user.leveling.textXp = newTextXp
 
           const dateStr = getDateString(new Date());
           const currPerDay = user.leveling.xpPerDay.get(dateStr) || 0;

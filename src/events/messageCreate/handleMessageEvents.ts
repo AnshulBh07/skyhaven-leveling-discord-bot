@@ -94,6 +94,7 @@ export const execute = async (client: Client, message: Message) => {
     );
 
     user.leveling.totalXp += totalXpGainFromMessage;
+    user.leveling.textXp += totalXpGainFromMessage;
     const dateStr = getDateString(new Date());
     user.leveling.xpPerDay.set(
       dateStr,

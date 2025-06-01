@@ -74,7 +74,33 @@ const init = async (): Promise<ICommandObj | undefined> => {
           // calculate base xp for this level and set the total xp to it
           let sum = 0;
           for (let i = 1; i < targetLevel; i++) sum += getNextLvlXP(i);
+
           user.leveling.totalXp = sum + 1;
+
+          // set text and voice xp as old ratio
+          const oldTotal = user.leveling.textXp + user.leveling.voiceXp;
+
+          if (oldTotal > 0) {
+            const textRatio = user.leveling.textXp / oldTotal;
+            const voiceRatio = user.leveling.voiceXp / oldTotal;
+
+            user.leveling.textXp = Math.floor(
+              user.leveling.totalXp * textRatio
+            );
+            user.leveling.voiceXp = Math.floor(
+              user.leveling.totalXp * voiceRatio
+            );
+
+            // Optional fix to ensure total matches exactly after flooring
+            const discrepancy =
+              user.leveling.totalXp -
+              (user.leveling.textXp + user.leveling.voiceXp);
+            user.leveling.textXp += discrepancy;
+          } else {
+            user.leveling.textXp = Math.floor(user.leveling.totalXp / 2);
+            user.leveling.voiceXp =
+              user.leveling.totalXp - user.leveling.textXp;
+          }
 
           if (prevLevel !== targetLevel)
             await generateLvlNotif(

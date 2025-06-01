@@ -64,6 +64,7 @@ export const createNewUser = async (
         voiceXp: 0,
         xpPerDay: new Map<string, number>(),
         level: 1,
+        textXp: 0,
         lastMessageTimestamp: new Date(),
         lastPromotionTimestamp: new Date(),
         currentRole: basicRole.roleID,

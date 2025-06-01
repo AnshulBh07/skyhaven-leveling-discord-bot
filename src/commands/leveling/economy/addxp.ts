@@ -66,6 +66,7 @@ const init = async (): Promise<ICommandObj | undefined> => {
           const { levelRoles, notificationChannelID } = guildConfig.levelConfig;
 
           user.leveling.xp += amount;
+          user.leveling.textXp += amount;
           const finalLevel = getLvlFromXP(user.leveling.totalXp + amount);
           const prevLevel = user.leveling.level;
           const dateStr = getDateString(new Date());

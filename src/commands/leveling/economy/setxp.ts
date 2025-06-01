@@ -16,7 +16,7 @@ import { getNextLvlXP } from "../../../utils/getNextLevelXP";
 const init = async (): Promise<ICommandObj | undefined> => {
   try {
     return {
-      name: "setxp",
+      name: "setttoalxp",
       description: "Set a user's text XP to a specific amount",
       options: [
         {
@@ -105,6 +105,24 @@ const init = async (): Promise<ICommandObj | undefined> => {
 
           user.leveling.xp = amount - sum;
           user.leveling.totalXp = amount;
+
+          // maintain text and voice xp ratio
+          const oldTotal = user.leveling.textXp + user.leveling.voiceXp;
+
+          if (oldTotal > 0) {
+            const textRatio = user.leveling.textXp / oldTotal;
+            const voiceRatio = user.leveling.voiceXp / oldTotal;
+
+            user.leveling.textXp = Math.floor(amount * textRatio);
+            user.leveling.voiceXp = Math.floor(amount * voiceRatio);
+
+            const discrepancy =
+              amount - (user.leveling.textXp + user.leveling.voiceXp);
+            user.leveling.textXp += discrepancy;
+          } else {
+            user.leveling.textXp = Math.floor(amount / 2);
+            user.leveling.voiceXp = amount - user.leveling.textXp;
+          }
 
           await user.save();
           await interaction.editReply(

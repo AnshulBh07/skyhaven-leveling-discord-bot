@@ -1,7 +1,7 @@
 // function that gets all the commands (from commands folder)
 import path from "path";
 import getAllFiles from "./getAllFiles";
-import { ICommandObj, ISubcommand } from "./interfaces";
+import { ICommandObj } from "./interfaces";
 
 // exceptions contains the list of commands that we want to exclude
 const getLocalCommands = async (exceptions?: string[]) => {

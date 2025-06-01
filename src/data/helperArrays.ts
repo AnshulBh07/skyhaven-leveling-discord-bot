@@ -1,4 +1,5 @@
 import path from "path";
+import { IUser } from "../utils/interfaces";
 
 export const discordBadges: Map<string, string> = new Map([
   ["Staff", path.resolve(__dirname, "../assets/images/staff.png")],
@@ -226,3 +227,42 @@ export const rolePromotionGifs: string[][] = [
     "https://media.tenor.com/v05kjibQ_ZQAAAAM/ascend-winnie-the-pooh-ascend.gif",
   ],
 ];
+
+export const sampleUsers: IUser[] = Array.from({ length: 55 }, (_, i) => {
+  const xpPerDay = new Map<string, number>();
+
+  // Generate XP for the last 40 days
+  for (let d = 0; d < 40; d++) {
+    const date = new Date();
+    date.setDate(date.getDate() - d);
+    const formatted = date.toISOString().split("T")[0]; // 'YYYY-MM-DD'
+    xpPerDay.set(formatted, Math.floor(Math.random() * 100)); // Random XP 0–99
+  }
+
+  const textXp = Math.floor(Math.random() * 2000);
+  const voiceXp = Math.floor(Math.random() * 3000);
+  const totalXp = textXp + voiceXp;
+
+  return {
+    userID: `10000000000000${i + 1}`,
+    username: `User${i + 1}`,
+    nickname: `CoolUser${i + 1}`,
+    serverID: "123456789012345678",
+    leveling: {
+      xp: Math.floor(Math.random() * 1000),
+      textXp,
+      voiceXp,
+      totalXp,
+      xpPerDay,
+      level: Math.floor(Math.random() * 20) + 1,
+      lastMessageTimestamp: new Date(Date.now() - Math.random() * 1000000000),
+      lastPromotionTimestamp: new Date(Date.now() - Math.random() * 1000000000),
+      currentRole: "",
+    },
+  };
+});
+
+export const leaderboardThumbnail = path.resolve(
+  __dirname,
+  "../assets/logos/rainbow_logo.png"
+);

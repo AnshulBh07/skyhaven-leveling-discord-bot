@@ -59,6 +59,7 @@ interface ILevelConfig {
 
 interface ILeveling {
   xp: number;
+  textXp:number;
   totalXp: number;
   voiceXp: number;
   xpPerDay: Map<string, number>;

@@ -71,7 +71,7 @@ export const execute = async (client: Client) => {
 
     // register fresh user for all guild members
     for (const member of guild_members) {
-      // no bots to register
+      // no bots to register as roles
       if (!member.bot) await createNewUser(client, guildId, member.id, true);
     }
 
