@@ -1,5 +1,81 @@
 import path from "path";
 import { IUser } from "../utils/interfaces";
+import { ColorResolvable } from "discord.js";
+
+type LevelRole = {
+  name: string;
+  minLevel: number;
+  maxLevel: number;
+  color: ColorResolvable;
+};
+
+export const levelRoles: LevelRole[] = [
+  {
+    name: "Certified Lurker",
+    minLevel: 1,
+    maxLevel: 5,
+    color: "#808080", // Gray
+  },
+  {
+    name: "Yapmaster Apprentice",
+    minLevel: 6,
+    maxLevel: 10,
+    color: "#1E90FF", // Dodger Blue
+  },
+  {
+    name: "Message Goblin",
+    minLevel: 11,
+    maxLevel: 20,
+    color: "#32CD32", // Lime Green
+  },
+  {
+    name: "Keyboard Crusader",
+    minLevel: 21,
+    maxLevel: 30,
+    color: "#FFA500", // Orange
+  },
+  {
+    name: "Legendary Typist",
+    minLevel: 31,
+    maxLevel: 50,
+    color: "#8A2BE2", // Blue Violet
+  },
+  {
+    name: "The Yapfather",
+    minLevel: 51,
+    maxLevel: 70,
+    color: "#FF69B4", // Hot Pink
+  },
+  {
+    name: "Chat Ascendant",
+    minLevel: 71,
+    maxLevel: Infinity,
+    color: "#FFD700", // Gold
+  },
+];
+
+export const giveawayRoles = [
+  {
+    name: "Giveaways",
+    color: "#FF4500", // Orange Red
+  },
+  {
+    name: "Gold Member",
+    color: "#FFD700", // Gold
+  },
+  {
+    name: "Silver Member",
+    color: "#C0C0C0", // Silver
+  },
+  {
+    name: "Bronze Member",
+    color: "#CD7F32", // Bronze
+  },
+  {
+    name: "Staff",
+    color: "#4B0082", // Indigo
+  },
+];
 
 export const discordBadges: Map<string, string> = new Map([
   ["Staff", path.resolve(__dirname, "../assets/images/staff.png")],
@@ -266,3 +342,62 @@ export const leaderboardThumbnail = path.resolve(
   __dirname,
   "../assets/logos/rainbow_logo.png"
 );
+
+export const farewellMessages: string[] = [
+  "{user} has vanished into the depths of Sofya City. Safe travels, adventurer!",
+  "{user} has left the guild hall. May the Mana guide you.",
+  "{user}'s orb disappeared in a flash of light. Farewell!",
+  "{user} unequipped their guild badge and logged out. Until next time!",
+  "{user} has left to forge a new destiny. The world of Toram awaits.",
+  "A portal opened... and {user} stepped through. Safe journeys, brave soul.",
+  "{user} has returned to the land of the NPCs. Goodbye, traveler.",
+  "{user}'s name fades from the guild roster. We’ll remember your contributions.",
+  "A mysterious adventurer named {user} has left the party...",
+  "{user} put down their weapon and walked into the sunset. Farewell, comrade.",
+  "{user} triggered the Return Warp and disappeared from the map.",
+  "{user} left the party... The formation feels a bit emptier now.",
+  "{user} was auto-kicked by the Blacksmith for failing too many refines. 💥",
+  "{user} used Stealth Walk... and now they're gone. Maybe.",
+  "{user}'s party slot is now open. LF1M for emotional support.",
+  "{user} answered the call of another realm. May their story continue elsewhere.",
+  "{user}'s name was etched into the Book of Departed Heroes.",
+  "{user} left to chase whispers of a lost treasure beyond El Scaro.",
+  "{user} faded like a memory in Hora Diomedea.",
+  "{user} now walks the silent roads of forgotten adventurers.",
+  "{user} has logged off for the last time... but their presence lingers.",
+  "{user}, the guild won’t be the same without your spirit.",
+  "Some adventurers leave, but their impact stays. Farewell, {user}.",
+  "{user} has moved on, but the bonds forged remain unbroken.",
+  "Even if you're no longer in the guild, you’ll always be part of our story, {user}.",
+  "{user} rage quit after failing +15 refine. Can’t blame them.",
+  "{user} tried to solo Venena... and hasn’t been seen since.",
+  "{user} tripped over a Mini Boss and rolled out of the server.",
+  "{user} forgot to feed their Pet and was dragged out by it.",
+  "{user} hit the logout button thinking it was jump. Oops.",
+];
+
+export const giveawayStartMessages = [
+  "Alchemia gods are feeling generous 🎁 Grab your luck before it resets!",
+  "A stray boss just exploded in Sofya 💥 — loot’s flying, react fast!",
+  "You’ve farmed Venena 400 times, now try farming luck 🎲 in this giveaway!",
+  "A Blacksmith accidentally gave away their best gear ⚒️ Wanna claim it?",
+  "This giveaway is rarer than a slot in a 2s Lil Empress Bow 👑",
+  "An NPC misplaced their legendary drop 📦 React now before it’s repossessed!",
+  "We found a treasure chest in the middle of Hora Diomedea 🗺️ Wanna peek inside?",
+  "Someone fused their gear wrong and dropped this instead 😬 Lucky you!",
+  "No need to farm mini bosses 12 hours today — just enter this giveaway 🔥",
+  "The consignment board crashed, but this item is still available 🧾 For free.",
+  "Some adventurer rage quit and left their loot behind 😭 Finders keepers!",
+  "Rumor has it this prize was blessed by Pino herself 🧝‍♀️",
+  "You’ve dodged Red Zones, but can you dodge bad luck? Enter to test 🎯",
+  "Your party member rolled this drop — but you can steal it here 🤫",
+  "A wandering merchant is giving away their goods 😎 Act before they vanish!",
+  "Who needs 10K Spina when you can get this for reacting 💸",
+  "This item is shinier than a full stack of Magic Marionette Cores 💎",
+  "Giveaway alert: no farming, no RNG, no potions — just react and hope 🍀",
+  "This might not be a Lucky Gem... but it might be luckier 💫",
+  "A rare dye just fell out of the sky 🎨 Be the first to grab it!",
+  "Forget Venena, this is the real DPS test — Damage Per Swipe 🤌",
+  "The Mononofu gods demand a winner 🥷 Are you worthy?",
+  "An AOE skill cleared the chat and left this behind 😳",
+];

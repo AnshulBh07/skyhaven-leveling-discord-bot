@@ -14,6 +14,23 @@ const LevelRolesSchema = new Schema(
   { timestamps: false, _id: false, _v: false }
 );
 
+const GiveawayRolesSchema = new Schema(
+  {
+    roleID: { type: String, required: true, default: "" },
+    name: { type: String, required: true, default: "" },
+  },
+  { timestamps: false, _id: false, _v: false }
+);
+
+const GiveawayBanSchema = new Schema(
+  {
+    userID: { type: String, required: true, default: "" },
+    reason: { type: String, default: "" },
+    banDate: { type: Date, required: true, default: new Date() },
+  },
+  { timestamps: false, _id: false, _v: false }
+);
+
 const LevelingConfig = new Schema(
   {
     levelRoles: { type: [LevelRolesSchema], default: [] },
@@ -32,11 +49,21 @@ const LevelingConfig = new Schema(
   { timestamps: false, _id: false, _v: false }
 );
 
-const moderationConfig = new Schema(
+const ModerationConfig = new Schema(
   {
     welcomeMessage: { type: String, default: "" },
     welcomeChannelID: { type: String, default: "" },
     welcomeBackMessage: { type: String, default: "" },
+    farewellChannelID: { type: String, default: "" },
+  },
+  { timestamps: false, _id: false, _v: false }
+);
+
+const GiveawayConfig = new Schema(
+  {
+    roles: { type: [GiveawayRolesSchema], default: [] },
+    giveawayChannelID: { type: String, default: "" },
+    banList: { type: [GiveawayBanSchema], default: [] },
   },
   { timestamps: false, _id: false, _v: false }
 );
@@ -47,7 +74,8 @@ const ConfigSchema = new Schema(
     botID: { type: String, required: true, default: "" },
     devsIDs: { type: [String], required: true, default: [] },
     levelConfig: { type: LevelingConfig, required: true },
-    moderationConfig: { type: moderationConfig, required: true },
+    moderationConfig: { type: ModerationConfig, required: true },
+    giveawayConfig: { type: GiveawayConfig, required: true },
     users: [
       {
         type: mongoose.Schema.Types.ObjectId,

@@ -9,7 +9,7 @@ import { getLvlFromXP } from "../../utils/getLevelFromXp";
 import { generateLvlNotif } from "../../utils/generateLvlNotif";
 import { getDateString } from "../../utils/getDateString";
 
-export const execute = async (client: Client, message: Message) => {
+const execute = async (client: Client, message: Message) => {
   try {
     const guildID = message.guildId;
 
@@ -140,3 +140,5 @@ export const execute = async (client: Client, message: Message) => {
     console.error(err);
   }
 };
+
+export default execute;

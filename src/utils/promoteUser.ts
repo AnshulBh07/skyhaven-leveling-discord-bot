@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, Client, User } from "discord.js";
+import { Client, User } from "discord.js";
 import { ILevelRoles, IUser } from "./interfaces";
 import { rolePromotionMessages } from "../data/helperArrays";
 

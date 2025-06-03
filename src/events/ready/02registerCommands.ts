@@ -3,7 +3,7 @@ import getLocalCommands from "../../utils/getLocalCommands";
 import getApplicationCommands from "../../utils/getApplicationCommands";
 import { areCommandsSame } from "../../utils/areCommandsSame";
 
-export const execute = async (client: Client) => {
+const execute = async (client: Client) => {
   try {
     // get local commands (in file system)
     const localCommands = await getLocalCommands();
@@ -59,3 +59,5 @@ export const execute = async (client: Client) => {
     console.error(err);
   }
 };
+
+export default execute;

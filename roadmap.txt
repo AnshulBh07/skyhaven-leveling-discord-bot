@@ -111,3 +111,56 @@ All of the following are subcommands under: /xpconfig
 3. 🏆 LEADERBOARD INTEGRATION
    - Voice XP is stored alongside message XP and used in the `/leaderboard` command.
    - Encourages active participation in both text and voice channels.
+
+
+----------------------------------------------------------------------------------------------
+                                       Giveaway system
+----------------------------------------------------------------------------------------------
+
+1. 🔨 MODERATION COMMANDS
+   - `/gban <user> [reason]`
+     • Bans a user from participating in giveaways.
+     • Optional reason can be added for moderation records.
+
+   - `/gunban <user>`
+     • Unbans a user, removing them from the giveaway banlist.
+
+   - `/gbanlist`
+     • (Optional) Displays all currently banned users.
+     
+   - `/gchannel`
+      - sets giveaway channel
+
+2. 🚀 GIVEAWAY MANAGEMENT
+   - `/gstart <prize> <duration> <number_of_winners> [role requirement] [image] [hosted_by]`
+     • Starts a giveaway creation flow.
+     • Initial options: prize, time, number of winners, and hosted by (optional).
+     • Bot follows up with:
+       › Entry requirements (e.g., level, role, previous wins).
+       › Tier restrictions (e.g., gold/silver/bronze).
+       › 📷 **Optional item image upload** – user can attach an image to be shown in the giveaway embed.
+
+   - `/greroll <giveaway_id>`
+     • Picks a new winner for a previous giveaway.
+     • Consider adding dropdown/autocomplete for giveaway selection.
+
+   - `/gdelete <giveaway_id>`
+     • Deletes a currently running giveaway by ID.
+
+   - `/glist`
+     • Shows all active giveaways in the server.
+
+3. 🛡️ ROLE / TIER CONFIGURATION
+   - `/gassignrole <user> <tier>`
+     • Assigns a giveaway access tier to a user.
+     • Tiers: gold, silver, bronze — can be used to limit access to special giveaways.
+
+   - *(Alternative idea)* `/gconfigrole <discord_role> <tier>`
+     • Maps a server role to a giveaway tier, useful for global config.
+
+4. ⏸️ OPTIONAL / SKIPPED FEATURES
+   - `/gpause`
+     • (Not planned) Would pause a running giveaway.
+
+   - `/gedit`
+     • (Not planned) Would allow editing giveaway parameters live.

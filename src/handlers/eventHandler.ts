@@ -20,8 +20,8 @@ const eventHandler = (client: Client) => {
     client.on(eventName, async (...args) => {
       // iterate over event files and execute them
       for (const eventFile of eventFiles) {
-        const { execute } = await import(eventFile);
-        await execute(client, ...args);
+        const module = await import(eventFile);
+        await module.default(client, ...args);
       }
     });
   }

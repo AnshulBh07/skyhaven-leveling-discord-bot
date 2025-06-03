@@ -5,7 +5,7 @@ import {
   Client,
   PermissionResolvable,
 } from "discord.js";
-import {  ObjectId } from "mongoose";
+import { ObjectId } from "mongoose";
 
 // interface choices {
 //   name: string;
@@ -40,6 +40,11 @@ export interface ILevelRoles {
   roleID: string;
 }
 
+export interface IGiveawayRoles {
+  roleID: string;
+  name: string;
+}
+
 interface ILevelConfig {
   levelRoles: ILevelRoles[];
   notificationChannelID: string;
@@ -59,7 +64,7 @@ interface ILevelConfig {
 
 interface ILeveling {
   xp: number;
-  textXp:number;
+  textXp: number;
   totalXp: number;
   voiceXp: number;
   xpPerDay: Map<string, number>;
@@ -86,12 +91,18 @@ interface IModerationConfig {
   welcomeChannelID: string;
 }
 
+interface IGiveawayConfig {
+  giveawayChannelID: "";
+  roles: IGiveawayRoles[];
+}
+
 export interface IConfig {
   serverID: string;
   botID: string;
   devsIDs: string[];
   levelConfig: ILevelConfig;
   moderationConfig: IModerationConfig;
+  giveawayConfig: IGiveawayConfig;
   users: ObjectId[] | IUser[];
   createdAt?: Date;
   updatedAt?: Date;
@@ -118,4 +129,28 @@ export interface ILevelCardUserData {
   user_id: string;
   previous_level: number;
   current_level: number;
+}
+
+export interface IGiveaway {
+  serverID: string;
+  hostID: string;
+  messageID: string;
+  channelID: string;
+  endMessageID: string;
+
+  prize: string;
+  winnersCount: number;
+  participants: string[]; //discord user ids
+  winners: string[];
+  imageUrl?: string;
+  role_req?: string;
+  role_color: string;
+  starterMessage: string;
+
+  // will use custom time stamps
+  createdAt: number;
+  updatedAt?: number;
+  endsAt: number;
+  isEnded: boolean;
+  isPaused?: boolean;
 }

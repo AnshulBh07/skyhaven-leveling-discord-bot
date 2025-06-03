@@ -59,7 +59,6 @@ const grantXp = async (
     const finalLevel = getLvlFromXP(user.leveling.totalXp);
 
     if (prevLevel !== finalLevel) {
-      console.log("level up has occured");
       const guildID = voiceState.guild.id;
       const guildConfig = await Config.findOne({ serverID: guildID });
 
@@ -97,7 +96,7 @@ const grantXp = async (
 };
 
 // this file handles voice state update and updates xp from voice
-export const execute = async (
+const execute = async (
   client: Client,
   oldState: VoiceState,
   newState: VoiceState
@@ -146,3 +145,5 @@ export const execute = async (
     console.error(err);
   }
 };
+
+export default execute;

@@ -73,7 +73,8 @@ export const createNewUser = async (
 
     if (userInGuildConfig) {
       // if user is already in guildconfig find and reset the user in users model
-      await User.findOneAndUpdate({ userID: userID }, { $set: options });
+      if (!initialConfig)
+        await User.findOneAndUpdate({ userID: userID }, { $set: options });
       //   send welcome back message here if it is set
       if (
         welcomeChannel &&

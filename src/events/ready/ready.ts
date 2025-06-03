@@ -1,6 +1,6 @@
 import { Client } from "discord.js";
 
-export const execute = (client: Client) => {
+const execute = (client: Client) => {
   if (!client.user) return;
 
   client.user.setPresence({
@@ -15,3 +15,5 @@ export const execute = (client: Client) => {
 
   console.log(`${client.user.username} bot is online.`);
 };
+
+export default execute;

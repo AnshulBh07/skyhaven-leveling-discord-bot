@@ -10,9 +10,11 @@ import Config from "../../models/configSchema";
 import { guildConfigCheck } from "../../utils/configurationCheck";
 import { IConfig } from "../../utils/interfaces";
 
-export const execute = async (client: Client, interaction: Interaction) => {
+const execute = async (client: Client, interaction: Interaction) => {
   try {
     if (!interaction.isChatInputCommand()) return;
+
+    const allowedCommands = ["xpconfig", "gchannel"];
 
     const guildConfig = await Config.findOne({ serverID: interaction.guildId });
 
@@ -27,7 +29,7 @@ export const execute = async (client: Client, interaction: Interaction) => {
     if (
       !guildConfigCheck(guildConfig as unknown as IConfig) &&
       interaction.command &&
-      interaction.command.name !== "xpconfig"
+      !allowedCommands.includes(interaction.command.name)
     ) {
       await interaction.reply({
         content:
@@ -108,3 +110,5 @@ export const execute = async (client: Client, interaction: Interaction) => {
     console.error(err);
   }
 };
+
+export default execute;
