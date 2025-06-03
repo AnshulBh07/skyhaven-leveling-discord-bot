@@ -91,6 +91,7 @@ export const attachCollector = async (
         const reactorID = btnInt.user.id;
 
         if (btnInt.customId === "participate") {
+          await btnInt.deferReply({ flags: "Ephemeral" });
           const freshData = await Giveaway.findOne({
             messageID: giveawayData.messageID,
           });
@@ -102,7 +103,7 @@ export const attachCollector = async (
           const bannedUsers = banList.map((user) => user.userID);
 
           if (bannedUsers.includes(reactorID)) {
-            await btnInt.reply({
+            await btnInt.editReply({
               content:
                 "You are banned from participating in this giveaway. Please contact admin for further info.",
             });
@@ -111,9 +112,8 @@ export const attachCollector = async (
 
           // if the user has already participated
           if (allParticipants.includes(reactorID)) {
-            await btnInt.reply({
+            await btnInt.editReply({
               content: "You have already participated in this giveaway",
-              flags: "Ephemeral",
             });
             return;
           }
@@ -129,10 +129,9 @@ export const attachCollector = async (
               member.user.bot ||
               !member_roles.includes(giveawayData.role_req)
             ) {
-              await btnInt.reply({
+              await btnInt.editReply({
                 content:
                   "You do not have the role required to participate in this giveaway.",
-                flags: "Ephemeral",
               });
               return;
             }
@@ -153,13 +152,13 @@ export const attachCollector = async (
             });
           }
 
-          await btnInt.reply({
+          await btnInt.editReply({
             content: "You've sucessfully registered for giveaway.",
-            flags: "Ephemeral",
           });
         }
 
         if (btnInt.customId === "leave") {
+          await btnInt.deferReply();
           const freshData = await Giveaway.findOne({
             messageID: giveawayData.messageID,
           });
@@ -169,10 +168,9 @@ export const attachCollector = async (
           const allParticipants = freshData.participants;
 
           if (!allParticipants.includes(reactorID)) {
-            await btnInt.reply({
+            await btnInt.editReply({
               content:
                 "Bro, you've never been a participant in the first place.",
-              flags: "Ephemeral",
             });
             return;
           }
@@ -189,9 +187,8 @@ export const attachCollector = async (
             });
           }
 
-          await btnInt.reply({
+          await btnInt.editReply({
             content: "You've left the giveaway",
-            flags: "Ephemeral",
           });
         }
       } catch (err) {
