@@ -240,8 +240,7 @@ const init = async (): Promise<ICommandObj | undefined> => {
 
               if (!freshGiveaway) return;
 
-              await endGiveaway(client, freshGiveaway);
-              await freshGiveaway.save();
+              await endGiveaway(client, freshGiveaway.messageID);
             }, endTime - Date.now());
         } catch (err) {
           console.error("Error in gstart callback", err);

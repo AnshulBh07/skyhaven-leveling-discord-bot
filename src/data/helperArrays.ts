@@ -335,6 +335,11 @@ export const sampleUsers: IUser[] = Array.from({ length: 55 }, (_, i) => {
       lastPromotionTimestamp: new Date(Date.now() - Math.random() * 1000000000),
       currentRole: "",
     },
+    giveaways: {
+      isBanned: false,
+      giveawaysEntries: [],
+      giveawaysWon: [],
+    },
   };
 });
 

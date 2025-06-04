@@ -220,7 +220,9 @@ const init = async (): Promise<ICommandObj | undefined> => {
           // now create a collector to enable interaction
           const collector = reply.createMessageComponentCollector({
             time: 60_000 * 100,
-            filter: (i) => i.user.id === interaction.user.id,
+            filter: (i) =>
+              i.user.id === interaction.user.id &&
+              ["prev", "next", "type_menu"].includes(i.customId),
           });
 
           collector.on("collect", async (compInt) => {

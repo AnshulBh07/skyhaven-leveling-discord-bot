@@ -149,6 +149,12 @@ All of the following are subcommands under: /xpconfig
 
    - `/glist`
      • Shows all active giveaways in the server.
+   
+   - `/gentries` <user>
+      * list of all the giveaways a user has entered
+   
+   - `/gwins` <user>
+      * list of all the giveaways won by user
 
 3. 🛡️ ROLE / TIER CONFIGURATION
    - `/gassignrole <user> <tier>`

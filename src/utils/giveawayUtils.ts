@@ -1,5 +1,8 @@
 import {
+  ActionRowBuilder,
   AttachmentBuilder,
+  ButtonBuilder,
+  ButtonStyle,
   Client,
   ColorResolvable,
   EmbedBuilder,
@@ -8,6 +11,7 @@ import Giveaway from "../models/giveawaySchema";
 import { IGiveaway } from "./interfaces";
 import Config from "../models/configSchema";
 import { leaderboardThumbnail } from "../data/helperArrays";
+import User from "../models/userSchema";
 
 const getUpdatedEmbed = (giveawayData: IGiveaway) => {
   const giveawayEmbed = new EmbedBuilder()
@@ -155,6 +159,11 @@ export const attachCollector = async (
           await btnInt.editReply({
             content: "You've sucessfully registered for giveaway.",
           });
+
+          await User.findOneAndUpdate(
+            { userID: reactorID },
+            { $push: { "giveaways.giveawaysEntries": freshData._id } }
+          );
         }
 
         if (btnInt.customId === "leave") {
@@ -190,6 +199,11 @@ export const attachCollector = async (
           await btnInt.editReply({
             content: "You've left the giveaway",
           });
+
+          await User.findOneAndUpdate(
+            { userID: reactorID },
+            { $pull: { "giveaways.giveawaysEntries": freshData._id } }
+          );
         }
       } catch (err) {
         console.error("Error inside giveaway button collector :", err);
@@ -203,8 +217,12 @@ export const attachCollector = async (
   }
 };
 
-export const endGiveaway = async (client: Client, giveaway: IGiveaway) => {
+export const endGiveaway = async (client: Client, giveawayID: string) => {
   try {
+    const giveaway = await Giveaway.findOne({ messageID: giveawayID });
+
+    if (!giveaway) return;
+
     // collector is stopped first thing in set timeout
     const { participants, winnersCount, messageID, channelID, serverID } =
       giveaway;
@@ -232,7 +250,9 @@ export const endGiveaway = async (client: Client, giveaway: IGiveaway) => {
     const winners = new Set<string>();
 
     // now we have the list of participants select winners from it
-    if (participants.length >= giveaway.winnersCount)
+    if (participants.length <= giveaway.winnersCount)
+      participants.forEach((participant) => winners.add(participant));
+    else
       while (winners.size !== winnersCount) {
         const winner =
           participants[Math.floor(Math.random() * participants.length)];
@@ -270,10 +290,7 @@ export const endGiveaway = async (client: Client, giveaway: IGiveaway) => {
           value: `**Winners : ** ${
             participants.length === 0
               ? " No winners. No glory."
-              : (participants.length <= giveaway.winnersCount
-                  ? participants
-                  : Array.from(winners)
-                )
+              : Array.from(winners)
                   .map((user) => `<@${user}>`)
                   .join(",")
           }`,
@@ -339,8 +356,98 @@ export const endGiveaway = async (client: Client, giveaway: IGiveaway) => {
     giveaway.winners = Array.from(winners);
     giveaway.endMessageID = giveawayEndMessage.id;
 
-    await giveawayMessage.delete();
+    await giveaway.save();
+
+    // instead of deleting the original message let us update it with a new embed
+    const afterEndEmbed = new EmbedBuilder()
+      .setTitle(`Giveaway Ended - ${giveaway.prize}`)
+      .setColor(giveaway.role_color as ColorResolvable)
+      .setThumbnail("attachment://thumbnail.png")
+      .addFields(
+        {
+          name: "\u200b",
+          value: `**🪪 Giveaway ID : ** ${giveaway.messageID}`,
+          inline: false,
+        },
+        {
+          name: "\u200b",
+          value: `**🎉 Winners : ** ${
+            winners.size === 0
+              ? "No winners."
+              : Array.from(winners)
+                  .map((winner) => `<@${winner}>`)
+                  .join(",")
+          }`,
+          inline: false,
+        },
+        {
+          name: "\u200b",
+          value: `**Ended on : ** <t:${Math.floor(Date.now() / 1000)}:f>`,
+          inline: false,
+        }
+      )
+      .setFooter({ text: `${guild.name} Giveaways` });
+
+    const messageLink = `https://discord.com/channels/${giveaway.serverID}/${giveaway.channelID}/${giveawayEndMessage.id}`;
+
+    const linkButton = new ActionRowBuilder<ButtonBuilder>().addComponents(
+      new ButtonBuilder()
+        .setLabel("Jump to winner announcement.")
+        .setStyle(ButtonStyle.Link)
+        .setURL(messageLink)
+    );
+
+    await giveawayMessage.edit({
+      embeds: [afterEndEmbed],
+      components: [linkButton],
+    });
+
+    // update users won in db
+    for (const winner of winners) {
+      await User.findOneAndUpdate(
+        { userID: winner },
+        { $push: { "giveaways.giveawaysWon": giveaway._id } }
+      );
+    }
   } catch (err) {
     console.error("Error in end giveaway function :", err);
   }
+};
+
+export const generateGiveawayListEmbed = (
+  allGiveaways: IGiveaway[],
+  page: number,
+  pageSize: number,
+  guildName: string,
+  description: string
+) => {
+  const startIndex = page * pageSize;
+  const endIndex = startIndex + pageSize;
+
+  const giveaways = allGiveaways.slice(startIndex, endIndex);
+
+  const embed = new EmbedBuilder()
+    .setTitle(description)
+    .setColor("Gold")
+    .setThumbnail("attachment://thumbnail.png")
+    .setDescription(
+      giveaways.length > 0
+        ? giveaways
+            .map(
+              (g, i) =>
+                `**${startIndex + i + 1}. [${g.prize}]**\n- 🪪 Giveaway ID : ${
+                  g.messageID
+                }\n- 👤 Hosted by : <@${g.hostID}>\n- 🎉 Winners : **${
+                  g.winnersCount
+                }**\n- ⏳ Ends : <t:${Math.floor(g.endsAt / 1000)}:R>`
+            )
+            .join("\n\n")
+        : "*No active giveaways right now. Check back later!*"
+    )
+    .setFooter({
+      text: `${guildName} Giveaways`,
+    })
+    .setTimestamp();
+
+  return embed;
 };

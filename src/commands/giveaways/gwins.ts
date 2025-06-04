@@ -1,53 +1,57 @@
 import {
   ActionRowBuilder,
+  ApplicationCommandOptionType,
   AttachmentBuilder,
   ButtonBuilder,
   ButtonStyle,
 } from "discord.js";
-import Giveaway from "../../models/giveawaySchema";
-import { ICommandObj } from "../../utils/interfaces";
-import { leaderboardThumbnail } from "../../data/helperArrays";
+import { ICommandObj, IGiveaway } from "../../utils/interfaces";
+import User from "../../models/userSchema";
 import { generateGiveawayListEmbed } from "../../utils/giveawayUtils";
+import { leaderboardThumbnail } from "../../data/helperArrays";
 
 const init = async (): Promise<ICommandObj | undefined> => {
   try {
     return {
-      name: "glist",
-      description:
-        "Displays a list of all active giveaways for current server.",
-      options: [],
+      name: "gwins",
+      description: "Displays list of all the giveaways won by user.",
+      options: [
+        {
+          name: "user",
+          description: "target user",
+          type: ApplicationCommandOptionType.User,
+          required: false,
+        },
+      ],
       permissionsRequired: [],
 
       callback: async (client, interaction) => {
         try {
-          const guildID = interaction.guildId;
+          const targetUser =
+            interaction.options.getUser("user") ?? interaction.user;
 
-          if (!guildID) {
-            await interaction.reply({
-              content: "Invalid guild",
-              flags: "Ephemeral",
-            });
+          const guild = interaction.guild;
+
+          await interaction.deferReply({ flags: "Ephemeral" });
+
+          const user = await User.findOne({ userID: targetUser.id }).populate(
+            "giveaways.giveawaysWon"
+          );
+
+          if (!user || !guild) {
+            await interaction.editReply({ content: "User not found." });
             return;
           }
 
-          await interaction.deferReply();
-
-          const guild = await client.guilds.fetch(guildID);
-
-          //   get all the giveaways for current server
-          const giveaways = await Giveaway.find({
-            serverID: guildID,
-            isEnded: false,
-          });
-
+          const allGiveaways = user.giveaways
+            .giveawaysWon as unknown as IGiveaway[];
           let page = 0;
           const pageSize = 3;
-          const totalPages = Math.ceil(giveaways.length / pageSize);
+          const totalPages = Math.ceil(allGiveaways.length / pageSize);
 
-          const description = `🎁 List of Active Giveaways`;
-
+          const description = `🎁 List of all the giveaways <@${targetUser.id}> has won.`;
           const embed = generateGiveawayListEmbed(
-            giveaways,
+            allGiveaways,
             page,
             pageSize,
             guild.name,
@@ -97,7 +101,7 @@ const init = async (): Promise<ICommandObj | undefined> => {
               if (btnInt.customId === "next") page++;
 
               const newPage = generateGiveawayListEmbed(
-                giveaways,
+                allGiveaways,
                 page,
                 pageSize,
                 guild.name,
@@ -124,12 +128,12 @@ const init = async (): Promise<ICommandObj | undefined> => {
             }
           });
         } catch (err) {
-          console.error("Error in glist callback : ", err);
+          console.error("Error in gentries callback :", err);
         }
       },
     };
   } catch (err) {
-    console.error("Error in glist command :", err);
+    console.error("Error in gentries command :", err);
     return undefined;
   }
 };

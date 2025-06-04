@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import mongoose, { Schema, model } from "mongoose";
 
 const Leveling = new Schema(
   {
@@ -15,6 +15,15 @@ const Leveling = new Schema(
   { timestamps: false, _id: false }
 );
 
+const Giveaways = new Schema(
+  {
+    isBanned: { type: Boolean, required: true, default: false },
+    giveawaysWon: [{ type: mongoose.Schema.Types.ObjectId, ref: "Giveaway" }],
+    giveawaysEntries: [{ type: mongoose.Schema.Types.ObjectId, ref: "Giveaway" }],
+  },
+  { _id: false, timestamps: false, _v: false }
+);
+
 const UserSchema = new Schema(
   {
     userID: { type: String, required: true, unique: true },
@@ -22,6 +31,7 @@ const UserSchema = new Schema(
     nickname: { type: String, default: "" },
     serverID: { type: String, required: true },
     leveling: { type: Leveling, required: true },
+    giveaways: { type: Giveaways, required: true },
   },
   { timestamps: true }
 );

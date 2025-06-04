@@ -69,6 +69,11 @@ export const createNewUser = async (
         lastPromotionTimestamp: new Date(),
         currentRole: basicRole.roleID,
       },
+      giveaways: {
+        isBanned: false,
+        giveawaysEntries: [],
+        giveawaysWon: [],
+      },
     };
 
     if (userInGuildConfig) {

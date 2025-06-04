@@ -5,7 +5,7 @@ import {
   Client,
   PermissionResolvable,
 } from "discord.js";
-import { ObjectId } from "mongoose";
+import { Types } from "mongoose";
 
 // interface choices {
 //   name: string;
@@ -76,12 +76,19 @@ interface ILeveling {
   updatedAt?: Date;
 }
 
+interface IUserGiveaways {
+  isBanned: boolean;
+  giveawaysWon: Types.ObjectId[];
+  giveawaysEntries: Types.ObjectId[];
+}
+
 export interface IUser {
   userID: string;
   serverID: string;
   username: string;
   nickname: string;
   leveling: ILeveling;
+  giveaways: IUserGiveaways;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -103,7 +110,7 @@ export interface IConfig {
   levelConfig: ILevelConfig;
   moderationConfig: IModerationConfig;
   giveawayConfig: IGiveawayConfig;
-  users: ObjectId[] | IUser[];
+  users: Types.ObjectId[] | IUser[];
   createdAt?: Date;
   updatedAt?: Date;
 }

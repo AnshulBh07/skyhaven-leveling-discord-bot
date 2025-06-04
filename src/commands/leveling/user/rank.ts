@@ -78,6 +78,7 @@ const init = async (): Promise<ICommandObj | undefined> => {
               username: user.username,
               nickname: user.nickname,
               leveling: user.leveling,
+              giveaways: user.giveaways,
             };
           });
 
