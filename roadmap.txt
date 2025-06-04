@@ -157,7 +157,7 @@ All of the following are subcommands under: /xpconfig
       * list of all the giveaways won by user
 
 3. 🛡️ ROLE / TIER CONFIGURATION
-   - `/gassignrole <user> <tier>`
+   - `/gassignrole <user> <tier>` (secondt thoughts on it as this should be a more of moderation feature)
      • Assigns a giveaway access tier to a user.
      • Tiers: gold, silver, bronze — can be used to limit access to special giveaways.
 

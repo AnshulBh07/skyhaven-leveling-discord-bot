@@ -78,54 +78,81 @@ export const giveawayRoles = [
 ];
 
 export const discordBadges: Map<string, string> = new Map([
-  ["Staff", path.resolve(__dirname, "../assets/images/staff.png")],
-  ["Partner", path.resolve(__dirname, "../assets/images/partner.png")],
+  [
+    "Staff",
+    path.resolve(__dirname, "../assets/discord_badges/images/staff.png"),
+  ],
+  [
+    "Partner",
+    path.resolve(__dirname, "../assets/discord_badges/images/partner.png"),
+  ],
   [
     "HypeSquadOnlineHouse1",
-    path.resolve(__dirname, "../assets/images/bravery.png"),
+    path.resolve(__dirname, "../assets/discord_badges/images/bravery.png"),
   ],
   [
     "HypeSquadOnlineHouse2",
-    path.resolve(__dirname, "../assets/images/brilliance.png"),
+    path.resolve(__dirname, "../assets/discord_badges/images/brilliance.png"),
   ],
   [
     "HypeSquadOnlineHouse3",
-    path.resolve(__dirname, "../assets/images/balance.png"),
+    path.resolve(__dirname, "../assets/discord_badges/images/balance.png"),
   ],
   [
     "BugHunterLevel1",
-    path.resolve(__dirname, "../assets/images/bughunter_1.png"),
+    path.resolve(__dirname, "../assets/discord_badges/images/bughunter_1.png"),
   ],
   [
     "BugHunterLevel2",
-    path.resolve(__dirname, "../assets/images/bughunter_2.png"),
+    path.resolve(__dirname, "../assets/discord_badges/images/bughunter_2.png"),
   ],
   [
     "EarlySupporter",
-    path.resolve(__dirname, "../assets/images/early_supporter.png"),
+    path.resolve(
+      __dirname,
+      "../assets/discord_badges/images/early_supporter.png"
+    ),
   ],
   [
     "VerifiedDeveloper",
-    path.resolve(__dirname, "../assets/images/developer.png"),
+    path.resolve(__dirname, "../assets/discord_badges/images/developer.png"),
   ],
   [
     "CertifiedModerator",
-    path.resolve(__dirname, "../assets/images/certified_moderator.png"),
+    path.resolve(
+      __dirname,
+      "../assets/discord_badges/images/certified_moderator.png"
+    ),
   ],
   [
     "ActiveDeveloper",
-    path.resolve(__dirname, "../assets/images/active_developer.png"),
+    path.resolve(
+      __dirname,
+      "../assets/discord_badges/images/active_developer.png"
+    ),
   ],
   [
     "HypeSquad",
-    path.resolve(__dirname, "../assets/images/hypesquad_events.png"),
+    path.resolve(
+      __dirname,
+      "../assets/discord_badges/images/hypesquad_events.png"
+    ),
   ],
   [
     "PremiumEarlySupporter",
-    path.resolve(__dirname, "../assets/images/early_supporter.png"),
+    path.resolve(
+      __dirname,
+      "../assets/discord_badges/images/early_supporter.png"
+    ),
   ],
-  ["ServerBooster", path.resolve(__dirname, "../assets/images/boosting_1.png")],
-  ["Nitro", path.resolve(__dirname, "../assets/images/nitro.png")],
+  [
+    "ServerBooster",
+    path.resolve(__dirname, "../assets/discord_badges/images/boosting_1.png"),
+  ],
+  [
+    "Nitro",
+    path.resolve(__dirname, "../assets/discord_badges/images/nitro.png"),
+  ],
 ]);
 
 export const xpBarColors: string[] = [

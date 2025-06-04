@@ -49,7 +49,7 @@ const init = async (): Promise<ICommandObj | undefined> => {
           const pageSize = 3;
           const totalPages = Math.ceil(allGiveaways.length / pageSize);
 
-          const description = `🎁 List of all the giveaways <@${targetUser.id}> has won.`;
+          const description = `🎁 List of all the giveaways ${targetUser.username} has won.`;
           const embed = generateGiveawayListEmbed(
             allGiveaways,
             page,

@@ -53,7 +53,12 @@ const init = async (): Promise<ICommandObj | undefined> => {
         try {
           const guild = interaction.guild;
 
-          if (!guild || !interaction.channel) return;
+          if (!guild || !interaction.channel) {
+            await interaction.reply("Invalid guild");
+            return;
+          }
+
+          await interaction.deferReply();
 
           // initial states for leaderboard
           let page = 0;
@@ -208,7 +213,7 @@ const init = async (): Promise<ICommandObj | undefined> => {
             type
           );
 
-          await interaction.reply({
+          await interaction.editReply({
             content: leaderboardList,
             embeds: [leaderboardEmbed],
             components: [buttonRow, selectRow],
