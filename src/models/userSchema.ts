@@ -19,7 +19,22 @@ const Giveaways = new Schema(
   {
     isBanned: { type: Boolean, required: true, default: false },
     giveawaysWon: [{ type: mongoose.Schema.Types.ObjectId, ref: "Giveaway" }],
-    giveawaysEntries: [{ type: mongoose.Schema.Types.ObjectId, ref: "Giveaway" }],
+    giveawaysEntries: [
+      { type: mongoose.Schema.Types.ObjectId, ref: "Giveaway" },
+    ],
+  },
+  { _id: false, timestamps: false, _v: false }
+);
+
+const GQuests = new Schema(
+  {
+    pending: [{ type: mongoose.Schema.Types.ObjectId, ref: "GQuest" }],
+    rewarded: [{ type: mongoose.Schema.Types.ObjectId, ref: "GQuest" }],
+    rejected: [{ type: mongoose.Schema.Types.ObjectId, ref: "GQuest" }],
+    lastSubmissionDate: { type: Date, default: null },
+    lastRewardDate: { type: Date, default: null },
+    lastRejectionDate: { type: Date, default: null },
+    totalRewarded: { type: Number, default: 0 },
   },
   { _id: false, timestamps: false, _v: false }
 );
@@ -32,6 +47,7 @@ const UserSchema = new Schema(
     serverID: { type: String, required: true },
     leveling: { type: Leveling, required: true },
     giveaways: { type: Giveaways, required: true },
+    gquests: { type: GQuests, required: true },
   },
   { timestamps: true }
 );

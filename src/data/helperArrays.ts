@@ -331,44 +331,44 @@ export const rolePromotionGifs: string[][] = [
   ],
 ];
 
-export const sampleUsers: IUser[] = Array.from({ length: 55 }, (_, i) => {
-  const xpPerDay = new Map<string, number>();
+// export const sampleUsers: IUser[] = Array.from({ length: 55 }, (_, i) => {
+//   const xpPerDay = new Map<string, number>();
 
-  // Generate XP for the last 40 days
-  for (let d = 0; d < 40; d++) {
-    const date = new Date();
-    date.setDate(date.getDate() - d);
-    const formatted = date.toISOString().split("T")[0]; // 'YYYY-MM-DD'
-    xpPerDay.set(formatted, Math.floor(Math.random() * 100)); // Random XP 0–99
-  }
+//   // Generate XP for the last 40 days
+//   for (let d = 0; d < 40; d++) {
+//     const date = new Date();
+//     date.setDate(date.getDate() - d);
+//     const formatted = date.toISOString().split("T")[0]; // 'YYYY-MM-DD'
+//     xpPerDay.set(formatted, Math.floor(Math.random() * 100)); // Random XP 0–99
+//   }
 
-  const textXp = Math.floor(Math.random() * 2000);
-  const voiceXp = Math.floor(Math.random() * 3000);
-  const totalXp = textXp + voiceXp;
+//   const textXp = Math.floor(Math.random() * 2000);
+//   const voiceXp = Math.floor(Math.random() * 3000);
+//   const totalXp = textXp + voiceXp;
 
-  return {
-    userID: `10000000000000${i + 1}`,
-    username: `User${i + 1}`,
-    nickname: `CoolUser${i + 1}`,
-    serverID: "123456789012345678",
-    leveling: {
-      xp: Math.floor(Math.random() * 1000),
-      textXp,
-      voiceXp,
-      totalXp,
-      xpPerDay,
-      level: Math.floor(Math.random() * 20) + 1,
-      lastMessageTimestamp: new Date(Date.now() - Math.random() * 1000000000),
-      lastPromotionTimestamp: new Date(Date.now() - Math.random() * 1000000000),
-      currentRole: "",
-    },
-    giveaways: {
-      isBanned: false,
-      giveawaysEntries: [],
-      giveawaysWon: [],
-    },
-  };
-});
+//   return {
+//     userID: `10000000000000${i + 1}`,
+//     username: `User${i + 1}`,
+//     nickname: `CoolUser${i + 1}`,
+//     serverID: "123456789012345678",
+//     leveling: {
+//       xp: Math.floor(Math.random() * 1000),
+//       textXp,
+//       voiceXp,
+//       totalXp,
+//       xpPerDay,
+//       level: Math.floor(Math.random() * 20) + 1,
+//       lastMessageTimestamp: new Date(Date.now() - Math.random() * 1000000000),
+//       lastPromotionTimestamp: new Date(Date.now() - Math.random() * 1000000000),
+//       currentRole: "",
+//     },
+//     giveaways: {
+//       isBanned: false,
+//       giveawaysEntries: [],
+//       giveawaysWon: [],
+//     },
+//   };
+// });
 
 export const leaderboardThumbnail = path.resolve(
   __dirname,
@@ -432,4 +432,87 @@ export const giveawayStartMessages = [
   "Forget Venena, this is the real DPS test — Damage Per Swipe 🤌",
   "The Mononofu gods demand a winner 🥷 Are you worthy?",
   "An AOE skill cleared the chat and left this behind 😳",
+];
+
+export const boostMessages = [
+  `✨ <@{userId}> just offered a rare orb to the Server Spirit!  
+  Legends say when an adventurer boosts, a Potum sheds a tear of joy, a Venena loses 1 DEF, and someone finally drops a 2s weapon after 7 years.  
+  Thank you, brave soul — the land of Toram shines brighter today.`,
+
+  `🗡️ With a swift motion, <@{userId}> unsheathed their blade... and boosted the entire server!  
+  As the stars realigned, everyone's stat points mysteriously increased.  
+  Merchants started smiling, farmers got lucky, and even Zokzada gave a rare item with no complaints.  
+  True power. True respect. Thank you for the boost, legend!`,
+
+  `💎 The gods of Toram trembled...  
+  <@{userId}> just unleashed a *Server Boost Lv.9999*!  
+  A mysterious aura now surrounds the guild base — drop rates feel better, crafting success has risen, and even the bots in Rakau stopped for a moment of silence.  
+  Your generosity will echo through time, adventurer.`,
+
+  `🌀 “BOOST!” shouted <@{userId}> as they stood atop the walls of Sofya.  
+  The wind howled, the chat lagged, and the boost was accepted by the ancient Discord core.  
+  In return, the server gained +10 morale, +15 guild pride, and 1 extremely emotional Potum.  
+  Thank you for the blessing, brave warrior.`,
+
+  `🌠 A strange energy has filled the air...  
+  <@{userId}> has boosted the server, and rumor has it their luck stat now permanently says "???".  
+  If you suddenly feel happier, richer, and slightly better at dodging boss AOEs — now you know why.  
+  Boost received. Gratitude transmitted. You are appreciated.`,
+
+  `🧪 The alchemists of El Scaro whisper of this day —  
+  <@{userId}> has performed the ancient ritual known as *Boostus Maximus*.  
+  The result? Server-wide buffs, a mysterious glowing aura, and one extremely confused merchant shouting “S>Boost for luck” in chat.  
+  Thank you for the power-up, friend.`,
+
+  `🗨️ <@{userId}> didn’t just boost.  
+  They struck the server with a Lightning Element Slash of Friendship +10.  
+  In their honor, all Revita IVs now heal emotional damage too.  
+  You didn’t have to go this hard, but you did. And we love you for it.`,
+
+  `🍀 Somewhere deep in the Toram code, an RNG gatekeeper screamed.  
+  <@{userId}> just boosted the server, and the luck stat cap has been broken.  
+  Pets are dancing, bosses are dropping loot, and even LFP parties are less toxic.  
+  This is a day to remember. Thank you, almighty booster.`,
+
+  `🎁 A strange gift fell from the skies above Sofya...  
+  <@{userId}>'s boost has triggered a rare event: “Server Vibes +100%”.  
+  Expect smooth drops, fun convos, and 15 minutes of temporary peace between DPS mains.  
+  Blessed be the booster.`,
+
+  `🛡️ In a flash of light, <@{userId}> boosted the server — and the guild statues trembled.  
+  Mochelo bowed respectfully. Venena smiled. Even King Piton admitted, “Yeah… they’re built different.”  
+  Thank you, hero. The server stands taller because of you.`,
+];
+
+export const welcomeMessages = [
+  `⚔️ <@{userId}> has entered the world...  
+  Quick! Someone teach them how to dodge AOEs before it's too late! 😵‍💫`,
+
+  `🎉 <@{userId}> just spawned in Sofya, looked around, and joined the most elite server in Toram history.  
+  Bad decisions start now — welcome! 😎`,
+
+  `🌀 <@{userId}> has joined the party!  
+  They're either here to make friends, farm Venena, or just ask “is 2s tradeable?” 15 times. 🤔`,
+
+  `🍜 Welcome <@{userId}>!  
+  Take a seat, grab some revitas, and enjoy the chaos. Toram’s weird, but we’re weirder. 🐢`,
+
+  `🗡️ <@{userId}> just logged in.  
+  Their starting class: Confused Wanderer.  
+  Current quest: Figure out what this server is about. 🤖`,
+
+  `🎮 <@{userId}> entered the guild base.  
+  Warning: may cause sudden laughter, questionable build advice, and an urge to farm minibosses at 3AM. 🌙`,
+
+  `✨ <@{userId}> joined the server!  
+  May their mana never run dry and their xtals always slot right the first time. 🙌`,
+
+  `⚙️ <@{userId}> just arrived!  
+  We gave them a rusty dagger, two revitas, and a dream. Welcome, traveler! 😤`,
+
+  `📦 <@{userId}> opened a mysterious chest...  
+  Inside was this server, a bunch of weirdos, and maybe some good advice. Welcome aboard! 🧙‍♀️`,
+
+  `🧪 <@{userId}> drank a strange potion labeled "Join Server"...  
+  They’re now permanently confused, slightly buffed, and 100% welcomed. 🍷`,
 ];

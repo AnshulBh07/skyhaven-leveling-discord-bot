@@ -82,6 +82,41 @@ interface IUserGiveaways {
   giveawaysEntries: Types.ObjectId[];
 }
 
+type GquestStatus = "pending" | "rewarded" | "rejected";
+
+export interface IGquest {
+  serverID: string;
+  userID: string;
+  messageID: string; //serves as gquest id
+  channelID: string;
+  imageUrl: string;
+  imageHash: string;
+  status: GquestStatus;
+  submittedAt?: number;
+  rewardedAt?: number;
+  reviewedBy: string; //admin disocrd id
+  rejectionReason?: string; //if rejected
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+interface IUserGquests {
+  pending: Types.ObjectId[];
+  rewarded: Types.ObjectId[];
+  rejected: Types.ObjectId[];
+  lastSubmissionDate: Date | null;
+  lastRewardDate: Date | null;
+  lastRejectionDate: Date | null;
+  totalRewarded: number;
+}
+
+interface IGquestConfig {
+  gquestChannelID: string;
+  role: string;
+  managerRoles: string[];
+  rewardAmount: number;
+}
+
 export interface IUser {
   userID: string;
   serverID: string;
@@ -89,6 +124,7 @@ export interface IUser {
   nickname: string;
   leveling: ILeveling;
   giveaways: IUserGiveaways;
+  gquests: IUserGquests;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -110,6 +146,7 @@ export interface IConfig {
   levelConfig: ILevelConfig;
   moderationConfig: IModerationConfig;
   giveawayConfig: IGiveawayConfig;
+  gquestConfig: IGquestConfig;
   users: Types.ObjectId[] | IUser[];
   createdAt?: Date;
   updatedAt?: Date;
@@ -161,3 +198,11 @@ export interface IGiveaway {
   isEnded: boolean;
   isPaused?: boolean;
 }
+
+export type LeaderboardUserTileInfo = {
+  userID: string;
+  level: number;
+  rank: number;
+  xp: number;
+  currentRole: string;
+};

@@ -170,3 +170,17 @@ All of the following are subcommands under: /xpconfig
 
    - `/gedit`
      • (Not planned) Would allow editing giveaway parameters live.
+
+
+----------------------------------------------------------------------------------------------
+                                       Guild Quests System
+----------------------------------------------------------------------------------------------
+1. user commands
+- /gquest submit <image> [user] : submit gquest for yourself or some other user
+- text OCR and image hashing as multi factor detection to avoid duplicate submissions. This is a basic check,
+amdin / manager will sitll ahve a choice to verify submissions themselves. This check just makes life 
+easier. The method above also eliminates near duplicates by calculating hamming distance between hashes.
+User will have only 5 attemps for a single day.
+
+Notes: Fixes needed
+ - leaderboard embed and interaction 

@@ -8,9 +8,17 @@ import {
   StringSelectMenuBuilder,
   StringSelectMenuOptionBuilder,
 } from "discord.js";
-import { ICommandObj, IUser } from "../../../utils/interfaces";
-import { leaderboardThumbnail, sampleUsers } from "../../../data/helperArrays";
+import {
+  ICommandObj,
+  IUser,
+  LeaderboardUserTileInfo,
+} from "../../../utils/interfaces";
+import { leaderboardThumbnail } from "../../../data/helperArrays";
 import { getWeekOfYear } from "../../../utils/getDateString";
+import getAllFiles from "../../../utils/getAllFiles";
+import path from "path";
+import { generateLeaderboardCanvas } from "../../../canvas/genearteLeaderboardCard";
+import User from "../../../models/userSchema";
 
 const leaderboardTypes = [
   {
@@ -60,11 +68,14 @@ const init = async (): Promise<ICommandObj | undefined> => {
 
           await interaction.deferReply();
 
+          // get all users for current guild
+          const users = await User.find({ serverID: guild.id });
+
           // initial states for leaderboard
           let page = 0;
           const pageSize = 10;
           let type = "overall";
-          const totalPages = Math.ceil(sampleUsers.length / pageSize);
+          const totalPages = Math.ceil(users.length / pageSize);
 
           // create a button row
           const buttonRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
@@ -103,29 +114,12 @@ const init = async (): Promise<ICommandObj | undefined> => {
                 )
             );
 
-          // the message to attach components with
-          const leaderboardEmbed = new EmbedBuilder()
-            .setTitle("🏆 LEADERBOARD")
-            .setDescription(
-              "Here's the current ranking based on overall XP. Use select menu to change views."
-            )
-            .setColor("Gold")
-            .setThumbnail("attachment://thumbnail.png");
-
           const generateLeaderboard = (
             usersArr: IUser[],
             pageSize: number,
             page: number,
             type: string
-          ) => {
-            const valueMap = new Map<string, string>([
-              ["overall", "Total XP"],
-              ["text", "Text XP"],
-              ["voice", "Voice XP"],
-              ["weekly", "Weekly XP"],
-              ["monthly", "Monthly XP"],
-            ]);
-
+          ): LeaderboardUserTileInfo[] => {
             const now = new Date();
             const currWeek = getWeekOfYear(now);
             const currMonth = now.getMonth();
@@ -197,27 +191,64 @@ const init = async (): Promise<ICommandObj | undefined> => {
                   }
                 })();
 
-                return `${startIndex + idx + 1}. ${user.username} -> level:${
-                  user.leveling.level
-                }, ${valueMap.get(type)}: ${displayedXp}`;
-              })
-              .join("\n");
+                const userInfo: LeaderboardUserTileInfo = {
+                  userID: user.userID,
+                  level: user.leveling.level,
+                  rank: startIndex + idx + 1,
+                  xp: displayedXp,
+                  currentRole: user.leveling.currentRole,
+                };
+
+                console.log(type, userInfo);
+
+                return userInfo;
+              });
 
             return leaderboardList;
           };
 
           let leaderboardList = generateLeaderboard(
-            sampleUsers,
+            users,
             pageSize,
             page,
             type
           );
 
+          // first we will get a random image out of all the images meant for bg
+          const allImages = getAllFiles(
+            path.join(__dirname, "../../..", "assets/images/leaderboard_bg"),
+            false
+          );
+
+          const randomBg =
+            allImages[Math.floor(Math.random() * allImages.length)];
+
+          // get all roles for the guild
+          const roles = Array.from(guild.roles.cache).map(([_, role]) => role);
+
+          const leaderboardCard = await generateLeaderboardCanvas(
+            client,
+            leaderboardList,
+            type,
+            randomBg,
+            roles
+          );
+
+          // the message to attach components with
+          const leaderboardEmbed = new EmbedBuilder()
+            .setTitle("🏆 LEADERBOARD")
+            .setDescription(
+              "Here's the current ranking based on overall XP. Use select menu to change views."
+            )
+            .setColor("Gold")
+            .setThumbnail("attachment://thumbnail.png");
+
+          if (leaderboardCard) leaderboardEmbed.setImage("attachment://bg.png");
+
           await interaction.editReply({
-            content: leaderboardList,
             embeds: [leaderboardEmbed],
             components: [buttonRow, selectRow],
-            files: [thumbnail],
+            files: [thumbnail, ...(leaderboardCard ? [leaderboardCard] : [])],
           });
 
           const reply = await interaction.fetchReply();
@@ -242,15 +273,26 @@ const init = async (): Promise<ICommandObj | undefined> => {
                 buttonRow.components[0].setDisabled(page <= 0);
                 buttonRow.components[1].setDisabled(page >= totalPages - 1);
 
-                const leaderboard = generateLeaderboard(
-                  sampleUsers,
+                const leaderboardList = generateLeaderboard(
+                  users,
                   pageSize,
                   page,
                   type
                 );
 
+                // generate new embed
+                const newCard = await generateLeaderboardCanvas(
+                  client,
+                  leaderboardList,
+                  type,
+                  randomBg,
+                  roles
+                );
+
+                if (newCard) leaderboardEmbed.setImage("attachment://bg.png");
+
                 await interaction.editReply({
-                  content: leaderboard,
+                  embeds: [leaderboardEmbed],
                   components: [buttonRow, selectRow],
                 });
               }
@@ -264,12 +306,23 @@ const init = async (): Promise<ICommandObj | undefined> => {
                 buttonRow.components[0].setDisabled(page <= 0);
                 buttonRow.components[1].setDisabled(page >= totalPages - 1);
 
-                const leaderboard = generateLeaderboard(
-                  sampleUsers,
+                const leaderboardList = generateLeaderboard(
+                  users,
                   pageSize,
                   page,
                   type
                 );
+
+                // generate new embed
+                const newCard = await generateLeaderboardCanvas(
+                  client,
+                  leaderboardList,
+                  type,
+                  randomBg,
+                  roles
+                );
+
+                if (newCard) leaderboardEmbed.setImage("attachment://bg.png");
 
                 // new select row to show visual change in select menu const selectRow =
                 const newSelectMenu =
@@ -291,7 +344,7 @@ const init = async (): Promise<ICommandObj | undefined> => {
                   );
 
                 await interaction.editReply({
-                  content: leaderboard,
+                  embeds: [leaderboardEmbed],
                   components: [buttonRow, newSelectMenu],
                 });
               }

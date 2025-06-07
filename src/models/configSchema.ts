@@ -68,6 +68,16 @@ const GiveawayConfig = new Schema(
   { timestamps: false, _id: false, _v: false }
 );
 
+const GquestConfig = new Schema(
+  {
+    gquestChannelID: { type: String, default: "" },
+    role: { type: String, default: "" },
+    managerRoles: { type: [String], default: "" },
+    rewardAmount: { type: Number, default: 0 },
+  },
+  { timestamps: false, _id: false, _v: false }
+);
+
 const ConfigSchema = new Schema(
   {
     serverID: { type: String, required: true, unique: true, default: "" },
@@ -76,6 +86,7 @@ const ConfigSchema = new Schema(
     levelConfig: { type: LevelingConfig, required: true },
     moderationConfig: { type: ModerationConfig, required: true },
     giveawayConfig: { type: GiveawayConfig, required: true },
+    gquestConfig: { type: GquestConfig, required: true },
     users: [
       {
         type: mongoose.Schema.Types.ObjectId,

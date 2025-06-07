@@ -1,6 +1,8 @@
 import { createCanvas, Image, loadImage } from "canvas";
 import { User } from "discord.js";
 import fetch from "node-fetch";
+import path from "path";
+import getAllFiles from "../../utils/getAllFiles";
 
 // function generates avatar and name
 export const generateAvatar = async (
@@ -20,8 +22,16 @@ export const generateAvatar = async (
     let buffer: Buffer<ArrayBuffer>;
     let avatar: Image;
 
+    // get random default pfps
+    const defaultPfp = getAllFiles(
+      path.join(__dirname, "../..", "assets/images/default_pfp"),
+      false
+    );
+
     if (!res.ok) {
-      avatar = await loadImage("");
+      avatar = await loadImage(
+        defaultPfp[Math.floor(Math.random() * defaultPfp.length)]
+      );
     } else {
       arrayBuffer = await res.arrayBuffer();
       buffer = Buffer.from(arrayBuffer);

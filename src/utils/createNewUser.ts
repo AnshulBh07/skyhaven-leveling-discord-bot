@@ -74,6 +74,15 @@ export const createNewUser = async (
         giveawaysEntries: [],
         giveawaysWon: [],
       },
+      gquests: {
+        pending: [],
+        rejected: [],
+        rewarded: [],
+        lastRejectionDate: null,
+        lastRewardDate: null,
+        lastSubmissionDate: null,
+        totalRewarded: 0,
+      },
     };
 
     if (userInGuildConfig) {

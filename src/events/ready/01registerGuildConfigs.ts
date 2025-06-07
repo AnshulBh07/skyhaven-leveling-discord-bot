@@ -1,5 +1,5 @@
 // this method will run once the bot is ready and get access to all guilds the bot is in
-import { Client, ColorResolvable, Guild } from "discord.js";
+import { Client, ColorResolvable } from "discord.js";
 import Config from "../../models/configSchema";
 import { IConfig, IGiveawayRoles, ILevelRoles } from "../../utils/interfaces";
 import { createNewUser } from "../../utils/createNewUser";
@@ -114,6 +114,12 @@ const execute = async (client: Client) => {
       giveawayConfig: {
         giveawayChannelID: "",
         roles: giveawayRolesConfig,
+      },
+      gquestConfig: {
+        gquestChannelID: "",
+        role: "",
+        managerRoles: [],
+        rewardAmount: 0,
       },
       users: [],
     };
