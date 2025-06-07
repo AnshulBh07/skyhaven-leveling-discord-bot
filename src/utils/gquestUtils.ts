@@ -1,6 +1,9 @@
 import {
   ActionRowBuilder,
   AttachmentBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  ChatInputCommandInteraction,
   Client,
   EmbedBuilder,
   ModalBuilder,
@@ -12,6 +15,10 @@ import Config from "../models/configSchema";
 import User from "../models/userSchema";
 import GQuest from "../models/guildQuestsSchema";
 import { leaderboardThumbnail } from "../data/helperArrays";
+
+const thumbnail = new AttachmentBuilder(leaderboardThumbnail).setName(
+  "thumbnail.png"
+);
 
 export const attachGquestCollector = async (
   client: Client,
@@ -29,9 +36,6 @@ export const attachGquestCollector = async (
     const { gquestConfig } = guildConfig;
     const { managerRoles, rewardAmount } = gquestConfig;
 
-    const thumbnail = new AttachmentBuilder(leaderboardThumbnail).setName(
-      "thumbnail.png"
-    );
     const submissionImage = new AttachmentBuilder(gquestData.imageUrl).setName(
       "submitted_image.png"
     );
@@ -64,89 +68,27 @@ export const attachGquestCollector = async (
           }
         }
 
-        // if (!hasRole) {
-        //   await btnInt.editReply({
-        //     content: "You do not have the permission to perform this action.",
-        //   });
-        //   return;
-        // }
+        if (!hasRole) {
+          await btnInt.editReply({
+            content: "You do not have the permission to perform this action.",
+          });
+          return;
+        }
 
         // manage button click now
+        // rejection opens a modal whereas rewarding asks for a screenshot from user
+        // rewarding will be handled in message create event
         if (btnInt.customId === "reward") {
           await btnInt.deferReply({ flags: "Ephemeral" });
 
-          // change gquest status, update user and edit message
-          const updatedGquest = await GQuest.findOneAndUpdate(
-            {
-              messageID: message.id,
-            },
-            {
-              $set: {
-                status: "rewarded",
-                rewardedAt: Date.now(),
-                reviewedBy: btnInt.user.id,
-              },
-            },
-            { new: true }
+          await GQuest.findOneAndUpdate(
+            { messageID: gquestData.messageID },
+            { $set: { lastRewardBtnClickAt: Date.now() } }
           );
 
-          const newUser = await User.findOneAndUpdate(
-            { userID: gquestData.userID },
-            {
-              $pull: { "gquests.pending": updatedGquest?._id },
-              $push: { "gquests.rewarded": updatedGquest?._id },
-              $set: { "gquests.lastRewardedAt": new Date() },
-              $inc: { "gquests.totalRewarded": rewardAmount },
-            },
-            { new: true }
-          );
-
-          //   create a new embed
-          const submissionEmbed = new EmbedBuilder()
-            .setTitle("💵 Gquest Rewarded")
-            .setColor("Aqua")
-            .setThumbnail("attachment://thumbnail.png")
-            .addFields(
-              {
-                name: "\u200b",
-                value: `**📤 Submitted by : **<@${gquestData.userID}>`,
-                inline: false,
-              },
-              {
-                name: "\u200b",
-                value: `**📝 Reviewed by : **<@${btnInt.user.id}>`,
-                inline: false,
-              },
-              {
-                name: "\u200b",
-                value: `**🕒 Rewarded On : **<t:${Math.floor(
-                  Date.now() / 1000
-                )}:F>`,
-              },
-              {
-                name: "👤 User Status",
-                value: `**Total Pending : **${newUser?.gquests.pending.length}\n**Total Rewarded : **${newUser?.gquests.rewarded.length}`,
-                inline: false,
-              },
-              {
-                name: "\u200b",
-                value: `**🪪 Guild Quest ID : **\`${gquestData.messageID}\``,
-                inline: false,
-              }
-            )
-            .setFooter({ text: `${guild.name} Guild Quests` })
-            .setImage("attachment://submitted_image.png")
-            .setTimestamp();
-
-          await message.edit({
-            embeds: [submissionEmbed],
-            files: [submissionImage, thumbnail],
-            components: [],
+          await btnInt.editReply({
+            content: `Please send the ingame screenshot of reward trade with user <@${gquestData.userID}>. Please submit it within the next 2 minutes`,
           });
-
-          await btnInt.editReply(
-            `Gquest rewarded for user <@${gquestData.userID}>`
-          );
         }
 
         if (btnInt.customId === "reject") {
@@ -174,5 +116,135 @@ export const attachGquestCollector = async (
     });
   } catch (err) {
     console.error("Error in gquest collector function : ", err);
+  }
+};
+
+export const getContributionScore = (rewarded: number, rejected: number) => {
+  return rewarded * 10 - rejected * 3;
+};
+
+export const generateGquestsListEmbed = async (
+  interaction: ChatInputCommandInteraction,
+  gquests: IGquest[],
+  title: string,
+  type: string
+) => {
+  try {
+    const guild = interaction.guild;
+
+    if (!guild) return;
+
+    let page = 0;
+    const pageSize = 5;
+    const totalPages = Math.ceil(gquests.length / pageSize);
+
+    const getEmbed = (page: number, pageSize: number) => {
+      const startIndex = page * pageSize;
+      const endIndex = pageSize + startIndex;
+
+      const slicedArr = gquests.slice(startIndex, endIndex);
+
+      const embed = new EmbedBuilder()
+        .setTitle(`${title}`)
+        .setThumbnail("attachment://thumbnail.png")
+        .setColor("Gold")
+        .setDescription(
+          slicedArr
+            .map((gquest, idx) => {
+              const submittedLine = `\n\n**${
+                startIndex + idx + 1
+              }. [Gquest ID: \`${gquest.messageID}\`]\n**
+**👤 Submitted by: **<@${gquest.userID}>
+** Submitted on: **<t:${Math.ceil(gquest.submittedAt! / 1000)}:F>`;
+
+              const rewardedLine =
+                type === "rewarded"
+                  ? `** Rewarded by: **<@${gquest.reviewedBy}>
+** Rewarded on: **<t:${Math.ceil(gquest.rewardedAt! / 1000)}:F>`
+                  : "";
+
+              const rejectedLine =
+                type === "rejected"
+                  ? `** Rejected by: **<@${gquest.reviewedBy}>
+** Rejected on: **<t:${Math.ceil(gquest.rejectedAt! / 1000)}:F>
+** Reason: **_${gquest.rejectionReason!}_`
+                  : "";
+
+              return [submittedLine, rewardedLine, rejectedLine]
+                .filter(Boolean)
+                .join("\n");
+            })
+            .join("\n\n────────────\n\n")
+        )
+        .setFooter({ text: `${guild.name} • Guild Quests` })
+        .setTimestamp();
+
+      return embed;
+    };
+
+    const initialEmbed = getEmbed(page, pageSize);
+
+    const buttonsRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
+      new ButtonBuilder()
+        .setCustomId(`${type}_prev`)
+        .setEmoji("⬅️")
+        .setStyle(ButtonStyle.Secondary)
+        .setDisabled(page <= 0),
+      new ButtonBuilder()
+        .setCustomId(`${type}_next`)
+        .setEmoji("➡️")
+        .setStyle(ButtonStyle.Secondary)
+        .setDisabled(page >= totalPages - 1)
+    );
+
+    await interaction.editReply({
+      embeds: [initialEmbed],
+      components: [buttonsRow],
+      files: [thumbnail],
+    });
+    const reply = await interaction.fetchReply();
+
+    const collector = reply.createMessageComponentCollector({
+      time: 60_000 * 10, //10 minutes
+      filter: (i) =>
+        [`${type}_prev`, `${type}_next`].includes(i.customId) &&
+        i.user.id === interaction.user.id,
+    });
+
+    collector.on("collect", async (btnInt) => {
+      try {
+        await btnInt.deferUpdate();
+
+        if (btnInt.customId === `${type}_prev`) page--;
+        if (btnInt.customId === `${type}_next`) page++;
+
+        buttonsRow.components[0].setDisabled(page <= 0);
+        buttonsRow.components[1].setDisabled(page >= totalPages - 1);
+
+        const newEmbed = getEmbed(page, pageSize);
+
+        await interaction.editReply({
+          embeds: [newEmbed],
+          components: [buttonsRow],
+        });
+      } catch (err) {
+        console.error("Error in collector :", err);
+      }
+    });
+
+    collector.on("end", async (collected, reason) => {
+      try {
+        if (reason === "time") {
+          await interaction.editReply({
+            content: "⏱️ Interaction timed out.",
+            components: [],
+          });
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    });
+  } catch (err) {
+    console.error("Error generating gquests list embed : ", err);
   }
 };

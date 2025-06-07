@@ -94,13 +94,18 @@ export interface IGquest {
   status: GquestStatus;
   submittedAt?: number;
   rewardedAt?: number;
+  rejectedAt?: number;
   reviewedBy: string; //admin disocrd id
   rejectionReason?: string; //if rejected
+  rewardMessageID?: string;
+  proofImageUrl?: string;
+  lastRewardBtnClickAt?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
 interface IUserGquests {
+  dmNotif: boolean;
   pending: Types.ObjectId[];
   rewarded: Types.ObjectId[];
   rejected: Types.ObjectId[];

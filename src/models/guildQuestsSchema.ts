@@ -21,6 +21,9 @@ const GQuestSchema = new Schema(
     rejectedAt: { type: Number },
     reviewedBy: { type: String, required: true, default: "" }, //admin disocrd id
     rejectionReason: { type: String }, //if rejected
+    rewardMessageID: { type: String },
+    proofImageUrl: { type: String },
+    lastRewardBtnClickAt: { type: Number },
   },
   { timestamps: true }
 );

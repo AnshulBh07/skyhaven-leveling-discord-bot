@@ -6,11 +6,11 @@ import {
   ButtonStyle,
   EmbedBuilder,
 } from "discord.js";
-import { IGquest, ISubcommand } from "../../../utils/interfaces";
-import { leaderboardThumbnail } from "../../../data/helperArrays";
-import User from "../../../models/userSchema";
-import GQuest from "../../../models/guildQuestsSchema";
-import { attachGquestCollector } from "../../../utils/gquestUtils";
+import { IGquest, ISubcommand } from "../../../../utils/interfaces";
+import { leaderboardThumbnail } from "../../../../data/helperArrays";
+import User from "../../../../models/userSchema";
+import GQuest from "../../../../models/guildQuestsSchema";
+import { attachGquestCollector } from "../../../../utils/gquestUtils";
 
 const init = async (): Promise<ISubcommand | undefined> => {
   try {

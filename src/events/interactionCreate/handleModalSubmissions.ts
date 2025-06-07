@@ -38,7 +38,7 @@ const execute = async (client: Client, interaction: ModalSubmitInteraction) => {
 
       const { userID, channelID, serverID } = gquest;
 
-      await User.findOneAndUpdate(
+      const updatedUser = await User.findOneAndUpdate(
         { userID: userID },
         {
           $pull: { "gquests.pending": gquest._id },
@@ -112,10 +112,16 @@ const execute = async (client: Client, interaction: ModalSubmitInteraction) => {
         content: "✅ Rejection processed successfully.",
       });
 
-      await user.send({
-        embeds: [rejectEmbed],
-        files: [thumbnail, gquestImage],
-      });
+      if (updatedUser?.gquests.dmNotif) {
+        try {
+          await user.send({
+            embeds: [rejectEmbed],
+            files: [thumbnail, gquestImage],
+          });
+        } catch (err) {
+          console.warn("Cannot sen ddm to user");
+        }
+      }
     }
   } catch (err) {
     console.error("Error in modal submission handler : ", err);

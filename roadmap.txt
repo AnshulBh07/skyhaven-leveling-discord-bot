@@ -177,10 +177,21 @@ All of the following are subcommands under: /xpconfig
 ----------------------------------------------------------------------------------------------
 1. user commands
 - /gquest submit <image> [user] : submit gquest for yourself or some other user
-- text OCR and image hashing as multi factor detection to avoid duplicate submissions. This is a basic check,
-amdin / manager will sitll ahve a choice to verify submissions themselves. This check just makes life 
-easier. The method above also eliminates near duplicates by calculating hamming distance between hashes.
-User will have only 5 attemps for a single day.
+- /gquest dm-notif <boolean> [user] : toggle dm notifications for gquests
+- /gquest stats [user] : give complete stats for user
+   stats dusplayed are 
+- /gquest pending [user] : gives a list of all pending gquests for user
+- /gquest completed [user] : gives a list of all completed gquests
+- /gquest rejected [user] : gives a list of all rejected gquests
+- /gquest find <gquest_id> : find previously sent gquest message, done by sending a link button to that message in reply
+- /gquest leaderboard : gives a leaderboard for gquests completed.
+
+2. admin commands
+- /gquest reward-amount <amount> : sets gquest reward amount
+- /gquest channel : sets gquest channel
+- /gquest role
+- /gquest add-admin
+- /gquest remove-admin
 
 Notes: Fixes needed
  - leaderboard embed and interaction 

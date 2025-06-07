@@ -1,0 +1,1023 @@
+{
+    "name": "ROOT",
+    "type": "dir",
+    "fullPath": "",
+    "fileNumber": 101,
+    "lines": 8250,
+    "characters": 278127,
+    "childrens": [
+        {
+            "name": "dist",
+            "type": "dir",
+            "fullPath": "/dist",
+            "fileNumber": 0,
+            "lines": 0,
+            "characters": 0,
+            "childrens": []
+        },
+        {
+            "name": "src",
+            "type": "dir",
+            "fullPath": "/src",
+            "fileNumber": 92,
+            "lines": 7831,
+            "characters": 253737,
+            "childrens": [
+                {
+                    "name": "assets",
+                    "type": "dir",
+                    "fullPath": "/src/assets",
+                    "fileNumber": 8,
+                    "lines": 2,
+                    "characters": 6734,
+                    "childrens": [
+                        {
+                            "name": "images",
+                            "type": "dir",
+                            "fullPath": "/src/assets/images",
+                            "fileNumber": 6,
+                            "lines": 0,
+                            "characters": 0,
+                            "childrens": [
+                                {
+                                    "name": "default_pfp",
+                                    "type": "dir",
+                                    "fullPath": "/src/assets/images/default_pfp",
+                                    "fileNumber": 0,
+                                    "lines": 0,
+                                    "characters": 0,
+                                    "childrens": []
+                                },
+                                {
+                                    "name": "discord_badges",
+                                    "type": "dir",
+                                    "fullPath": "/src/assets/images/discord_badges",
+                                    "fileNumber": 0,
+                                    "lines": 0,
+                                    "characters": 0,
+                                    "childrens": []
+                                },
+                                {
+                                    "name": "leaderboard_bg",
+                                    "type": "dir",
+                                    "fullPath": "/src/assets/images/leaderboard_bg",
+                                    "fileNumber": 0,
+                                    "lines": 0,
+                                    "characters": 0,
+                                    "childrens": []
+                                },
+                                {
+                                    "name": "raids_ss",
+                                    "type": "dir",
+                                    "fullPath": "/src/assets/images/raids_ss",
+                                    "fileNumber": 0,
+                                    "lines": 0,
+                                    "characters": 0,
+                                    "childrens": []
+                                },
+                                {
+                                    "name": "temp",
+                                    "type": "dir",
+                                    "fullPath": "/src/assets/images/temp",
+                                    "fileNumber": 0,
+                                    "lines": 0,
+                                    "characters": 0,
+                                    "childrens": []
+                                },
+                                {
+                                    "name": "welcome_msg",
+                                    "type": "dir",
+                                    "fullPath": "/src/assets/images/welcome_msg",
+                                    "fileNumber": 0,
+                                    "lines": 0,
+                                    "characters": 0,
+                                    "childrens": []
+                                }
+                            ]
+                        },
+                        {
+                            "name": "logos",
+                            "type": "dir",
+                            "fullPath": "/src/assets/logos",
+                            "fileNumber": 2,
+                            "lines": 2,
+                            "characters": 6734,
+                            "childrens": [
+                                {
+                                    "name": "gold_crown.webp",
+                                    "type": "file",
+                                    "fullPath": "/src/assets/logos/gold_crown.webp",
+                                    "lines": 1,
+                                    "characters": 3901
+                                },
+                                {
+                                    "name": "silver_crown.webp",
+                                    "type": "file",
+                                    "fullPath": "/src/assets/logos/silver_crown.webp",
+                                    "lines": 1,
+                                    "characters": 2833
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "canvas",
+                    "type": "dir",
+                    "fullPath": "/src/canvas",
+                    "fileNumber": 13,
+                    "lines": 891,
+                    "characters": 23974,
+                    "childrens": [
+                        {
+                            "name": "utils",
+                            "type": "dir",
+                            "fullPath": "/src/canvas/utils",
+                            "fileNumber": 10,
+                            "lines": 718,
+                            "characters": 18784,
+                            "childrens": [
+                                {
+                                    "name": "adjustHexShades.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/canvas/utils/adjustHexShades.ts",
+                                    "lines": 95,
+                                    "characters": 2487
+                                },
+                                {
+                                    "name": "drawArrow.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/canvas/utils/drawArrow.ts",
+                                    "lines": 49,
+                                    "characters": 1162
+                                },
+                                {
+                                    "name": "drawRoundedHexagon.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/canvas/utils/drawRoundedHexagon.ts",
+                                    "lines": 74,
+                                    "characters": 1816
+                                },
+                                {
+                                    "name": "generateAvatar.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/canvas/utils/generateAvatar.ts",
+                                    "lines": 69,
+                                    "characters": 1812
+                                },
+                                {
+                                    "name": "generateBackground.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/canvas/utils/generateBackground.ts",
+                                    "lines": 87,
+                                    "characters": 2382
+                                },
+                                {
+                                    "name": "generateLeaderboardUserTile.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/canvas/utils/generateLeaderboardUserTile.ts",
+                                    "lines": 258,
+                                    "characters": 7052
+                                },
+                                {
+                                    "name": "generateLvlTransition.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/canvas/utils/generateLvlTransition.ts",
+                                    "lines": 39,
+                                    "characters": 842
+                                },
+                                {
+                                    "name": "getDominantColor.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/canvas/utils/getDominantColor.ts",
+                                    "lines": 22,
+                                    "characters": 572
+                                },
+                                {
+                                    "name": "getLuminance.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/canvas/utils/getLuminance.ts",
+                                    "lines": 13,
+                                    "characters": 414
+                                },
+                                {
+                                    "name": "rgbToHex.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/canvas/utils/rgbToHex.ts",
+                                    "lines": 12,
+                                    "characters": 245
+                                }
+                            ]
+                        },
+                        {
+                            "name": "genearteLeaderboardCard.ts",
+                            "type": "file",
+                            "fullPath": "/src/canvas/genearteLeaderboardCard.ts",
+                            "lines": 62,
+                            "characters": 1759
+                        },
+                        {
+                            "name": "generateLevelUpCard.ts",
+                            "type": "file",
+                            "fullPath": "/src/canvas/generateLevelUpCard.ts",
+                            "lines": 46,
+                            "characters": 1491
+                        },
+                        {
+                            "name": "generateRankCard.ts",
+                            "type": "file",
+                            "fullPath": "/src/canvas/generateRankCard.ts",
+                            "lines": 65,
+                            "characters": 1940
+                        }
+                    ]
+                },
+                {
+                    "name": "commands",
+                    "type": "dir",
+                    "fullPath": "/src/commands",
+                    "fileNumber": 30,
+                    "lines": 3555,
+                    "characters": 113348,
+                    "childrens": [
+                        {
+                            "name": "giveaways",
+                            "type": "dir",
+                            "fullPath": "/src/commands/giveaways",
+                            "fileNumber": 10,
+                            "lines": 1193,
+                            "characters": 36687,
+                            "childrens": [
+                                {
+                                    "name": "gban.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/commands/giveaways/gban.ts",
+                                    "lines": 84,
+                                    "characters": 2485
+                                },
+                                {
+                                    "name": "gbanlist.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/commands/giveaways/gbanlist.ts",
+                                    "lines": 75,
+                                    "characters": 2300
+                                },
+                                {
+                                    "name": "gchannel.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/commands/giveaways/gchannel.ts",
+                                    "lines": 59,
+                                    "characters": 1722
+                                },
+                                {
+                                    "name": "gdelete.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/commands/giveaways/gdelete.ts",
+                                    "lines": 85,
+                                    "characters": 2544
+                                },
+                                {
+                                    "name": "gentries.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/commands/giveaways/gentries.ts",
+                                    "lines": 143,
+                                    "characters": 4444
+                                },
+                                {
+                                    "name": "glist.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/commands/giveaways/glist.ts",
+                                    "lines": 138,
+                                    "characters": 4135
+                                },
+                                {
+                                    "name": "greroll.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/commands/giveaways/greroll.ts",
+                                    "lines": 136,
+                                    "characters": 4175
+                                },
+                                {
+                                    "name": "gstart.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/commands/giveaways/gstart.ts",
+                                    "lines": 257,
+                                    "characters": 8330
+                                },
+                                {
+                                    "name": "gunban.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/commands/giveaways/gunban.ts",
+                                    "lines": 74,
+                                    "characters": 2127
+                                },
+                                {
+                                    "name": "gwins.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/commands/giveaways/gwins.ts",
+                                    "lines": 142,
+                                    "characters": 4425
+                                }
+                            ]
+                        },
+                        {
+                            "name": "gquests",
+                            "type": "dir",
+                            "fullPath": "/src/commands/gquests",
+                            "fileNumber": 4,
+                            "lines": 445,
+                            "characters": 14287,
+                            "childrens": [
+                                {
+                                    "name": "subcommands",
+                                    "type": "dir",
+                                    "fullPath": "/src/commands/gquests/subcommands",
+                                    "fileNumber": 3,
+                                    "lines": 368,
+                                    "characters": 12064,
+                                    "childrens": [
+                                        {
+                                            "name": "dm_notif.ts",
+                                            "type": "file",
+                                            "fullPath": "/src/commands/gquests/subcommands/dm_notif.ts",
+                                            "lines": 63,
+                                            "characters": 1952
+                                        },
+                                        {
+                                            "name": "stats.ts",
+                                            "type": "file",
+                                            "fullPath": "/src/commands/gquests/subcommands/stats.ts",
+                                            "lines": 120,
+                                            "characters": 3892
+                                        },
+                                        {
+                                            "name": "submit.ts",
+                                            "type": "file",
+                                            "fullPath": "/src/commands/gquests/subcommands/submit.ts",
+                                            "lines": 185,
+                                            "characters": 6220
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "index.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/commands/gquests/index.ts",
+                                    "lines": 77,
+                                    "characters": 2223
+                                }
+                            ]
+                        },
+                        {
+                            "name": "leveling",
+                            "type": "dir",
+                            "fullPath": "/src/commands/leveling",
+                            "fileNumber": 15,
+                            "lines": 1896,
+                            "characters": 61854,
+                            "childrens": [
+                                {
+                                    "name": "economy",
+                                    "type": "dir",
+                                    "fullPath": "/src/commands/leveling/economy",
+                                    "fileNumber": 6,
+                                    "lines": 810,
+                                    "characters": 26287,
+                                    "childrens": [
+                                        {
+                                            "name": "addxp.ts",
+                                            "type": "file",
+                                            "fullPath": "/src/commands/leveling/economy/addxp.ts",
+                                            "lines": 122,
+                                            "characters": 3797
+                                        },
+                                        {
+                                            "name": "removexp.ts",
+                                            "type": "file",
+                                            "fullPath": "/src/commands/leveling/economy/removexp.ts",
+                                            "lines": 141,
+                                            "characters": 4407
+                                        },
+                                        {
+                                            "name": "resetserverxp.ts",
+                                            "type": "file",
+                                            "fullPath": "/src/commands/leveling/economy/resetserverxp.ts",
+                                            "lines": 162,
+                                            "characters": 5847
+                                        },
+                                        {
+                                            "name": "resetxp.ts",
+                                            "type": "file",
+                                            "fullPath": "/src/commands/leveling/economy/resetxp.ts",
+                                            "lines": 107,
+                                            "characters": 3220
+                                        },
+                                        {
+                                            "name": "setlevel.ts",
+                                            "type": "file",
+                                            "fullPath": "/src/commands/leveling/economy/setlevel.ts",
+                                            "lines": 135,
+                                            "characters": 4488
+                                        },
+                                        {
+                                            "name": "setxp.ts",
+                                            "type": "file",
+                                            "fullPath": "/src/commands/leveling/economy/setxp.ts",
+                                            "lines": 143,
+                                            "characters": 4528
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "user",
+                                    "type": "dir",
+                                    "fullPath": "/src/commands/leveling/user",
+                                    "fileNumber": 2,
+                                    "lines": 555,
+                                    "characters": 18638,
+                                    "childrens": [
+                                        {
+                                            "name": "leaderboard.ts",
+                                            "type": "file",
+                                            "fullPath": "/src/commands/leveling/user/leaderboard.ts",
+                                            "lines": 421,
+                                            "characters": 14534
+                                        },
+                                        {
+                                            "name": "rank.ts",
+                                            "type": "file",
+                                            "fullPath": "/src/commands/leveling/user/rank.ts",
+                                            "lines": 134,
+                                            "characters": 4104
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "xpconfig",
+                                    "type": "dir",
+                                    "fullPath": "/src/commands/leveling/xpconfig",
+                                    "fileNumber": 7,
+                                    "lines": 531,
+                                    "characters": 16929,
+                                    "childrens": [
+                                        {
+                                            "name": "set",
+                                            "type": "dir",
+                                            "fullPath": "/src/commands/leveling/xpconfig/set",
+                                            "fileNumber": 5,
+                                            "lines": 304,
+                                            "characters": 9471,
+                                            "childrens": [
+                                                {
+                                                    "name": "blacklist_channel.ts",
+                                                    "type": "file",
+                                                    "fullPath": "/src/commands/leveling/xpconfig/set/blacklist_channel.ts",
+                                                    "lines": 57,
+                                                    "characters": 1826
+                                                },
+                                                {
+                                                    "name": "ignore_channel.ts",
+                                                    "type": "file",
+                                                    "fullPath": "/src/commands/leveling/xpconfig/set/ignore_channel.ts",
+                                                    "lines": 57,
+                                                    "characters": 1807
+                                                },
+                                                {
+                                                    "name": "listen_channel.ts",
+                                                    "type": "file",
+                                                    "fullPath": "/src/commands/leveling/xpconfig/set/listen_channel.ts",
+                                                    "lines": 65,
+                                                    "characters": 1959
+                                                },
+                                                {
+                                                    "name": "notif_channel.ts",
+                                                    "type": "file",
+                                                    "fullPath": "/src/commands/leveling/xpconfig/set/notif_channel.ts",
+                                                    "lines": 64,
+                                                    "characters": 1961
+                                                },
+                                                {
+                                                    "name": "whitelist_channel.ts",
+                                                    "type": "file",
+                                                    "fullPath": "/src/commands/leveling/xpconfig/set/whitelist_channel.ts",
+                                                    "lines": 61,
+                                                    "characters": 1918
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "name": "view",
+                                            "type": "dir",
+                                            "fullPath": "/src/commands/leveling/xpconfig/view",
+                                            "fileNumber": 1,
+                                            "lines": 124,
+                                            "characters": 4154,
+                                            "childrens": [
+                                                {
+                                                    "name": "view.ts",
+                                                    "type": "file",
+                                                    "fullPath": "/src/commands/leveling/xpconfig/view/view.ts",
+                                                    "lines": 124,
+                                                    "characters": 4154
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "name": "index.ts",
+                                            "type": "file",
+                                            "fullPath": "/src/commands/leveling/xpconfig/index.ts",
+                                            "lines": 103,
+                                            "characters": 3304
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "misc",
+                            "type": "dir",
+                            "fullPath": "/src/commands/misc",
+                            "fileNumber": 1,
+                            "lines": 21,
+                            "characters": 520,
+                            "childrens": [
+                                {
+                                    "name": "ping.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/commands/misc/ping.ts",
+                                    "lines": 21,
+                                    "characters": 520
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "data",
+                    "type": "dir",
+                    "fullPath": "/src/data",
+                    "fileNumber": 2,
+                    "lines": 525,
+                    "characters": 24388,
+                    "childrens": [
+                        {
+                            "name": "config.ts",
+                            "type": "file",
+                            "fullPath": "/src/data/config.ts",
+                            "lines": 6,
+                            "characters": 133
+                        },
+                        {
+                            "name": "helperArrays.ts",
+                            "type": "file",
+                            "fullPath": "/src/data/helperArrays.ts",
+                            "lines": 519,
+                            "characters": 24255
+                        }
+                    ]
+                },
+                {
+                    "name": "events",
+                    "type": "dir",
+                    "fullPath": "/src/events",
+                    "fileNumber": 12,
+                    "lines": 891,
+                    "characters": 26832,
+                    "childrens": [
+                        {
+                            "name": "guildCreate",
+                            "type": "dir",
+                            "fullPath": "/src/events/guildCreate",
+                            "fileNumber": 0,
+                            "lines": 0,
+                            "characters": 0,
+                            "childrens": []
+                        },
+                        {
+                            "name": "guildMemberAdd",
+                            "type": "dir",
+                            "fullPath": "/src/events/guildMemberAdd",
+                            "fileNumber": 1,
+                            "lines": 15,
+                            "characters": 370,
+                            "childrens": [
+                                {
+                                    "name": "handleGuildMemberAdd.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/events/guildMemberAdd/handleGuildMemberAdd.ts",
+                                    "lines": 15,
+                                    "characters": 370
+                                }
+                            ]
+                        },
+                        {
+                            "name": "guildMemberRemove",
+                            "type": "dir",
+                            "fullPath": "/src/events/guildMemberRemove",
+                            "fileNumber": 1,
+                            "lines": 45,
+                            "characters": 1337,
+                            "childrens": [
+                                {
+                                    "name": "handleGuildMemberRemove.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/events/guildMemberRemove/handleGuildMemberRemove.ts",
+                                    "lines": 45,
+                                    "characters": 1337
+                                }
+                            ]
+                        },
+                        {
+                            "name": "interactionCreate",
+                            "type": "dir",
+                            "fullPath": "/src/events/interactionCreate",
+                            "fileNumber": 2,
+                            "lines": 247,
+                            "characters": 7066,
+                            "childrens": [
+                                {
+                                    "name": "handleInteractionCommands.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/events/interactionCreate/handleInteractionCommands.ts",
+                                    "lines": 115,
+                                    "characters": 3210
+                                },
+                                {
+                                    "name": "handleModalSubmissions.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/events/interactionCreate/handleModalSubmissions.ts",
+                                    "lines": 132,
+                                    "characters": 3856
+                                }
+                            ]
+                        },
+                        {
+                            "name": "messageCreate",
+                            "type": "dir",
+                            "fullPath": "/src/events/messageCreate",
+                            "fileNumber": 1,
+                            "lines": 145,
+                            "characters": 4583,
+                            "childrens": [
+                                {
+                                    "name": "handleMessageEvents.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/events/messageCreate/handleMessageEvents.ts",
+                                    "lines": 145,
+                                    "characters": 4583
+                                }
+                            ]
+                        },
+                        {
+                            "name": "ready",
+                            "type": "dir",
+                            "fullPath": "/src/events/ready",
+                            "fileNumber": 5,
+                            "lines": 289,
+                            "characters": 9040,
+                            "childrens": [
+                                {
+                                    "name": "01registerGuildConfigs.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/events/ready/01registerGuildConfigs.ts",
+                                    "lines": 144,
+                                    "characters": 4657
+                                },
+                                {
+                                    "name": "02registerCommands.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/events/ready/02registerCommands.ts",
+                                    "lines": 64,
+                                    "characters": 2043
+                                },
+                                {
+                                    "name": "03resumeGiveaways.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/events/ready/03resumeGiveaways.ts",
+                                    "lines": 42,
+                                    "characters": 1406
+                                },
+                                {
+                                    "name": "04resumeGquestSubmissions.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/events/ready/04resumeGquestSubmissions.ts",
+                                    "lines": 19,
+                                    "characters": 585
+                                },
+                                {
+                                    "name": "ready.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/events/ready/ready.ts",
+                                    "lines": 20,
+                                    "characters": 349
+                                }
+                            ]
+                        },
+                        {
+                            "name": "voiceStateUpdate",
+                            "type": "dir",
+                            "fullPath": "/src/events/voiceStateUpdate",
+                            "fileNumber": 1,
+                            "lines": 150,
+                            "characters": 4436,
+                            "childrens": [
+                                {
+                                    "name": "handleVoiceStateUpdate.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/events/voiceStateUpdate/handleVoiceStateUpdate.ts",
+                                    "lines": 150,
+                                    "characters": 4436
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "handlers",
+                    "type": "dir",
+                    "fullPath": "/src/handlers",
+                    "fileNumber": 1,
+                    "lines": 31,
+                    "characters": 1007,
+                    "childrens": [
+                        {
+                            "name": "eventHandler.ts",
+                            "type": "file",
+                            "fullPath": "/src/handlers/eventHandler.ts",
+                            "lines": 31,
+                            "characters": 1007
+                        }
+                    ]
+                },
+                {
+                    "name": "models",
+                    "type": "dir",
+                    "fullPath": "/src/models",
+                    "fileNumber": 5,
+                    "lines": 268,
+                    "characters": 9073,
+                    "childrens": [
+                        {
+                            "name": "commandSchema.ts",
+                            "type": "file",
+                            "fullPath": "/src/models/commandSchema.ts",
+                            "lines": 41,
+                            "characters": 1179
+                        },
+                        {
+                            "name": "configSchema.ts",
+                            "type": "file",
+                            "fullPath": "/src/models/configSchema.ts",
+                            "lines": 103,
+                            "characters": 3445
+                        },
+                        {
+                            "name": "giveawaySchema.ts",
+                            "type": "file",
+                            "fullPath": "/src/models/giveawaySchema.ts",
+                            "lines": 34,
+                            "characters": 1353
+                        },
+                        {
+                            "name": "guildQuestsSchema.ts",
+                            "type": "file",
+                            "fullPath": "/src/models/guildQuestsSchema.ts",
+                            "lines": 31,
+                            "characters": 1075
+                        },
+                        {
+                            "name": "userSchema.ts",
+                            "type": "file",
+                            "fullPath": "/src/models/userSchema.ts",
+                            "lines": 59,
+                            "characters": 2021
+                        }
+                    ]
+                },
+                {
+                    "name": "types",
+                    "type": "dir",
+                    "fullPath": "/src/types",
+                    "fileNumber": 1,
+                    "lines": 15,
+                    "characters": 372,
+                    "childrens": [
+                        {
+                            "name": "colorthief.d.ts",
+                            "type": "file",
+                            "fullPath": "/src/types/colorthief.d.ts",
+                            "lines": 15,
+                            "characters": 372
+                        }
+                    ]
+                },
+                {
+                    "name": "utils",
+                    "type": "dir",
+                    "fullPath": "/src/utils",
+                    "fileNumber": 19,
+                    "lines": 1614,
+                    "characters": 47061,
+                    "childrens": [
+                        {
+                            "name": "areCommandsSame.ts",
+                            "type": "file",
+                            "fullPath": "/src/utils/areCommandsSame.ts",
+                            "lines": 80,
+                            "characters": 2417
+                        },
+                        {
+                            "name": "compareStrings.ts",
+                            "type": "file",
+                            "fullPath": "/src/utils/compareStrings.ts",
+                            "lines": 16,
+                            "characters": 384
+                        },
+                        {
+                            "name": "configurationCheck.ts",
+                            "type": "file",
+                            "fullPath": "/src/utils/configurationCheck.ts",
+                            "lines": 11,
+                            "characters": 286
+                        },
+                        {
+                            "name": "countEmojis.ts",
+                            "type": "file",
+                            "fullPath": "/src/utils/countEmojis.ts",
+                            "lines": 8,
+                            "characters": 322
+                        },
+                        {
+                            "name": "createNewUser.ts",
+                            "type": "file",
+                            "fullPath": "/src/utils/createNewUser.ts",
+                            "lines": 139,
+                            "characters": 4078
+                        },
+                        {
+                            "name": "demoteUser.ts",
+                            "type": "file",
+                            "fullPath": "/src/utils/demoteUser.ts",
+                            "lines": 63,
+                            "characters": 2065
+                        },
+                        {
+                            "name": "generateLvlNotif.ts",
+                            "type": "file",
+                            "fullPath": "/src/utils/generateLvlNotif.ts",
+                            "lines": 109,
+                            "characters": 3382
+                        },
+                        {
+                            "name": "getAllFiles.ts",
+                            "type": "file",
+                            "fullPath": "/src/utils/getAllFiles.ts",
+                            "lines": 31,
+                            "characters": 970
+                        },
+                        {
+                            "name": "getApplicationCommands.ts",
+                            "type": "file",
+                            "fullPath": "/src/utils/getApplicationCommands.ts",
+                            "lines": 21,
+                            "characters": 497
+                        },
+                        {
+                            "name": "getCumulativeXPUptoLvl.ts",
+                            "type": "file",
+                            "fullPath": "/src/utils/getCumulativeXPUptoLvl.ts",
+                            "lines": 12,
+                            "characters": 207
+                        },
+                        {
+                            "name": "getDateString.ts",
+                            "type": "file",
+                            "fullPath": "/src/utils/getDateString.ts",
+                            "lines": 25,
+                            "characters": 716
+                        },
+                        {
+                            "name": "getLevelFromXp.ts",
+                            "type": "file",
+                            "fullPath": "/src/utils/getLevelFromXp.ts",
+                            "lines": 17,
+                            "characters": 336
+                        },
+                        {
+                            "name": "getLocalCommands.ts",
+                            "type": "file",
+                            "fullPath": "/src/utils/getLocalCommands.ts",
+                            "lines": 54,
+                            "characters": 1564
+                        },
+                        {
+                            "name": "getNextLevelXP.ts",
+                            "type": "file",
+                            "fullPath": "/src/utils/getNextLevelXP.ts",
+                            "lines": 4,
+                            "characters": 99
+                        },
+                        {
+                            "name": "giveawayUtils.ts",
+                            "type": "file",
+                            "fullPath": "/src/utils/giveawayUtils.ts",
+                            "lines": 454,
+                            "characters": 14229
+                        },
+                        {
+                            "name": "gquestUtils.ts",
+                            "type": "file",
+                            "fullPath": "/src/utils/gquestUtils.ts",
+                            "lines": 183,
+                            "characters": 5939
+                        },
+                        {
+                            "name": "imageSubmissionUtils.ts",
+                            "type": "file",
+                            "fullPath": "/src/utils/imageSubmissionUtils.ts",
+                            "lines": 115,
+                            "characters": 3193
+                        },
+                        {
+                            "name": "interfaces.ts",
+                            "type": "file",
+                            "fullPath": "/src/utils/interfaces.ts",
+                            "lines": 210,
+                            "characters": 4488
+                        },
+                        {
+                            "name": "promoteUser.ts",
+                            "type": "file",
+                            "fullPath": "/src/utils/promoteUser.ts",
+                            "lines": 62,
+                            "characters": 1889
+                        }
+                    ]
+                },
+                {
+                    "name": "index.ts",
+                    "type": "file",
+                    "fullPath": "/src/index.ts",
+                    "lines": 39,
+                    "characters": 948
+                }
+            ]
+        },
+        {
+            "name": ".env.development",
+            "type": "file",
+            "fullPath": "/.env.development",
+            "lines": 1,
+            "characters": 183
+        },
+        {
+            "name": ".env.production",
+            "type": "file",
+            "fullPath": "/.env.production",
+            "lines": 1,
+            "characters": 183
+        },
+        {
+            "name": ".gitattributes",
+            "type": "file",
+            "fullPath": "/.gitattributes",
+            "lines": 2,
+            "characters": 49
+        },
+        {
+            "name": ".gitignore",
+            "type": "file",
+            "fullPath": "/.gitignore",
+            "lines": 4,
+            "characters": 54
+        },
+        {
+            "name": "nodemon.json",
+            "type": "file",
+            "fullPath": "/nodemon.json",
+            "lines": 7,
+            "characters": 100
+        },
+        {
+            "name": "README.md",
+            "type": "file",
+            "fullPath": "/README.md",
+            "lines": 92,
+            "characters": 3467
+        },
+        {
+            "name": "roadmap.txt",
+            "type": "file",
+            "fullPath": "/roadmap.txt",
+            "lines": 195,
+            "characters": 7703
+        },
+        {
+            "name": "tsconfig.json",
+            "type": "file",
+            "fullPath": "/tsconfig.json",
+            "lines": 117,
+            "characters": 12651
+        }
+    ]
+}

@@ -75,6 +75,7 @@ export const createNewUser = async (
         giveawaysWon: [],
       },
       gquests: {
+        dmNotif: true,
         pending: [],
         rejected: [],
         rewarded: [],

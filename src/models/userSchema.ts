@@ -28,6 +28,7 @@ const Giveaways = new Schema(
 
 const GQuests = new Schema(
   {
+    dmNotif: { type: Boolean, required: true, default: true },
     pending: [{ type: mongoose.Schema.Types.ObjectId, ref: "GQuest" }],
     rewarded: [{ type: mongoose.Schema.Types.ObjectId, ref: "GQuest" }],
     rejected: [{ type: mongoose.Schema.Types.ObjectId, ref: "GQuest" }],
