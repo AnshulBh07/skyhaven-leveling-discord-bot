@@ -1,6 +1,6 @@
 import { ApplicationCommandOptionType, ChannelType } from "discord.js";
-import { ICommandObj } from "../../utils/interfaces";
-import Config from "../../models/configSchema";
+import { ICommandObj } from "../../../utils/interfaces";
+import Config from "../../../models/configSchema";
 
 const init = async (): Promise<ICommandObj | undefined> => {
   try {

@@ -1,7 +1,7 @@
 import { AttachmentBuilder, EmbedBuilder } from "discord.js";
-import Config from "../../models/configSchema";
-import { ICommandObj } from "../../utils/interfaces";
-import { leaderboardThumbnail } from "../../data/helperArrays";
+import Config from "../../../models/configSchema";
+import { ICommandObj } from "../../../utils/interfaces";
+import { leaderboardThumbnail } from "../../../data/helperArrays";
 
 const init = async (): Promise<ICommandObj | undefined> => {
   try {

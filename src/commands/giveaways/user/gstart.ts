@@ -7,14 +7,14 @@ import {
   EmbedBuilder,
   Role,
 } from "discord.js";
-import { ICommandObj, IGiveaway } from "../../utils/interfaces";
+import { ICommandObj, IGiveaway } from "../../../utils/interfaces";
 import {
   giveawayStartMessages,
   leaderboardThumbnail,
-} from "../../data/helperArrays";
+} from "../../../data/helperArrays";
 import ms, { StringValue } from "ms";
-import Giveaway from "../../models/giveawaySchema";
-import { attachCollector, endGiveaway } from "../../utils/giveawayUtils";
+import Giveaway from "../../../models/giveawaySchema";
+import { attachCollector, endGiveaway } from "../../../utils/giveawayUtils";
 
 const init = async (): Promise<ICommandObj | undefined> => {
   try {

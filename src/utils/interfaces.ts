@@ -211,3 +211,10 @@ export type LeaderboardUserTileInfo = {
   xp: number;
   currentRole: string;
 };
+
+export type questMazeLeaderboardUser = {
+  userID: string;
+  rank: number;
+  completed: number;
+  contribution_score: number;
+};

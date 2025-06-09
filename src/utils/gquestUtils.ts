@@ -6,15 +6,19 @@ import {
   ChatInputCommandInteraction,
   Client,
   EmbedBuilder,
+  Guild,
   ModalBuilder,
+  StringSelectMenuBuilder,
+  StringSelectMenuOptionBuilder,
   TextInputBuilder,
   TextInputStyle,
 } from "discord.js";
-import { IGquest } from "./interfaces";
+import { IGquest, IUser, questMazeLeaderboardUser } from "./interfaces";
 import Config from "../models/configSchema";
 import User from "../models/userSchema";
 import GQuest from "../models/guildQuestsSchema";
 import { leaderboardThumbnail } from "../data/helperArrays";
+import { generateGquestMazeLeaderboardImage } from "../canvas/generateGquestMazeLeaderboardImage";
 
 const thumbnail = new AttachmentBuilder(leaderboardThumbnail).setName(
   "thumbnail.png"
@@ -122,6 +126,11 @@ export const attachGquestCollector = async (
 export const getContributionScore = (rewarded: number, rejected: number) => {
   return rewarded * 10 - rejected * 3;
 };
+
+const selectMenuOptions = [
+  { label: "Guild Quests", value: "guild_quest" },
+  { label: "Guild Maze", value: "maze" },
+];
 
 export const generateGquestsListEmbed = async (
   interaction: ChatInputCommandInteraction,
@@ -246,5 +255,234 @@ export const generateGquestsListEmbed = async (
     });
   } catch (err) {
     console.error("Error generating gquests list embed : ", err);
+  }
+};
+
+// give paginated leaderboard
+export const getGquestMazeLeaderboard = async (
+  client: Client,
+  users: IUser[],
+  guild: Guild,
+  type: string,
+  interaction: ChatInputCommandInteraction
+) => {
+  try {
+    let page = 0;
+    const pageSize = 10;
+    const totalPages = Math.ceil(users.length / pageSize);
+
+    // function that sorts and slices
+    const getUsers = (
+      page: number,
+      type: string
+    ): questMazeLeaderboardUser[] => {
+      const startIndex = page * pageSize;
+      const endIndex = pageSize + startIndex;
+
+      // sort based on type
+      const sortedUsers = [...users].sort((a, b) => {
+        const compParameter = (user: IUser) => {
+          const rewarded = user.gquests.rewarded;
+          const rejected = user.gquests.rejected;
+
+          switch (type) {
+            case "guild_quest":
+              return (
+                rewarded.length +
+                getContributionScore(rewarded.length, rejected.length)
+              );
+            default:
+              return (
+                rewarded.length +
+                getContributionScore(rewarded.length, rejected.length)
+              );
+          }
+        };
+
+        return compParameter(b) - compParameter(a);
+      });
+
+      return sortedUsers.slice(startIndex, endIndex).map((user, idx) => {
+        const rewarded = user.gquests.rewarded;
+        const rejected = user.gquests.rejected;
+
+        return type === "guild_quest"
+          ? {
+              userID: user.userID,
+              rank: startIndex + idx + 1,
+              completed: user.gquests.rewarded.length,
+              contribution_score: getContributionScore(
+                rewarded.length,
+                rejected.length
+              ),
+            }
+          : {
+              userID: user.userID,
+              rank: startIndex + idx + 1,
+              completed: user.gquests.rewarded.length,
+              contribution_score: getContributionScore(
+                rewarded.length,
+                rejected.length
+              ),
+            };
+      });
+    };
+
+    const usersArr = getUsers(page, type);
+    const leaderboardImage = await generateGquestMazeLeaderboardImage(
+      client,
+      usersArr
+    );
+
+    const embed = new EmbedBuilder()
+      .setTitle(
+        `📊 ${guild.name} ${type
+          .split("_")
+          .map((word) => word.at(0)!.toUpperCase() + word.slice(1))
+          .join(" ")} Leaderboard`
+      )
+      .setColor("Aqua")
+      .setFooter({ text: `${guild.name} ${type}` })
+      .setImage("attachment://leaderboard.png")
+      .setTimestamp();
+
+    const buttonsRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
+      new ButtonBuilder()
+        .setCustomId(`leaderboard_prev`)
+        .setEmoji("⬅️")
+        .setStyle(ButtonStyle.Secondary)
+        .setDisabled(page <= 0),
+      new ButtonBuilder()
+        .setCustomId(`leaderboard_next`)
+        .setEmoji("➡️")
+        .setStyle(ButtonStyle.Secondary)
+        .setDisabled(page >= totalPages - 1)
+    );
+
+    const selectMenuRow =
+      new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
+        new StringSelectMenuBuilder()
+          .setCustomId("leaderboard_select")
+          .addOptions(
+            selectMenuOptions.map((option) => {
+              return new StringSelectMenuOptionBuilder()
+                .setLabel(option.label)
+                .setValue(option.value)
+                .setDefault(type === option.value);
+            })
+          )
+      );
+
+    await interaction.editReply({
+      embeds: [embed],
+      files: [leaderboardImage],
+      components: [buttonsRow, selectMenuRow],
+    });
+
+    // add collector
+    const reply = await interaction.fetchReply();
+
+    const collector = reply.createMessageComponentCollector({
+      time: 60_000 * 10,
+      filter: (i) =>
+        ["leaderboard_prev", "leaderboard_select", "leaderboard_next"].includes(
+          i.customId
+        ) && i.user.id === interaction.user.id,
+    });
+
+    collector.on("collect", async (compInt) => {
+      try {
+        // if button interaction
+        if (compInt.isButton()) {
+          await compInt.deferUpdate();
+          if (compInt.customId === "leaderboard_prev") page--;
+          if (compInt.customId === "leaderboard_next") page++;
+
+          buttonsRow.components[0].setDisabled(page <= 0);
+          buttonsRow.components[1].setDisabled(page >= totalPages - 1);
+
+          const newUsers = getUsers(page, type);
+          // generate new image
+          const newLeaderboardImage = await generateGquestMazeLeaderboardImage(
+            client,
+            newUsers
+          );
+
+          embed.setTitle(
+            `📊 ${guild.name} ${type
+              .split("_")
+              .map((word) => word.at(0)!.toUpperCase() + word.slice(1))
+              .join(" ")} Leaderboard`
+          );
+
+          await interaction.editReply({
+            embeds: [embed],
+            components: [buttonsRow, selectMenuRow],
+            files: [newLeaderboardImage],
+          });
+        }
+
+        // if select menu interaction
+        if (compInt.isStringSelectMenu()) {
+          await compInt.deferUpdate();
+          page = 0;
+          type = compInt.values[0];
+
+          const newUsers = getUsers(page, type);
+          const leaderboardImage = await generateGquestMazeLeaderboardImage(
+            client,
+            newUsers
+          );
+
+          embed.setTitle(
+            `📊 ${guild.name} ${type
+              .split("_")
+              .map((word) => word.at(0)!.toUpperCase() + word.slice(1))
+              .join(" ")} Leaderboard`
+          );
+
+          const newSelectMenuRow =
+            new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
+              new StringSelectMenuBuilder()
+                .setCustomId("leaderboard_select")
+                .addOptions(
+                  selectMenuOptions.map((option) => {
+                    return new StringSelectMenuOptionBuilder()
+                      .setLabel(option.label)
+                      .setValue(option.value)
+                      .setDefault(type === option.value);
+                  })
+                )
+            );
+
+          await interaction.editReply({
+            embeds: [embed],
+            components: [buttonsRow, newSelectMenuRow],
+            files: [leaderboardImage],
+          });
+        }
+      } catch (err) {
+        console.error(
+          "Error in guild quest/maze leaderboard collector : ",
+          err
+        );
+      }
+    });
+
+    collector.on("end", async (collected, reason) => {
+      try {
+        if (reason === "time") {
+          await interaction.editReply({
+            content: "⏱️ Interaction timed out.",
+            components: [],
+          });
+          return;
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    });
+  } catch (err) {
+    console.error("Error generating guild quest or maze leaderboard : ", err);
   }
 };

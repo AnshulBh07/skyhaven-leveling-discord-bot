@@ -1,6 +1,6 @@
 import { ApplicationCommandOptionType } from "discord.js";
-import { ICommandObj } from "../../utils/interfaces";
-import Giveaway from "../../models/giveawaySchema";
+import { ICommandObj } from "../../../utils/interfaces";
+import Giveaway from "../../../models/giveawaySchema";
 
 const init = async (): Promise<ICommandObj | undefined> => {
   try {

@@ -4,9 +4,9 @@ import {
   ColorResolvable,
   EmbedBuilder,
 } from "discord.js";
-import { ICommandObj } from "../../utils/interfaces";
-import Giveaway from "../../models/giveawaySchema";
-import { leaderboardThumbnail } from "../../data/helperArrays";
+import { ICommandObj } from "../../../utils/interfaces";
+import Giveaway from "../../../models/giveawaySchema";
+import { leaderboardThumbnail } from "../../../data/helperArrays";
 
 const init = async (): Promise<ICommandObj | undefined> => {
   try {

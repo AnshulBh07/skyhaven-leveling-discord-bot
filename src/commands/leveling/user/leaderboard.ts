@@ -67,7 +67,7 @@ const init = async (): Promise<ICommandObj | undefined> => {
           }
 
           await interaction.deferReply();
-
+ 
           // get all users for current guild
           const users = await User.find({ serverID: guild.id });
 

@@ -5,16 +5,16 @@ import {
   ButtonBuilder,
   ButtonStyle,
 } from "discord.js";
-import { ICommandObj, IGiveaway } from "../../utils/interfaces";
-import User from "../../models/userSchema";
-import { generateGiveawayListEmbed } from "../../utils/giveawayUtils";
-import { leaderboardThumbnail } from "../../data/helperArrays";
+import { ICommandObj, IGiveaway } from "../../../utils/interfaces";
+import User from "../../../models/userSchema";
+import { generateGiveawayListEmbed } from "../../../utils/giveawayUtils";
+import { leaderboardThumbnail } from "../../../data/helperArrays";
 
 const init = async (): Promise<ICommandObj | undefined> => {
   try {
     return {
-      name: "gwins",
-      description: "Displays list of all the giveaways won by user.",
+      name: "gentries",
+      description: "Displays list of all the giveaways user has taken part in.",
       options: [
         {
           name: "user",
@@ -35,7 +35,7 @@ const init = async (): Promise<ICommandObj | undefined> => {
           await interaction.deferReply({ flags: "Ephemeral" });
 
           const user = await User.findOne({ userID: targetUser.id }).populate(
-            "giveaways.giveawaysWon"
+            "giveaways.giveawaysEntries"
           );
 
           if (!user || !guild) {
@@ -44,12 +44,13 @@ const init = async (): Promise<ICommandObj | undefined> => {
           }
 
           const allGiveaways = user.giveaways
-            .giveawaysWon as unknown as IGiveaway[];
+            .giveawaysEntries as unknown as IGiveaway[];
           let page = 0;
           const pageSize = 3;
           const totalPages = Math.ceil(allGiveaways.length / pageSize);
 
-          const description = `🎁 List of all the giveaways ${targetUser.username} has won.`;
+          const description = `📦 List of all the giveaways for ${targetUser.username}`;
+
           const embed = generateGiveawayListEmbed(
             allGiveaways,
             page,

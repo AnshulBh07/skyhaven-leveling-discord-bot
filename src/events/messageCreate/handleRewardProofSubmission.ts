@@ -226,6 +226,19 @@ const execute = async (client: Client, message: Message) => {
 
       // finally delete the photo message
       await message.delete();
+
+      // send at dm
+      if (newUser?.gquests.dmNotif) {
+        try {
+          const targetUser = await client.users.fetch(gquest.userID);
+          await targetUser.send({
+            embeds: [rewardEmbed],
+            files: [proofImage, thumbnail],
+          });
+        } catch (err) {
+          console.warn("Cannot sen ddm to user");
+        }
+      }
     }
   } catch (err) {
     console.error("Error in gquest reward image submission : ", err);
