@@ -7,14 +7,14 @@ const init = async (): Promise<ISubcommand | undefined> => {
     return {
       isSubCommand: true,
       data: {
-        name: "use-role",
+        name: "add-admin",
         description:
-          "Sets role that enables guild members to use guild quest related commands.",
+          "Adds a role that can manage member's guild maze submissions.",
         type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
             name: "role",
-            description: "role to set",
+            description: "management role to add",
             type: ApplicationCommandOptionType.Role,
             required: true,
           },
@@ -36,28 +36,33 @@ const init = async (): Promise<ISubcommand | undefined> => {
 
           await interaction.deferReply();
 
-          const updatedConfig = await Config.findOneAndUpdate(
-            {
-              serverID: guild.id,
-            },
-            { $set: { "gquestMazeConfig.gquestRole": role.id } }
-          );
+          const config = await Config.findOne({ serverID: guild.id });
 
-          if (!updatedConfig) {
+          if (!config) {
             await interaction.editReply({ content: "Guild config not found." });
             return;
           }
 
+          const { managerRoles } = config.gquestMazeConfig;
+
+          if (managerRoles.includes(role.id)) {
+            await interaction.editReply("Role already set as managment.");
+            return;
+          }
+
+          config.gquestMazeConfig.managerRoles.push(role.id);
+          await config.save();
+
           await interaction.editReply({
-            content: `Guild quest user role set to <@&${role.id}>`,
+            content: `Added <@&${role.id}> as management role for guild quests.`,
           });
         } catch (err) {
-          console.error("Error in gquest channel callback : ", err);
+          console.error("Error in maze add-admin callback : ", err);
         }
       },
     };
   } catch (err) {
-    console.error("Error in gquest channel subcommand : ", err);
+    console.error("Error in maze add-admin subcommand : ", err);
     return undefined;
   }
 };

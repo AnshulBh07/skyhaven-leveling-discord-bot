@@ -11,7 +11,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
       data: {
         name: "rewarded",
         description:
-          "Gives list of all rewarded guild quests. If user is specified gives details for the user only",
+          "Gives list of all rewarded guild mazes. If user is specified gives details for the user only",
         type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
@@ -36,34 +36,34 @@ const init = async (): Promise<ISubcommand | undefined> => {
           await interaction.deferReply({ flags: "Ephemeral" });
 
           //   fetch all rewarded gquests
-          let gquests: IGquestMaze[] = await GQuestMaze.find({
+          let mazes: IGquestMaze[] = await GQuestMaze.find({
             serverID: guild.id,
             status: "rewarded",
-            type: "gquest",
+            type: "maze",
           });
-          let title = "📃 List of all Rewarded Guild Quests";
+          let title = "📃 List of all Rewarded Guild Mazes";
 
           if (targetUser) {
-            gquests = (gquests as IGquestMaze[]).filter(
-              (gquest) => gquest.userID === targetUser.id
+            mazes = (mazes as IGquestMaze[]).filter(
+              (maze) => maze.userID === targetUser.id
             );
-            title = `📃 List of Rewarded Guild Quests for ${targetUser.username}`;
+            title = `📃 List of Rewarded Guild Mazes for ${targetUser.username}`;
           }
 
           //   create embed with buttons
           await generateGquestsListEmbed(
             interaction,
-            gquests,
+            mazes,
             title,
             "rewarded"
           );
         } catch (err) {
-          console.error("Error in gquest rewarded subcommand callback : ", err);
+          console.error("Error in maze rewarded subcommand callback : ", err);
         }
       },
     };
   } catch (err) {
-    console.error("Error in gquest rewarded subcommand : ", err);
+    console.error("Error in maze rewarded subcommand : ", err);
     return undefined;
   }
 };

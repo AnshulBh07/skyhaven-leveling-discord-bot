@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionType } from "discord.js";
+import { ApplicationCommandOptionType, ChannelType } from "discord.js";
 import { ISubcommand } from "../../../../utils/interfaces";
 import Config from "../../../../models/configSchema";
 
@@ -7,15 +7,16 @@ const init = async (): Promise<ISubcommand | undefined> => {
     return {
       isSubCommand: true,
       data: {
-        name: "reward-amount",
+        name: "channel",
         description:
-          "Sets the amount of reward guild member gets for completing one guild quest.",
+          "Channel where guild members submit guild maze and all related notfications are sent.",
         type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
-            name: "amount",
-            description: "amount to set (in spinas)",
-            type: ApplicationCommandOptionType.Number,
+            name: "channel",
+            description: "channel to set",
+            type: ApplicationCommandOptionType.Channel,
+            channelTypes: [ChannelType.GuildText],
             required: true,
           },
         ],
@@ -23,10 +24,10 @@ const init = async (): Promise<ISubcommand | undefined> => {
 
       callback: async (client, interaction) => {
         try {
-          const amount = interaction.options.getNumber("amount");
+          const channel = interaction.options.getChannel("channel");
           const guild = interaction.guild;
 
-          if (!amount || !guild) {
+          if (!channel || !guild) {
             await interaction.reply({
               content: "Invalid command",
               flags: "Ephemeral",
@@ -40,7 +41,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
             {
               serverID: guild.id,
             },
-            { $set: { "gquestMazeConfig.gquestRewardAmount": amount } }
+            { $set: { "gquestMazeConfig.mazeChannelID": channel.id } }
           );
 
           if (!updatedConfig) {
@@ -49,15 +50,15 @@ const init = async (): Promise<ISubcommand | undefined> => {
           }
 
           await interaction.editReply({
-            content: `Set guild quest reward amount to ${amount}`,
+            content: `Guild maze channel set to <#${channel.id}>`,
           });
         } catch (err) {
-          console.error("Error in gquest reward-amount callback : ", err);
+          console.error("Error in maze channel callback : ", err);
         }
       },
     };
   } catch (err) {
-    console.error("Error in gquest reward-amount subcommand : ", err);
+    console.error("Error in maze channel subcommand : ", err);
     return undefined;
   }
 };

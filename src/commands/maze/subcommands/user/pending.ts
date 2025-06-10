@@ -9,9 +9,9 @@ const init = async (): Promise<ISubcommand | undefined> => {
     return {
       isSubCommand: true,
       data: {
-        name: "rewarded",
+        name: "pending",
         description:
-          "Gives list of all rewarded guild quests. If user is specified gives details for the user only",
+          "Gives list of all pending guild mazes. If user is specified gives details for the user only",
         type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
@@ -35,35 +35,35 @@ const init = async (): Promise<ISubcommand | undefined> => {
 
           await interaction.deferReply({ flags: "Ephemeral" });
 
-          //   fetch all rewarded gquests
-          let gquests: IGquestMaze[] = await GQuestMaze.find({
+          //   fetch all pending gquests
+          let mazes: IGquestMaze[] = await GQuestMaze.find({
             serverID: guild.id,
-            status: "rewarded",
-            type: "gquest",
+            status: "pending",
+            type: "maze",
           });
-          let title = "📃 List of all Rewarded Guild Quests";
+          let title = "📃 List of all Pending Guild Mazes";
 
           if (targetUser) {
-            gquests = (gquests as IGquestMaze[]).filter(
-              (gquest) => gquest.userID === targetUser.id
+            mazes = (mazes as IGquestMaze[]).filter(
+              (maze) => maze.userID === targetUser.id
             );
-            title = `📃 List of Rewarded Guild Quests for ${targetUser.username}`;
+            title = `📃 List of Pending Guild Mazes for ${targetUser.username}`;
           }
 
           //   create embed with buttons
           await generateGquestsListEmbed(
             interaction,
-            gquests,
+            mazes,
             title,
-            "rewarded"
+            "pending"
           );
         } catch (err) {
-          console.error("Error in gquest rewarded subcommand callback : ", err);
+          console.error("Error in maze pending subcommand callback : ", err);
         }
       },
     };
   } catch (err) {
-    console.error("Error in gquest rewarded subcommand : ", err);
+    console.error("Error in maze pending subcommand : ", err);
     return undefined;
   }
 };

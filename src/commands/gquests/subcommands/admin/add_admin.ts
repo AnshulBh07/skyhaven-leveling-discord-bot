@@ -43,26 +43,26 @@ const init = async (): Promise<ISubcommand | undefined> => {
             return;
           }
 
-          const { managerRoles } = config.gquestConfig;
+          const { managerRoles } = config.gquestMazeConfig;
 
           if (managerRoles.includes(role.id)) {
             await interaction.editReply("Role already set as managment.");
             return;
           }
 
-          config.gquestConfig.managerRoles.push(role.id);
+          config.gquestMazeConfig.managerRoles.push(role.id);
           await config.save();
 
           await interaction.editReply({
             content: `Added <@&${role.id}> as management role for guild quests.`,
           });
         } catch (err) {
-          console.error("Error in gquest channel callback : ", err);
+          console.error("Error in gquest add-admin callback : ", err);
         }
       },
     };
   } catch (err) {
-    console.error("Error in gquest channel subcommand : ", err);
+    console.error("Error in gquest add-admin subcommand : ", err);
     return undefined;
   }
 };

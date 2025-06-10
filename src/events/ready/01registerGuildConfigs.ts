@@ -115,11 +115,14 @@ const execute = async (client: Client) => {
         giveawayChannelID: "",
         roles: giveawayRolesConfig,
       },
-      gquestConfig: {
+      gquestMazeConfig: {
+        mazeChannelID: "",
         gquestChannelID: "",
-        role: "",
+        gquestRole: "",
+        mazeRole: "",
         managerRoles: [],
-        rewardAmount: 0,
+        gquestRewardAmount: 0,
+        mazeRewardAmount: 0,
       },
       users: [],
     };

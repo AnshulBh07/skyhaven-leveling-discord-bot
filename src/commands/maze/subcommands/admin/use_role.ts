@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionType } from "discord.js";
+import { ApplicationCommandOptionType, ChannelType } from "discord.js";
 import { ISubcommand } from "../../../../utils/interfaces";
 import Config from "../../../../models/configSchema";
 
@@ -7,15 +7,15 @@ const init = async (): Promise<ISubcommand | undefined> => {
     return {
       isSubCommand: true,
       data: {
-        name: "reward-amount",
+        name: "use-role",
         description:
-          "Sets the amount of reward guild member gets for completing one guild quest.",
+          "Sets role that enables guild members to use guild maze related commands.",
         type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
-            name: "amount",
-            description: "amount to set (in spinas)",
-            type: ApplicationCommandOptionType.Number,
+            name: "role",
+            description: "role to set",
+            type: ApplicationCommandOptionType.Role,
             required: true,
           },
         ],
@@ -23,10 +23,10 @@ const init = async (): Promise<ISubcommand | undefined> => {
 
       callback: async (client, interaction) => {
         try {
-          const amount = interaction.options.getNumber("amount");
+          const role = interaction.options.getRole("role");
           const guild = interaction.guild;
 
-          if (!amount || !guild) {
+          if (!role || !guild) {
             await interaction.reply({
               content: "Invalid command",
               flags: "Ephemeral",
@@ -40,7 +40,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
             {
               serverID: guild.id,
             },
-            { $set: { "gquestMazeConfig.gquestRewardAmount": amount } }
+            { $set: { "gquestMazeConfig.mazeRole": role.id } }
           );
 
           if (!updatedConfig) {
@@ -49,15 +49,15 @@ const init = async (): Promise<ISubcommand | undefined> => {
           }
 
           await interaction.editReply({
-            content: `Set guild quest reward amount to ${amount}`,
+            content: `Guild maze user role set to <@&${role.id}>`,
           });
         } catch (err) {
-          console.error("Error in gquest reward-amount callback : ", err);
+          console.error("Error in maze role callback : ", err);
         }
       },
     };
   } catch (err) {
-    console.error("Error in gquest reward-amount subcommand : ", err);
+    console.error("Error in maze role subcommand : ", err);
     return undefined;
   }
 };

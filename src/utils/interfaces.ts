@@ -84,7 +84,8 @@ interface IUserGiveaways {
 
 type GquestStatus = "pending" | "rewarded" | "rejected";
 
-export interface IGquest {
+export interface IGquestMaze {
+  type: "gquest" | "maze";
   serverID: string;
   userID: string;
   messageID: string; //serves as gquest id
@@ -115,11 +116,25 @@ interface IUserGquests {
   totalRewarded: number;
 }
 
+interface IUserMaze {
+  dmNotif: boolean;
+  pending: Types.ObjectId[];
+  rewarded: Types.ObjectId[];
+  rejected: Types.ObjectId[];
+  lastSubmissionDate: Date | null;
+  lastRewardDate: Date | null;
+  lastRejectionDate: Date | null;
+  totalRewarded: number;
+}
+
 interface IGquestConfig {
+  mazeChannelID: string;
   gquestChannelID: string;
-  role: string;
+  gquestRole: string;
+  mazeRole: string;
   managerRoles: string[];
-  rewardAmount: number;
+  gquestRewardAmount: number;
+  mazeRewardAmount: number;
 }
 
 export interface IUser {
@@ -130,6 +145,7 @@ export interface IUser {
   leveling: ILeveling;
   giveaways: IUserGiveaways;
   gquests: IUserGquests;
+  mazes: IUserMaze;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -151,7 +167,7 @@ export interface IConfig {
   levelConfig: ILevelConfig;
   moderationConfig: IModerationConfig;
   giveawayConfig: IGiveawayConfig;
-  gquestConfig: IGquestConfig;
+  gquestMazeConfig: IGquestConfig;
   users: Types.ObjectId[] | IUser[];
   createdAt?: Date;
   updatedAt?: Date;

@@ -43,15 +43,15 @@ const init = async (): Promise<ISubcommand | undefined> => {
             return;
           }
 
-          const { managerRoles } = config.gquestConfig;
+          const { managerRoles } = config.gquestMazeConfig;
 
           if (!managerRoles.includes(role.id)) {
             await interaction.editReply("Role is not a management role.");
             return;
           }
 
-          config.gquestConfig.managerRoles =
-            config.gquestConfig.managerRoles.filter(
+          config.gquestMazeConfig.managerRoles =
+            config.gquestMazeConfig.managerRoles.filter(
               (managerRole) => managerRole !== role.id
             );
           await config.save();
@@ -60,12 +60,12 @@ const init = async (): Promise<ISubcommand | undefined> => {
             content: `Removed <@&${role.id}> as management role for guild quests.`,
           });
         } catch (err) {
-          console.error("Error in gquest channel callback : ", err);
+          console.error("Error in gquest remove-admin callback : ", err);
         }
       },
     };
   } catch (err) {
-    console.error("Error in gquest channel subcommand : ", err);
+    console.error("Error in gquest remove-admin subcommand : ", err);
     return undefined;
   }
 };

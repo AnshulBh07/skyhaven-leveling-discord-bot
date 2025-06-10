@@ -9,7 +9,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
       data: {
         name: "reward-amount",
         description:
-          "Sets the amount of reward guild member gets for completing one guild quest.",
+          "Sets the amount of reward guild member gets for completing guild maze.",
         type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
@@ -40,7 +40,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
             {
               serverID: guild.id,
             },
-            { $set: { "gquestMazeConfig.gquestRewardAmount": amount } }
+            { $set: { "gquestMazeConfig.mazeRewardAmount": amount } }
           );
 
           if (!updatedConfig) {
@@ -49,15 +49,15 @@ const init = async (): Promise<ISubcommand | undefined> => {
           }
 
           await interaction.editReply({
-            content: `Set guild quest reward amount to ${amount}`,
+            content: `Set guild maze reward amount to ${amount}`,
           });
         } catch (err) {
-          console.error("Error in gquest reward-amount callback : ", err);
+          console.error("Error in maze reward-amount callback : ", err);
         }
       },
     };
   } catch (err) {
-    console.error("Error in gquest reward-amount subcommand : ", err);
+    console.error("Error in maze reward-amount subcommand : ", err);
     return undefined;
   }
 };

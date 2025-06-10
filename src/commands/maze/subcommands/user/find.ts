@@ -5,7 +5,6 @@ import {
   ButtonStyle,
 } from "discord.js";
 import { ISubcommand } from "../../../../utils/interfaces";
-import GQuest from "../../../../models/guildQuestsMazesSchema";
 import GQuestMaze from "../../../../models/guildQuestsMazesSchema";
 
 // gives the link to gquest submission message if u have the gquest id
@@ -15,12 +14,12 @@ const init = async (): Promise<ISubcommand | undefined> => {
       isSubCommand: true,
       data: {
         name: "find",
-        description: "Find guild quest submission with gquest id.",
+        description: "Find guild maze submission with gquest id.",
         type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
-            name: "gquest_id",
-            description: "ID of guild quest",
+            name: "maze_id",
+            description: "ID of guild maze",
             type: ApplicationCommandOptionType.String,
             required: true,
           },
@@ -30,7 +29,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
       callback: async (client, interaction) => {
         try {
           const guild = interaction.guild;
-          const message_id = interaction.options.getString("gquest_id");
+          const message_id = interaction.options.getString("maze_id");
 
           if (!message_id || !guild) {
             await interaction.reply({
@@ -43,14 +42,17 @@ const init = async (): Promise<ISubcommand | undefined> => {
           await interaction.deferReply({ flags: "Ephemeral" });
 
           //   find the gquest
-          const gquest = await GQuestMaze.findOne({ messageID: message_id });
+          const maze = await GQuestMaze.findOne({
+            messageID: message_id,
+            type: "maze",
+          });
 
-          if (!gquest) {
-            await interaction.editReply({ content: "No guild quest found." });
+          if (!maze) {
+            await interaction.editReply({ content: "No guild maze found." });
             return;
           }
 
-          const messageLink = `https://discord.com/channels/${guild.id}/${gquest.channelID}/${gquest.messageID}`;
+          const messageLink = `https://discord.com/channels/${guild.id}/${maze.channelID}/${maze.messageID}`;
 
           const LinkButton =
             new ActionRowBuilder<ButtonBuilder>().addComponents(

@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 
 const Schema = mongoose.Schema;
 
+
 const LevelRolesSchema = new Schema(
   {
     minLevel: { type: Number, requird: true },
@@ -68,12 +69,15 @@ const GiveawayConfig = new Schema(
   { timestamps: false, _id: false, _v: false }
 );
 
-const GquestConfig = new Schema(
+const GquestMazeConfig = new Schema(
   {
+    mazeChannelID: { type: String, default: "" },
     gquestChannelID: { type: String, default: "" },
-    role: { type: String, default: "" },
+    gquestRole: { type: String, default: "" },
+    mazeRole: { type: String, default: "" },
     managerRoles: { type: [String], default: "" },
-    rewardAmount: { type: Number, default: 0 },
+    gquestRewardAmount: { type: Number, default: 0 },
+    mazeRewardAmount: { type: Number, default: 0 },
   },
   { timestamps: false, _id: false, _v: false }
 );
@@ -86,7 +90,7 @@ const ConfigSchema = new Schema(
     levelConfig: { type: LevelingConfig, required: true },
     moderationConfig: { type: ModerationConfig, required: true },
     giveawayConfig: { type: GiveawayConfig, required: true },
-    gquestConfig: { type: GquestConfig, required: true },
+    gquestMazeConfig: { type: GquestMazeConfig, required: true },
     users: [
       {
         type: mongoose.Schema.Types.ObjectId,

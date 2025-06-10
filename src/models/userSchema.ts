@@ -29,9 +29,23 @@ const Giveaways = new Schema(
 const GQuests = new Schema(
   {
     dmNotif: { type: Boolean, required: true, default: true },
-    pending: [{ type: mongoose.Schema.Types.ObjectId, ref: "GQuest" }],
-    rewarded: [{ type: mongoose.Schema.Types.ObjectId, ref: "GQuest" }],
-    rejected: [{ type: mongoose.Schema.Types.ObjectId, ref: "GQuest" }],
+    pending: [{ type: mongoose.Schema.Types.ObjectId, ref: "GQuestMaze" }],
+    rewarded: [{ type: mongoose.Schema.Types.ObjectId, ref: "GQuestMaze" }],
+    rejected: [{ type: mongoose.Schema.Types.ObjectId, ref: "GQuestMaze" }],
+    lastSubmissionDate: { type: Date, default: null },
+    lastRewardDate: { type: Date, default: null },
+    lastRejectionDate: { type: Date, default: null },
+    totalRewarded: { type: Number, default: 0 },
+  },
+  { _id: false, timestamps: false, _v: false }
+);
+
+const Mazes = new Schema(
+  {
+    dmNotif: { type: Boolean, required: true, default: true },
+    pending: [{ type: mongoose.Schema.Types.ObjectId, ref: "GQuestMaze" }],
+    rewarded: [{ type: mongoose.Schema.Types.ObjectId, ref: "GQuestMaze" }],
+    rejected: [{ type: mongoose.Schema.Types.ObjectId, ref: "GQuestMaze" }],
     lastSubmissionDate: { type: Date, default: null },
     lastRewardDate: { type: Date, default: null },
     lastRejectionDate: { type: Date, default: null },
@@ -49,6 +63,7 @@ const UserSchema = new Schema(
     leveling: { type: Leveling, required: true },
     giveaways: { type: Giveaways, required: true },
     gquests: { type: GQuests, required: true },
+    mazes: { type: Mazes, required: true },
   },
   { timestamps: true }
 );

@@ -18,7 +18,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
       isSubCommand: true,
       data: {
         name: "submit",
-        description: "Submit a gquest for yourself or some other user.",
+        description: "Submit a maze for yourself or some other user.",
         type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
@@ -60,7 +60,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
             return;
           }
 
-          const { gquests } = user;
+          const { mazes } = user;
 
           const thumbnail = new AttachmentBuilder(leaderboardThumbnail).setName(
             "thumbnail.png"
@@ -71,7 +71,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
           ).setName("submitted_image.png");
 
           const submissionEmbed = new EmbedBuilder()
-            .setTitle("🧾 Gquest Submission")
+            .setTitle("🧾 Guild Maze Submission")
             .setDescription(
               `Thank you for your submission! 🔍\n` +
                 `Our team will review it shortly. If everything checks out, you’ll be rewarded soon. 🎉`
@@ -107,8 +107,8 @@ const init = async (): Promise<ISubcommand | undefined> => {
               {
                 name: "👤 User Status",
                 value: `**Total Pending : **${
-                  gquests.pending.length + 1
-                }\n**Total Rewarded : **${gquests.rewarded.length}`,
+                  mazes.pending.length + 1
+                }\n**Total Rewarded : **${mazes.rewarded.length}`,
                 inline: false,
               }
             )
@@ -124,8 +124,8 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const reply = await interaction.fetchReply();
 
           // insert a new gquest submission in db
-          const gquestOptions: IGquestMaze = {
-            type:"gquest",
+          const mazeOptions: IGquestMaze = {
+            type: "maze",
             serverID: guild.id,
             userID: targetUser ? targetUser.id : interaction.user.id,
             messageID: reply.id,
@@ -137,12 +137,12 @@ const init = async (): Promise<ISubcommand | undefined> => {
             submittedAt: Date.now(),
           };
 
-          const newGquest = new GQuest(gquestOptions);
-          await newGquest.save();
+          const newMaze = new GQuest(mazeOptions);
+          await newMaze.save();
 
           // update user
           user.gquests.lastSubmissionDate = new Date();
-          user.gquests.pending.push(newGquest._id);
+          user.gquests.pending.push(newMaze._id);
           await user.save();
 
           // create buttons and edit reply again, we didn't create them before to avoid interaction failure
@@ -170,7 +170,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
           });
 
           // attach collectors to this gquest message
-          await attachGquestCollector(client, newGquest as IGquestMaze,"gquest");
+          await attachGquestCollector(client, newMaze as IGquestMaze, "maze");
         } catch (err) {
           console.error("Error in gquest submit subcommand callback : ", err);
         }

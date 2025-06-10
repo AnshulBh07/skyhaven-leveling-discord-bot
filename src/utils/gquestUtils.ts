@@ -13,12 +13,11 @@ import {
   TextInputBuilder,
   TextInputStyle,
 } from "discord.js";
-import { IGquest, IUser, questMazeLeaderboardUser } from "./interfaces";
+import { IGquestMaze, IUser, questMazeLeaderboardUser } from "./interfaces";
 import Config from "../models/configSchema";
-import User from "../models/userSchema";
-import GQuest from "../models/guildQuestsSchema";
 import { leaderboardThumbnail } from "../data/helperArrays";
 import { generateGquestMazeLeaderboardImage } from "../canvas/generateGquestMazeLeaderboardImage";
+import GQuestMaze from "../models/guildQuestsMazesSchema";
 
 const thumbnail = new AttachmentBuilder(leaderboardThumbnail).setName(
   "thumbnail.png"
@@ -26,23 +25,20 @@ const thumbnail = new AttachmentBuilder(leaderboardThumbnail).setName(
 
 export const attachGquestCollector = async (
   client: Client,
-  gquestData: IGquest
+  gquestMazeData: IGquestMaze,
+  type:string,
 ) => {
   try {
-    const guild = await client.guilds.fetch(gquestData.serverID);
-    const channel = await guild.channels.fetch(gquestData.channelID);
+    const guild = await client.guilds.fetch(gquestMazeData.serverID);
+    const channel = await guild.channels.fetch(gquestMazeData.channelID);
     const guildConfig = await Config.findOne({ serverID: guild.id });
 
     if (!channel || channel.type !== 0 || !guildConfig) return;
 
-    const message = await channel.messages.fetch(gquestData.messageID);
+    const message = await channel.messages.fetch(gquestMazeData.messageID);
 
-    const { gquestConfig } = guildConfig;
-    const { managerRoles, rewardAmount } = gquestConfig;
-
-    const submissionImage = new AttachmentBuilder(gquestData.imageUrl).setName(
-      "submitted_image.png"
-    );
+    const { gquestMazeConfig } = guildConfig;
+    const { managerRoles } = gquestMazeConfig;
 
     // attach collector
     const collector = message.createMessageComponentCollector({
@@ -55,7 +51,7 @@ export const attachGquestCollector = async (
         // check if the interaction is for valid user or not
         // interactor must have one of the roles from managerRoles
         const member = guild.members.cache.find(
-          (member) => member.id === gquestData.userID
+          (member) => member.id === gquestMazeData.userID
         );
 
         if (!member) return;
@@ -85,20 +81,20 @@ export const attachGquestCollector = async (
         if (btnInt.customId === "reward") {
           await btnInt.deferReply({ flags: "Ephemeral" });
 
-          await GQuest.findOneAndUpdate(
-            { messageID: gquestData.messageID },
+          await GQuestMaze.findOneAndUpdate(
+            { messageID: gquestMazeData.messageID },
             { $set: { lastRewardBtnClickAt: Date.now() } }
           );
 
           await btnInt.editReply({
-            content: `Please send the ingame screenshot of reward trade with user <@${gquestData.userID}>. Please submit it within the next 2 minutes`,
+            content: `Please send the ingame screenshot of reward trade with user <@${gquestMazeData.userID}>. Please submit it within the next 2 minutes`,
           });
         }
 
         if (btnInt.customId === "reject") {
           // display a modal to user
           const modal = new ModalBuilder()
-            .setCustomId(`gquest_rejection_modal_${gquestData.messageID}`)
+            .setCustomId(`${type}_rejection_modal_${gquestMazeData.messageID}`)
             .setTitle("Guild Quest Rejection");
 
           const reasonInput =
@@ -115,11 +111,11 @@ export const attachGquestCollector = async (
           await btnInt.showModal(modal);
         }
       } catch (err) {
-        console.error("Error in gquest collector collect event : ", err);
+        console.error("Error in gquest/maze collector collect event : ", err);
       }
     });
   } catch (err) {
-    console.error("Error in gquest collector function : ", err);
+    console.error("Error in gquest/maze collector function : ", err);
   }
 };
 
@@ -134,7 +130,7 @@ const selectMenuOptions = [
 
 export const generateGquestsListEmbed = async (
   interaction: ChatInputCommandInteraction,
-  gquests: IGquest[],
+  gquestMazeArr: IGquestMaze[],
   title: string,
   type: string
 ) => {
@@ -145,13 +141,13 @@ export const generateGquestsListEmbed = async (
 
     let page = 0;
     const pageSize = 5;
-    const totalPages = Math.ceil(gquests.length / pageSize);
+    const totalPages = Math.ceil(gquestMazeArr.length / pageSize);
 
     const getEmbed = (page: number, pageSize: number) => {
       const startIndex = page * pageSize;
       const endIndex = pageSize + startIndex;
 
-      const slicedArr = gquests.slice(startIndex, endIndex);
+      const slicedArr = gquestMazeArr.slice(startIndex, endIndex);
 
       const embed = new EmbedBuilder()
         .setTitle(`${title}`)
@@ -159,24 +155,24 @@ export const generateGquestsListEmbed = async (
         .setColor("Gold")
         .setDescription(
           slicedArr
-            .map((gquest, idx) => {
-              const submittedLine = `\n\n**${
-                startIndex + idx + 1
-              }. [Gquest ID: \`${gquest.messageID}\`]\n**
-**👤 Submitted by: **<@${gquest.userID}>
-** Submitted on: **<t:${Math.ceil(gquest.submittedAt! / 1000)}:F>`;
+            .map((ele, idx) => {
+              const submittedLine = `\n\n**${startIndex + idx + 1}. [${
+                type === "guild_quest" ? "Gquest" : "Maze"
+              } ID: \`${ele.messageID}\`]\n**
+**👤 Submitted by: **<@${ele.userID}>
+** Submitted on: **<t:${Math.ceil(ele.submittedAt! / 1000)}:F>`;
 
               const rewardedLine =
                 type === "rewarded"
-                  ? `** Rewarded by: **<@${gquest.reviewedBy}>
-** Rewarded on: **<t:${Math.ceil(gquest.rewardedAt! / 1000)}:F>`
+                  ? `** Rewarded by: **<@${ele.reviewedBy}>
+** Rewarded on: **<t:${Math.ceil(ele.rewardedAt! / 1000)}:F>`
                   : "";
 
               const rejectedLine =
                 type === "rejected"
-                  ? `** Rejected by: **<@${gquest.reviewedBy}>
-** Rejected on: **<t:${Math.ceil(gquest.rejectedAt! / 1000)}:F>
-** Reason: **_${gquest.rejectionReason!}_`
+                  ? `** Rejected by: **<@${ele.reviewedBy}>
+** Rejected on: **<t:${Math.ceil(ele.rejectedAt! / 1000)}:F>
+** Reason: **_${ele.rejectionReason!}_`
                   : "";
 
               return [submittedLine, rewardedLine, rejectedLine]
@@ -185,7 +181,11 @@ export const generateGquestsListEmbed = async (
             })
             .join("\n\n────────────\n\n")
         )
-        .setFooter({ text: `${guild.name} • Guild Quests` })
+        .setFooter({
+          text: `${guild.name} • Guild ${
+            type === "guild_quest" ? "Quests" : "Mazes"
+          }`,
+        })
         .setTimestamp();
 
       return embed;
@@ -282,53 +282,44 @@ export const getGquestMazeLeaderboard = async (
       // sort based on type
       const sortedUsers = [...users].sort((a, b) => {
         const compParameter = (user: IUser) => {
-          const rewarded = user.gquests.rewarded;
-          const rejected = user.gquests.rejected;
+          const rewarded =
+            type === "guild_quest"
+              ? user.gquests.rewarded
+              : user.mazes.rewarded;
+          const rejected =
+            type === "guild_quest"
+              ? user.gquests.rejected
+              : user.mazes.rejected;
 
-          switch (type) {
-            case "guild_quest":
-              return (
-                rewarded.length +
-                getContributionScore(rewarded.length, rejected.length)
-              );
-            default:
-              return (
-                rewarded.length +
-                getContributionScore(rewarded.length, rejected.length)
-              );
-          }
+          return (
+            rewarded.length +
+            getContributionScore(rewarded.length, rejected.length)
+          );
         };
 
         return compParameter(b) - compParameter(a);
       });
 
       return sortedUsers.slice(startIndex, endIndex).map((user, idx) => {
-        const rewarded = user.gquests.rewarded;
-        const rejected = user.gquests.rejected;
+        const rewarded =
+          type === "guild_quest" ? user.gquests.rewarded : user.mazes.rewarded;
+        const rejected =
+          type === "guild_quest" ? user.gquests.rejected : user.mazes.rejected;
 
-        return type === "guild_quest"
-          ? {
-              userID: user.userID,
-              rank: startIndex + idx + 1,
-              completed: user.gquests.rewarded.length,
-              contribution_score: getContributionScore(
-                rewarded.length,
-                rejected.length
-              ),
-            }
-          : {
-              userID: user.userID,
-              rank: startIndex + idx + 1,
-              completed: user.gquests.rewarded.length,
-              contribution_score: getContributionScore(
-                rewarded.length,
-                rejected.length
-              ),
-            };
+        return {
+          userID: user.userID,
+          rank: startIndex + idx + 1,
+          completed: rewarded.length,
+          contribution_score: getContributionScore(
+            rewarded.length,
+            rejected.length
+          ),
+        };
       });
     };
 
     const usersArr = getUsers(page, type);
+
     const leaderboardImage = await generateGquestMazeLeaderboardImage(
       client,
       usersArr

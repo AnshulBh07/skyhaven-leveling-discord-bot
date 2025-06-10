@@ -9,9 +9,9 @@ import {
   TextChannel,
 } from "discord.js";
 import Config from "../../models/configSchema";
-import GQuest from "../../models/guildQuestsSchema";
 import User from "../../models/userSchema";
 import { leaderboardThumbnail } from "../../data/helperArrays";
+import GQuestMaze from "../../models/guildQuestsMazesSchema";
 
 // this file handles reward submission for gquest channel and guild mazes channel
 const execute = async (client: Client, message: Message) => {
@@ -25,16 +25,23 @@ const execute = async (client: Client, message: Message) => {
     const guildConfig = await Config.findOne({ serverID: guild.id });
     if (!guildConfig) return;
 
-    const { gquestConfig } = guildConfig;
+    const { gquestMazeConfig } = guildConfig;
 
     const thumbnail = new AttachmentBuilder(leaderboardThumbnail).setName(
       "thumbnail.png"
     );
 
-    // if it is for gquest
-    if (channel.id === gquestConfig.gquestChannelID && channel.isTextBased()) {
+    // if it is for gquest or maze
+    if (
+      (channel.id === gquestMazeConfig.gquestChannelID ||
+        channel.id === gquestMazeConfig.mazeChannelID) &&
+      channel.isTextBased() &&
+      channel.isSendable()
+    ) {
       // get role of user who messaged and compare with the manager role
       const user = message.author;
+      const type =
+        channel.id === gquestMazeConfig.gquestChannelID ? "gquest" : "maze";
 
       if (user.bot) return;
 
@@ -43,7 +50,7 @@ const execute = async (client: Client, message: Message) => {
         ([_, role]) => role.id
       );
 
-      const managerRoles = gquestConfig.managerRoles;
+      const managerRoles = gquestMazeConfig.managerRoles;
       let hasRole = false;
 
       for (const role of roles) {
@@ -53,20 +60,29 @@ const execute = async (client: Client, message: Message) => {
         }
       }
 
-      if (!hasRole) return;
+      if (!hasRole) {
+        await channel.send({
+          content: "❌ You do not have permission to perform this action.",
+        });
+        await message.delete();
+        return;
+      }
 
       //   message author has manager role
       const currTime = Date.now();
       const threshold = 2 * 60 * 1000; // 2 minutes in ms
       //   we need to fetch correct data from db but we do not have enough information so we assume that
       // the latest reward button click is the gquest message that user interacted with
-      const gquest = await GQuest.findOne({ serverID: guild.id }).sort({
+      const gquestMaze = await GQuestMaze.findOne({
+        serverID: guild.id,
+        type: type,
+      }).sort({
         lastRewardBtnClickAt: -1,
       });
 
-      if (!gquest) return;
+      if (!gquestMaze) return;
 
-      const lastBtnClick = gquest.lastRewardBtnClickAt;
+      const lastBtnClick = gquestMaze.lastRewardBtnClickAt;
       //   return a timeout message
       if (!lastBtnClick || currTime - lastBtnClick > threshold) {
         await message.reply({
@@ -88,7 +104,8 @@ const execute = async (client: Client, message: Message) => {
         !attachments[0].contentType?.startsWith("image/") ||
         !attachments[0].url
       ) {
-        await message.reply("Invalid submission. Please try again.");
+        await channel.send("Invalid submission. Please try again.");
+        await message.delete();
         return;
       }
 
@@ -98,9 +115,10 @@ const execute = async (client: Client, message: Message) => {
       );
 
       // change gquest status, update user and edit message
-      const updatedGquest = await GQuest.findOneAndUpdate(
+      const updatedGquestMaze = await GQuestMaze.findOneAndUpdate(
         {
-          messageID: gquest.messageID,
+          messageID: gquestMaze.messageID,
+          type: type,
         },
         {
           $set: {
@@ -112,16 +130,30 @@ const execute = async (client: Client, message: Message) => {
         { new: true }
       );
 
-      if (!updatedGquest) return;
+      if (!updatedGquestMaze) return;
+
+      const updateOptions =
+        type === "gquest"
+          ? {
+              $pull: { "gquests.pending": updatedGquestMaze._id },
+              $push: { "gquests.rewarded": updatedGquestMaze._id },
+              $set: { "gquests.lastRewardedAt": new Date() },
+              $inc: {
+                "gquests.totalRewarded": gquestMazeConfig.gquestRewardAmount,
+              },
+            }
+          : {
+              $pull: { "mazes.pending": updatedGquestMaze._id },
+              $push: { "mazes.rewarded": updatedGquestMaze._id },
+              $set: { "mazes.lastRewardedAt": new Date() },
+              $inc: {
+                "mazes.totalRewarded": gquestMazeConfig.mazeRewardAmount,
+              },
+            };
 
       const newUser = await User.findOneAndUpdate(
-        { userID: gquest.userID },
-        {
-          $pull: { "gquests.pending": updatedGquest._id },
-          $push: { "gquests.rewarded": updatedGquest._id },
-          $set: { "gquests.lastRewardedAt": new Date() },
-          $inc: { "gquests.totalRewarded": gquestConfig.rewardAmount },
-        },
+        { userID: gquestMaze.userID },
+        updateOptions,
         { new: true }
       );
 
@@ -129,13 +161,15 @@ const execute = async (client: Client, message: Message) => {
 
       // send a reward message to the associated channel
       const rewardEmbed = new EmbedBuilder()
-        .setTitle("💵 Gquest Rewarded")
+        .setTitle(
+          `💵 ${type.split("")[0].toUpperCase() + type.slice(1)} Rewarded`
+        )
         .setColor("Aqua")
         .setThumbnail("attachment://thumbnail.png")
         .addFields(
           {
             name: "\u200b",
-            value: `**📤 Submitted by : **<@${gquest.userID}>`,
+            value: `**📤 Submitted by : **<@${gquestMaze.userID}>`,
             inline: false,
           },
           {
@@ -151,16 +185,26 @@ const execute = async (client: Client, message: Message) => {
           },
           {
             name: "👤 User Status",
-            value: `**Total Pending : **${newUser.gquests.pending.length}\n**Total Rewarded : **${newUser?.gquests.rewarded.length}`,
+            value: `**Total Pending : **${
+              type === "gquest"
+                ? newUser.gquests.pending.length
+                : newUser.mazes.pending.length
+            }\n**Total Rewarded : **${
+              type === "gquest"
+                ? newUser.gquests.rewarded.length
+                : newUser.mazes.rewarded.length
+            }`,
             inline: false,
           },
           {
             name: "\u200b",
-            value: `**🪪 Guild Quest ID : **\`${gquest.messageID}\``,
+            value: `**🪪 ${
+              type.split("")[0].toUpperCase() + type.slice(1)
+            } ID : **\`${gquestMaze.messageID}\``,
             inline: false,
           }
         )
-        .setFooter({ text: `${guild.name} Guild Quests` })
+        .setFooter({ text: `${guild.name} Guild Quests and Mazes` })
         .setImage("attachment://proof_image.png")
         .setTimestamp();
 
@@ -171,23 +215,25 @@ const execute = async (client: Client, message: Message) => {
       });
 
       // update gquest model
-      updatedGquest.rewardMessageID = rewardMessage.id;
-      updatedGquest.proofImageUrl = attachments[0].url;
-      await updatedGquest.save();
+      updatedGquestMaze.rewardMessageID = rewardMessage.id;
+      updatedGquestMaze.proofImageUrl = attachments[0].url;
+      await updatedGquestMaze.save();
 
-      const submissionImage = new AttachmentBuilder(gquest.imageUrl).setName(
-        "submitted_image.png"
-      );
+      const submissionImage = new AttachmentBuilder(
+        gquestMaze.imageUrl
+      ).setName("submitted_image.png");
 
       //   create a new embed
       const submissionEmbed = new EmbedBuilder()
-        .setTitle("💵 Gquest Rewarded")
+        .setTitle(
+          `💵 ${type.split("")[0].toUpperCase() + type.slice(1)} Rewarded`
+        )
         .setColor("Aqua")
         .setThumbnail("attachment://thumbnail.png")
         .addFields(
           {
             name: "\u200b",
-            value: `**📤 Submitted by : **<@${gquest.userID}>`,
+            value: `**📤 Submitted by : **<@${gquestMaze.userID}>`,
             inline: false,
           },
           {
@@ -207,7 +253,9 @@ const execute = async (client: Client, message: Message) => {
         .setTimestamp();
 
       // get the submission message form channel
-      const submissionMessage = await channel.messages.fetch(gquest.messageID);
+      const submissionMessage = await channel.messages.fetch(
+        gquestMaze.messageID
+      );
 
       const messageLink = `https://discord.com/channels/${guild.id}/${channel.id}/${rewardMessage.id}`;
 
@@ -227,16 +275,21 @@ const execute = async (client: Client, message: Message) => {
       // finally delete the photo message
       await message.delete();
 
+      const sendNotif =
+        type === "gquest"
+          ? newUser.gquests.dmNotif
+          : newUser.mazes.dmNotif;
+
       // send at dm
-      if (newUser?.gquests.dmNotif) {
+      if (sendNotif) {
         try {
-          const targetUser = await client.users.fetch(gquest.userID);
+          const targetUser = await client.users.fetch(gquestMaze.userID);
           await targetUser.send({
             embeds: [rewardEmbed],
             files: [proofImage, thumbnail],
           });
         } catch (err) {
-          console.warn("Cannot sen ddm to user");
+          console.warn("Cannot sen DM to user");
         }
       }
     }

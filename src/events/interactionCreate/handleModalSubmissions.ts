@@ -4,25 +4,29 @@ import {
   EmbedBuilder,
   ModalSubmitInteraction,
 } from "discord.js";
-import GQuest from "../../models/guildQuestsSchema";
 import User from "../../models/userSchema";
 import { leaderboardThumbnail } from "../../data/helperArrays";
+import GQuestMaze from "../../models/guildQuestsMazesSchema";
 
 const execute = async (client: Client, interaction: ModalSubmitInteraction) => {
   try {
     if (!interaction.isModalSubmit()) return;
 
     // handle gquest rejection modal
-    if (interaction.customId.startsWith("gquest_rejection_modal")) {
+    if (
+      interaction.customId.startsWith("gquest_rejection_modal") ||
+      interaction.customId.startsWith("maze_rejection_modal")
+    ) {
       await interaction.deferReply({ flags: "Ephemeral" });
       const messageID = interaction.customId.split("_").at(-1);
       const reason = interaction.fields.getTextInputValue("reason");
+      const type = interaction.customId.split("_")[0];
 
       if (!messageID) return;
 
       //   fetch and update related gquest
-      const gquest = await GQuest.findOneAndUpdate(
-        { messageID: messageID },
+      const gquestMaze = await GQuestMaze.findOneAndUpdate(
+        { messageID: messageID, type: type },
         {
           $set: {
             status: "rejected",
@@ -34,19 +38,30 @@ const execute = async (client: Client, interaction: ModalSubmitInteraction) => {
         { new: true }
       );
 
-      if (!gquest) return;
+      if (!gquestMaze) return;
 
-      const { userID, channelID, serverID } = gquest;
+      const { userID, channelID, serverID } = gquestMaze;
+
+      const updateOptions =
+        type === "gquest"
+          ? {
+              $pull: { "gquests.pending": gquestMaze._id },
+              $push: { "gquests.rejected": gquestMaze._id },
+              $set: { "gquests.lastRejectionDate": new Date() },
+            }
+          : {
+              $pull: { "mazes.pending": gquestMaze._id },
+              $push: { "mazes.rejected": gquestMaze._id },
+              $set: { "mazes.lastRejectionDate": new Date() },
+            };
 
       const updatedUser = await User.findOneAndUpdate(
         { userID: userID },
-        {
-          $pull: { "gquests.pending": gquest._id },
-          $push: { "gquests.rejected": gquest._id },
-          $set: { "gquests.lastRejectionDate": new Date() },
-        },
+        updateOptions,
         { new: true }
       );
+
+      if (!updatedUser) return;
 
       const guild = await client.guilds.fetch(serverID);
       const channel = await guild.channels.fetch(channelID);
@@ -56,7 +71,7 @@ const execute = async (client: Client, interaction: ModalSubmitInteraction) => {
 
       const msg = await channel.messages.fetch(messageID);
 
-      const gquestImage = new AttachmentBuilder(gquest.imageUrl).setName(
+      const gquestImage = new AttachmentBuilder(gquestMaze.imageUrl).setName(
         "submitted_image.png"
       );
       const thumbnail = new AttachmentBuilder(leaderboardThumbnail).setName(
@@ -64,7 +79,7 @@ const execute = async (client: Client, interaction: ModalSubmitInteraction) => {
       );
 
       const rejectEmbed = new EmbedBuilder()
-        .setTitle("❌ Gquest Rejected")
+        .setTitle(`❌ ${type} Rejected`)
         .setThumbnail("attachment://thumbnail.png")
         .setColor("Red")
         .addFields(
@@ -86,7 +101,7 @@ const execute = async (client: Client, interaction: ModalSubmitInteraction) => {
           {
             name: "\u200b",
             value: `**🕒 Submitted On : **<t:${Math.floor(
-              gquest.submittedAt / 1000
+              gquestMaze.submittedAt / 1000
             )}:F>`,
             inline: false,
           },
@@ -99,7 +114,11 @@ const execute = async (client: Client, interaction: ModalSubmitInteraction) => {
           }
         )
         .setImage("attachment://submitted_image.png")
-        .setFooter({ text: `${guild.name} Guild Quests` })
+        .setFooter({
+          text: `${guild.name} Guild ${
+            type.split("")[0].toUpperCase() + type.slice(1)
+          }s`,
+        })
         .setTimestamp();
 
       await msg.edit({
@@ -112,14 +131,19 @@ const execute = async (client: Client, interaction: ModalSubmitInteraction) => {
         content: "✅ Rejection processed successfully.",
       });
 
-      if (updatedUser?.gquests.dmNotif) {
+      const sendNotif =
+        type === "gquest"
+          ? updatedUser.gquests.dmNotif
+          : updatedUser.mazes.dmNotif;
+
+      if (sendNotif) {
         try {
           await user.send({
             embeds: [rejectEmbed],
             files: [thumbnail, gquestImage],
           });
         } catch (err) {
-          console.warn("Cannot sen ddm to user");
+          console.warn("Cannot sen DM to user");
         }
       }
     }

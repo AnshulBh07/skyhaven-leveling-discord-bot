@@ -1,15 +1,15 @@
 import { Client } from "discord.js";
-import GQuest from "../../models/guildQuestsSchema";
 import { attachGquestCollector } from "../../utils/gquestUtils";
-import { IGquest } from "../../utils/interfaces";
+import { IGquestMaze } from "../../utils/interfaces";
+import GQuestMaze from "../../models/guildQuestsMazesSchema";
 
 const execute = async (client: Client) => {
   try {
-    const gquests = await GQuest.find({ status: "pending" });
+    const gquests = await GQuestMaze.find({ status: "pending" });
 
     // attach a collector on each one
     for (const gquest of gquests)
-      await attachGquestCollector(client, gquest as IGquest);
+      await attachGquestCollector(client, gquest as IGquestMaze);
   } catch (err) {
     console.error("Error in gquest resume function : ", err);
   }

@@ -1,7 +1,8 @@
 import { ApplicationCommandOptionType } from "discord.js";
-import { IGquest, ISubcommand } from "../../../../utils/interfaces";
-import GQuest from "../../../../models/guildQuestsSchema";
+import { IGquestMaze, ISubcommand } from "../../../../utils/interfaces";
+import GQuest from "../../../../models/guildQuestsMazesSchema";
 import { generateGquestsListEmbed } from "../../../../utils/gquestUtils";
+import GQuestMaze from "../../../../models/guildQuestsMazesSchema";
 
 const init = async (): Promise<ISubcommand | undefined> => {
   try {
@@ -35,14 +36,15 @@ const init = async (): Promise<ISubcommand | undefined> => {
           await interaction.deferReply({ flags: "Ephemeral" });
 
           //   fetch all pending gquests
-          let gquests: IGquest[] = await GQuest.find({
+          let gquests: IGquestMaze[] = await GQuestMaze.find({
             serverID: guild.id,
             status: "pending",
+            type: "gquest",
           });
           let title = "📃 List of all Pending Guild Quests";
 
           if (targetUser) {
-            gquests = (gquests as IGquest[]).filter(
+            gquests = (gquests as IGquestMaze[]).filter(
               (gquest) => gquest.userID === targetUser.id
             );
             title = `📃 List of Pending Guild Quests for ${targetUser.username}`;

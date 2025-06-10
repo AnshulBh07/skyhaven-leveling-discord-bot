@@ -41,7 +41,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
             {
               serverID: guild.id,
             },
-            { $set: { "gquestConfig.gquestChannelID": channel.id } }
+            { $set: { "gquestMazeConfig.gquestChannelID": channel.id } }
           );
 
           if (!updatedConfig) {
