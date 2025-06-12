@@ -5,7 +5,7 @@ import {
   ButtonStyle,
 } from "discord.js";
 import { ISubcommand } from "../../../../utils/interfaces";
-import GQuestMaze from "../../../../models/guildQuestsMazesSchema";
+import Maze from "../../../../models/mazeSchema";
 
 // gives the link to gquest submission message if u have the gquest id
 const init = async (): Promise<ISubcommand | undefined> => {
@@ -42,7 +42,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
           await interaction.deferReply({ flags: "Ephemeral" });
 
           //   find the gquest
-          const maze = await GQuestMaze.findOne({
+          const maze = await Maze.findOne({
             messageID: message_id,
             type: "maze",
           });

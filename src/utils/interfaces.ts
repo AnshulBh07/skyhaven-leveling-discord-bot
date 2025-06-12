@@ -84,13 +84,36 @@ interface IUserGiveaways {
 
 type GquestStatus = "pending" | "rewarded" | "rejected";
 
-export interface IGquestMaze {
-  type: "gquest" | "maze";
+export interface IGquest {
   serverID: string;
   userID: string;
   messageID: string; //serves as gquest id
   channelID: string;
   imageUrl: string;
+  imageHash: string;
+  status: GquestStatus;
+  submittedAt?: number;
+  rewardedAt?: number;
+  rejectedAt?: number;
+  reviewedBy: string; //admin disocrd id
+  rejectionReason?: string; //if rejected
+  rewardMessageID?: string;
+  proofImageUrl?: string;
+  lastRewardBtnClickAt?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface IMaze {
+  serverID: string;
+  userID: string;
+  messageID: string; //serves as gquest id
+  channelID: string;
+  submissionThreadID: string;
+  embedMessageID: string;
+  imageUrls: string[];
+  startFloor: number;
+  endFloor: number;
   imageHash: string;
   status: GquestStatus;
   submittedAt?: number;

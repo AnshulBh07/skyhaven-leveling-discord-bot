@@ -75,7 +75,7 @@ const GquestMazeConfig = new Schema(
     gquestChannelID: { type: String, default: "" },
     gquestRole: { type: String, default: "" },
     mazeRole: { type: String, default: "" },
-    managerRoles: { type: [String], default: "" },
+    managerRoles: { type: [String], default: [] },
     gquestRewardAmount: { type: Number, default: 0 },
     mazeRewardAmount: { type: Number, default: 0 },
   },

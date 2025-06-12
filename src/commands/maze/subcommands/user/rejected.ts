@@ -1,8 +1,8 @@
 import { ApplicationCommandOptionType } from "discord.js";
-import { IGquestMaze, ISubcommand } from "../../../../utils/interfaces";
-import GQuest from "../../../../models/guildQuestsMazesSchema";
+import { IMaze, ISubcommand } from "../../../../utils/interfaces";
+import Maze from "../../../../models/mazeSchema";
 import { generateGquestsListEmbed } from "../../../../utils/gquestUtils";
-import GQuestMaze from "../../../../models/guildQuestsMazesSchema";
+import GQuestMaze from "../../../../models/guildQuestsSchema";
 
 const init = async (): Promise<ISubcommand | undefined> => {
   try {
@@ -36,27 +36,21 @@ const init = async (): Promise<ISubcommand | undefined> => {
           await interaction.deferReply({ flags: "Ephemeral" });
 
           //   fetch all rejected gquests
-          let mazes: IGquestMaze[] = await GQuestMaze.find({
+          let mazes: IMaze[] = await Maze.find({
             serverID: guild.id,
             status: "rejected",
-            type: "maze",
           });
           let title = "📃 List of all Rejected Guild Mazes";
 
           if (targetUser) {
-            mazes = (mazes as IGquestMaze[]).filter(
+            mazes = (mazes as IMaze[]).filter(
               (maze) => maze.userID === targetUser.id
             );
             title = `📃 List of Rejected Guild Mazes for ${targetUser.username}`;
           }
 
           //   create embed with buttons
-          await generateGquestsListEmbed(
-            interaction,
-            mazes,
-            title,
-            "rejected"
-          );
+          await generateGquestsListEmbed(interaction, mazes, title, "rejected");
         } catch (err) {
           console.error("Error in maze rejected subcommand callback : ", err);
         }

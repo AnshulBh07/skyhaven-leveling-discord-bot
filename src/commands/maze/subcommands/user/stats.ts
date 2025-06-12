@@ -45,7 +45,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
             "thumbnail.png"
           );
 
-          const gquestStatusEmbed = new EmbedBuilder()
+          const mazeStatusEmbed = new EmbedBuilder()
             .setTitle(`📊 Guild Maze Status`)
             .setColor("Blurple")
             .setThumbnail("attachment://thumbnail.png")
@@ -102,7 +102,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
             .setTimestamp();
 
           await interaction.editReply({
-            embeds: [gquestStatusEmbed],
+            embeds: [mazeStatusEmbed],
             files: [thumbnail],
           });
         } catch (err) {

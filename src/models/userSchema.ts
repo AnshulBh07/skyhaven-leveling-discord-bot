@@ -29,9 +29,9 @@ const Giveaways = new Schema(
 const GQuests = new Schema(
   {
     dmNotif: { type: Boolean, required: true, default: true },
-    pending: [{ type: mongoose.Schema.Types.ObjectId, ref: "GQuestMaze" }],
-    rewarded: [{ type: mongoose.Schema.Types.ObjectId, ref: "GQuestMaze" }],
-    rejected: [{ type: mongoose.Schema.Types.ObjectId, ref: "GQuestMaze" }],
+    pending: [{ type: mongoose.Schema.Types.ObjectId, ref: "GQuest" }],
+    rewarded: [{ type: mongoose.Schema.Types.ObjectId, ref: "GQuest" }],
+    rejected: [{ type: mongoose.Schema.Types.ObjectId, ref: "GQuest" }],
     lastSubmissionDate: { type: Date, default: null },
     lastRewardDate: { type: Date, default: null },
     lastRejectionDate: { type: Date, default: null },
@@ -43,9 +43,9 @@ const GQuests = new Schema(
 const Mazes = new Schema(
   {
     dmNotif: { type: Boolean, required: true, default: true },
-    pending: [{ type: mongoose.Schema.Types.ObjectId, ref: "GQuestMaze" }],
-    rewarded: [{ type: mongoose.Schema.Types.ObjectId, ref: "GQuestMaze" }],
-    rejected: [{ type: mongoose.Schema.Types.ObjectId, ref: "GQuestMaze" }],
+    pending: [{ type: mongoose.Schema.Types.ObjectId, ref: "Maze" }],
+    rewarded: [{ type: mongoose.Schema.Types.ObjectId, ref: "Maze" }],
+    rejected: [{ type: mongoose.Schema.Types.ObjectId, ref: "Maze" }],
     lastSubmissionDate: { type: Date, default: null },
     lastRewardDate: { type: Date, default: null },
     lastRejectionDate: { type: Date, default: null },

@@ -6,11 +6,11 @@ import {
   ButtonStyle,
   EmbedBuilder,
 } from "discord.js";
-import { IGquestMaze, ISubcommand } from "../../../../utils/interfaces";
+import { IGquest, ISubcommand } from "../../../../utils/interfaces";
 import { leaderboardThumbnail } from "../../../../data/helperArrays";
 import User from "../../../../models/userSchema";
-import GQuest from "../../../../models/guildQuestsMazesSchema";
-import { attachGquestCollector } from "../../../../utils/gquestUtils";
+import GQuest from "../../../../models/guildQuestsSchema";
+import { attachQuestMazeReviewCollector } from "../../../../utils/gquestUtils";
 
 const init = async (): Promise<ISubcommand | undefined> => {
   try {
@@ -124,8 +124,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const reply = await interaction.fetchReply();
 
           // insert a new gquest submission in db
-          const gquestOptions: IGquestMaze = {
-            type:"gquest",
+          const gquestOptions: IGquest = {
             serverID: guild.id,
             userID: targetUser ? targetUser.id : interaction.user.id,
             messageID: reply.id,
@@ -170,7 +169,11 @@ const init = async (): Promise<ISubcommand | undefined> => {
           });
 
           // attach collectors to this gquest message
-          await attachGquestCollector(client, newGquest as IGquestMaze,"gquest");
+          await attachQuestMazeReviewCollector(
+            client,
+            newGquest as IGquest,
+            "gquest"
+          );
         } catch (err) {
           console.error("Error in gquest submit subcommand callback : ", err);
         }

@@ -5,40 +5,40 @@ import {
   ButtonStyle,
   ChatInputCommandInteraction,
   Client,
+  DiscordAPIError,
   EmbedBuilder,
   Guild,
   ModalBuilder,
   StringSelectMenuBuilder,
   StringSelectMenuOptionBuilder,
+  TextChannel,
   TextInputBuilder,
   TextInputStyle,
 } from "discord.js";
-import { IGquestMaze, IUser, questMazeLeaderboardUser } from "./interfaces";
+import { IGquest, IMaze, IUser, questMazeLeaderboardUser } from "./interfaces";
 import Config from "../models/configSchema";
 import { leaderboardThumbnail } from "../data/helperArrays";
 import { generateGquestMazeLeaderboardImage } from "../canvas/generateGquestMazeLeaderboardImage";
-import GQuestMaze from "../models/guildQuestsMazesSchema";
+import GQuest from "../models/guildQuestsSchema";
+import Maze from "../models/mazeSchema";
+import User from "../models/userSchema";
 
 const thumbnail = new AttachmentBuilder(leaderboardThumbnail).setName(
   "thumbnail.png"
 );
 
-export const attachGquestCollector = async (
+export const attachQuestMazeReviewCollector = async (
   client: Client,
-  gquestMazeData: IGquestMaze,
-  type:string,
+  gquestMazeData: IGquest | IMaze,
+  type = "gquest"
 ) => {
   try {
     const guild = await client.guilds.fetch(gquestMazeData.serverID);
     const channel = await guild.channels.fetch(gquestMazeData.channelID);
-    const guildConfig = await Config.findOne({ serverID: guild.id });
 
-    if (!channel || channel.type !== 0 || !guildConfig) return;
+    if (!channel || channel.type !== 0) return;
 
     const message = await channel.messages.fetch(gquestMazeData.messageID);
-
-    const { gquestMazeConfig } = guildConfig;
-    const { managerRoles } = gquestMazeConfig;
 
     // attach collector
     const collector = message.createMessageComponentCollector({
@@ -48,6 +48,15 @@ export const attachGquestCollector = async (
 
     collector.on("collect", async (btnInt) => {
       try {
+        const guildConfig = await Config.findOne({ serverID: guild.id });
+        if (!guildConfig) return;
+
+        const { gquestMazeConfig } = guildConfig;
+
+        if (!gquestMazeConfig) return;
+
+        const { managerRoles } = gquestMazeConfig;
+
         // check if the interaction is for valid user or not
         // interactor must have one of the roles from managerRoles
         const member = guild.members.cache.find(
@@ -69,8 +78,9 @@ export const attachGquestCollector = async (
         }
 
         if (!hasRole) {
-          await btnInt.editReply({
+          await btnInt.reply({
             content: "You do not have the permission to perform this action.",
+            flags: "Ephemeral",
           });
           return;
         }
@@ -81,13 +91,263 @@ export const attachGquestCollector = async (
         if (btnInt.customId === "reward") {
           await btnInt.deferReply({ flags: "Ephemeral" });
 
-          await GQuestMaze.findOneAndUpdate(
-            { messageID: gquestMazeData.messageID },
-            { $set: { lastRewardBtnClickAt: Date.now() } }
-          );
+          if (type === "gquest")
+            await GQuest.findOneAndUpdate(
+              { messageID: gquestMazeData.messageID },
+              { $set: { lastRewardBtnClickAt: Date.now() } }
+            );
 
-          await btnInt.editReply({
+          if (type === "maze")
+            await Maze.findOneAndUpdate(
+              {
+                messageID: gquestMazeData.messageID,
+              },
+              { $set: { lastRewardBtnClickAt: Date.now() } }
+            );
+
+          // create a thread that will be used by admin to submit proof within 2 minutes
+          const proofSubThread = await channel.threads.create({
+            name: `${member.user.username} Reward Proof Submission by Admin`,
+            autoArchiveDuration: 60,
+          });
+
+          await proofSubThread.send({
             content: `Please send the ingame screenshot of reward trade with user <@${gquestMazeData.userID}>. Please submit it within the next 2 minutes`,
+          });
+
+          // add a message collector to thread
+          const collector = proofSubThread.createMessageCollector({
+            filter: (msg) => !msg.author.bot,
+            time: 60_000 * 2,
+          });
+
+          collector.on("collect", async (msg) => {
+            try {
+              if (msg.author.id !== btnInt.user.id) {
+                await proofSubThread.send({
+                  content:
+                    "❌ you do not have permission to perform this action.",
+                });
+                return;
+              }
+
+              if (msg.content.length > 0) {
+                await proofSubThread.send(
+                  "Please send image for submission only."
+                );
+                return;
+              }
+
+              // get attachment
+              const attachments = Array.from(msg.attachments.entries()).map(
+                ([_, attachment]) => attachment
+              );
+
+              // check for invalid submissions
+              if (
+                attachments.length > 1 ||
+                attachments.some(
+                  (attachment) =>
+                    attachment.contentType &&
+                    !attachment.contentType.startsWith("image/")
+                )
+              ) {
+                await proofSubThread.send("❌ Invalid submission.");
+                return;
+              }
+
+              await proofSubThread.send({
+                content: "Please wait while we process your submission.",
+              });
+
+              const proofImage = new AttachmentBuilder(
+                attachments[0].url
+              ).setName("proof_image.png");
+
+              const updateOpt = {
+                $set: {
+                  status: "rewarded",
+                  rewardedAt: Date.now(),
+                  reviewedBy: btnInt.user.id,
+                },
+              };
+
+              let updatedDoc;
+              // update the maze or gquest
+              if (type === "gquest")
+                updatedDoc = await GQuest.findOneAndUpdate(
+                  { messageID: message.id },
+                  updateOpt
+                );
+              else
+                updatedDoc = await Maze.findOneAndUpdate(
+                  { messageID: message.id },
+                  updateOpt
+                );
+
+              if (!updatedDoc) return;
+
+              // update user
+              const userUpdateOpt =
+                type === "gquest"
+                  ? {
+                      $pull: { "gquests.pending": updatedDoc._id },
+                      $push: { "gquests.rewarded": updatedDoc._id },
+                      $set: { "gquests.lastRewardedAt": new Date() },
+                      $inc: {
+                        "gquests.totalRewarded":
+                          gquestMazeConfig.gquestRewardAmount,
+                      },
+                    }
+                  : {
+                      $pull: { "mazes.pending": updatedDoc._id },
+                      $push: { "mazes.rewarded": updatedDoc._id },
+                      $set: { "mazes.lastRewardedAt": new Date() },
+                      $inc: {
+                        "mazes.totalRewarded":
+                          (gquestMazeConfig.mazeRewardAmount *
+                            ((updatedDoc as IMaze).endFloor -
+                              (updatedDoc as IMaze).startFloor)) /
+                          100,
+                      },
+                    };
+
+              const updatedUser = await User.findOneAndUpdate(
+                { userID: gquestMazeData.userID },
+                userUpdateOpt,
+                { new: true }
+              );
+
+              if (!updatedUser) return;
+
+              // send a reward message to the associated channel
+              const rewardEmbed = new EmbedBuilder()
+                .setTitle(
+                  `💵 ${
+                    type.split("")[0].toUpperCase() + type.slice(1)
+                  } Rewarded`
+                )
+                .setColor("Aqua")
+                .setThumbnail("attachment://thumbnail.png")
+                .addFields(
+                  {
+                    name: "\u200b",
+                    value: `**📤 Submitted by : **<@${updatedDoc.userID}>`,
+                    inline: false,
+                  },
+                  {
+                    name: "\u200b",
+                    value: `**📝 Reviewed by : **<@${btnInt.user.id}>`,
+                    inline: false,
+                  },
+                  {
+                    name: "\u200b",
+                    value: `**🕒 Rewarded On : **<t:${Math.floor(
+                      Date.now() / 1000
+                    )}:F>`,
+                  },
+                  {
+                    name: "👤 User Status",
+                    value: `**Total Pending : **${
+                      type === "gquest"
+                        ? updatedUser.gquests.pending.length
+                        : updatedUser.mazes.pending.length
+                    }\n**Total Rewarded : **${
+                      type === "gquest"
+                        ? updatedUser.gquests.rewarded.length
+                        : updatedUser.mazes.rewarded.length
+                    }`,
+                    inline: false,
+                  },
+                  {
+                    name: "\u200b",
+                    value: `**🪪 ${
+                      type.split("")[0].toUpperCase() + type.slice(1)
+                    } ID : **\`${updatedDoc.messageID}\``,
+                    inline: false,
+                  }
+                )
+                .setFooter({ text: `${guild.name} Guild Quests and Mazes` })
+                .setImage("attachment://proof_image.png")
+                .setTimestamp();
+
+              // send a message on channel
+              const rewardMessage = await (channel as TextChannel).send({
+                embeds: [rewardEmbed],
+                files: [proofImage, thumbnail],
+              });
+
+              // update gquest / maze model
+              updatedDoc.rewardMessageID = rewardMessage.id;
+              updatedDoc.proofImageUrl = attachments[0].url;
+              await updatedDoc.save();
+
+              // edit the previous submission message, remove buttons add a link to new reward message
+              const messageLink = `https://discord.com/channels/${guild.id}/${channel.id}/${rewardMessage.id}`;
+
+              const LinkButton =
+                new ActionRowBuilder<ButtonBuilder>().addComponents(
+                  new ButtonBuilder()
+                    .setLabel("Jump to reward message")
+                    .setURL(messageLink)
+                    .setStyle(ButtonStyle.Link)
+                );
+
+              await message.edit({
+                components: [LinkButton],
+              });
+
+              // send notif to user and delete thread at last
+              const sendNotif =
+                type === "gquest"
+                  ? updatedUser.gquests.dmNotif
+                  : updatedUser.mazes.dmNotif;
+
+              // send at dm
+              if (sendNotif) {
+                try {
+                  const targetUser = await client.users.fetch(
+                    updatedDoc.userID
+                  );
+
+                  await targetUser.send({
+                    embeds: [rewardEmbed],
+                    files: [proofImage, thumbnail],
+                  });
+                } catch (err) {
+                  console.warn("Cannot send DM to user");
+                }
+              }
+
+              await proofSubThread.delete();
+            } catch (err) {
+              console.error("Error in reward collector inside thread : ", err);
+            }
+          });
+
+          collector.on("end", async (collected, reason) => {
+            try {
+              if (reason === "time" && collected.size === 0) {
+                await btnInt.editReply(
+                  "Interaction time out. Please try submitting again."
+                );
+              }
+            } catch (err) {
+              console.error(
+                "Error in proof image collector thread end event : ",
+                err
+              );
+            } finally {
+              try {
+                await proofSubThread.delete();
+              } catch (err) {
+                if (err instanceof DiscordAPIError && err.code === 10003) {
+                  console.log("Thread was already deleted.");
+                } else {
+                  console.error("Error deleting thread in finally block:", err);
+                }
+              }
+            }
           });
         }
 
@@ -95,7 +355,7 @@ export const attachGquestCollector = async (
           // display a modal to user
           const modal = new ModalBuilder()
             .setCustomId(`${type}_rejection_modal_${gquestMazeData.messageID}`)
-            .setTitle("Guild Quest Rejection");
+            .setTitle(`Guild ${type == "gquest" ? "Quest" : "Maze"} Rejection`);
 
           const reasonInput =
             new ActionRowBuilder<TextInputBuilder>().addComponents(
@@ -130,7 +390,7 @@ const selectMenuOptions = [
 
 export const generateGquestsListEmbed = async (
   interaction: ChatInputCommandInteraction,
-  gquestMazeArr: IGquestMaze[],
+  gquestMazeArr: IGquest[] | IMaze[],
   title: string,
   type: string
 ) => {

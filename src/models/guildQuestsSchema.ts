@@ -7,14 +7,9 @@ enum StatusType {
   REJECTED = "rejected",
 }
 
-enum taskType {
-  MAZE = "maze",
-  GQUEST = "gquest",
-}
 
-const GQuestMazeSchema = new Schema(
+const GQuestSchema = new Schema(
   {
-    type: { type: String, enum: Object.values(taskType), required: true },
     serverID: { type: String, required: true, default: "" },
     userID: { type: String, required: true, default: "" },
     messageID: { type: String, required: true, default: "" }, //serves as gquest id
@@ -34,6 +29,6 @@ const GQuestMazeSchema = new Schema(
   { timestamps: true }
 );
 
-const GQuestMaze = mongoose.model("GQuestMaze", GQuestMazeSchema);
+const GQuest = mongoose.model("GQuest", GQuestSchema);
 
-export default GQuestMaze;
+export default GQuest;

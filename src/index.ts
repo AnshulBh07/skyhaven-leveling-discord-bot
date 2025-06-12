@@ -10,7 +10,8 @@ myIntents.add(
   IntentsBitField.Flags.GuildMessages,
   IntentsBitField.Flags.MessageContent,
   IntentsBitField.Flags.GuildPresences,
-  IntentsBitField.Flags.GuildVoiceStates
+  IntentsBitField.Flags.GuildVoiceStates,
+  IntentsBitField.Flags.GuildMessageReactions
 );
 
 // create a bot instance

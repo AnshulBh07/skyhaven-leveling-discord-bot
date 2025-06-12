@@ -80,6 +80,7 @@ const init = async (): Promise<ICommandObj | undefined> => {
               leveling: user.leveling,
               giveaways: user.giveaways,
               gquests: user.gquests,
+              mazes: user.mazes,
             };
           });
 

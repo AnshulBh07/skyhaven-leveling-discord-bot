@@ -1,16 +1,12 @@
 import {
-  ActionRowBuilder,
   ApplicationCommandOptionType,
-  AttachmentBuilder,
-  ButtonBuilder,
-  ButtonStyle,
+  ChannelType,
   EmbedBuilder,
 } from "discord.js";
-import { IGquestMaze, ISubcommand } from "../../../../utils/interfaces";
-import { leaderboardThumbnail } from "../../../../data/helperArrays";
+import { IMaze, ISubcommand } from "../../../../utils/interfaces";
 import User from "../../../../models/userSchema";
-import GQuest from "../../../../models/guildQuestsMazesSchema";
-import { attachGquestCollector } from "../../../../utils/gquestUtils";
+import Maze from "../../../../models/mazeSchema";
+import { attachMazeThreadCollector } from "../../../../utils/mazeUtils";
 
 const init = async (): Promise<ISubcommand | undefined> => {
   try {
@@ -22,10 +18,19 @@ const init = async (): Promise<ISubcommand | undefined> => {
         type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
-            name: "image",
-            description:
-              "Ingame screenshot. Without this your submission will be rejected.",
-            type: ApplicationCommandOptionType.Attachment,
+            name: "start_floor",
+            description: "floor from",
+            type: ApplicationCommandOptionType.Number,
+            min_value: 1,
+            max_value: 900,
+            required: true,
+          },
+          {
+            name: "end_floor",
+            description: "floor to",
+            type: ApplicationCommandOptionType.Number,
+            min_value: 100,
+            max_value: 1000,
             required: true,
           },
           {
@@ -36,23 +41,44 @@ const init = async (): Promise<ISubcommand | undefined> => {
         ],
       },
 
+      // there will be a followup message the will account for submissions, user will send images
       callback: async (client, interaction) => {
         try {
-          const targetUser = interaction.options.getUser("user");
-          const gquestImage = interaction.options.getAttachment("image");
+          const targetUser =
+            interaction.options.getUser("user") ?? interaction.user;
+          const start_floor = interaction.options.getNumber("start_floor");
+          const end_floor = interaction.options.getNumber("end_floor");
           const channel = interaction.channel;
           const guild = interaction.guild;
 
-          if (!gquestImage || !channel || !channel.isTextBased() || !guild) {
-            await interaction.reply({ content: "Invalid command/submission." });
+          if (
+            !start_floor ||
+            !end_floor ||
+            !targetUser ||
+            !channel ||
+            !guild ||
+            start_floor >= end_floor
+          ) {
+            await interaction.reply({
+              content: "Invalid command/submission.",
+              flags: "Ephemeral",
+            });
             return;
           }
 
-          await interaction.deferReply();
+          if (channel.type !== ChannelType.GuildText) {
+            await interaction.reply({
+              content: "Channel is not text-based.",
+              ephemeral: true,
+            });
+            return;
+          }
+
+          await interaction.deferReply({ flags: "Ephemeral" });
 
           // find user
           const user = await User.findOne({
-            userID: targetUser ? targetUser.id : interaction.user.id,
+            userID: targetUser.id,
           });
 
           if (!user) {
@@ -60,124 +86,54 @@ const init = async (): Promise<ISubcommand | undefined> => {
             return;
           }
 
-          const { mazes } = user;
-
-          const thumbnail = new AttachmentBuilder(leaderboardThumbnail).setName(
-            "thumbnail.png"
-          );
-
-          const submissionImage = new AttachmentBuilder(
-            gquestImage.url
-          ).setName("submitted_image.png");
-
-          const submissionEmbed = new EmbedBuilder()
-            .setTitle("🧾 Guild Maze Submission")
-            .setDescription(
-              `Thank you for your submission! 🔍\n` +
-                `Our team will review it shortly. If everything checks out, you’ll be rewarded soon. 🎉`
-            )
-            .setColor("Aqua")
-            .setThumbnail("attachment://thumbnail.png")
-            .addFields(
-              {
-                name: "\u200b",
-                value: `**📤 Submitted by : **<@${interaction.user.id}>`,
-                inline: false,
-              },
-              ...(targetUser
-                ? [
-                    {
-                      name: "\u200b",
-                      value: `**🎯 For : **<@${targetUser.id}>`,
-                      inline: false,
-                    },
-                  ]
-                : []),
-              {
-                name: "\u200b",
-                value: `**🕒 Submitted On : **<t:${Math.floor(
-                  Date.now() / 1000
-                )}:F>`,
-              },
-              {
-                name: "\u200b",
-                value: `**📌 Status : **${"Pending"}`,
-                inline: false,
-              },
-              {
-                name: "👤 User Status",
-                value: `**Total Pending : **${
-                  mazes.pending.length + 1
-                }\n**Total Rewarded : **${mazes.rewarded.length}`,
-                inline: false,
-              }
-            )
-            .setFooter({ text: `${guild.name} Guild Quests` })
-            .setImage("attachment://submitted_image.png")
-            .setTimestamp();
-
-          // send interaction reply
           await interaction.editReply({
-            embeds: [submissionEmbed],
-            files: [submissionImage, thumbnail],
+            content:
+              "Maze submission process has started. You will need to provide image proof for every 100th floor you've cleard.",
           });
+
           const reply = await interaction.fetchReply();
 
-          // insert a new gquest submission in db
-          const mazeOptions: IGquestMaze = {
-            type: "maze",
+          // the rest of the submission will be handled in an isaloted environment only
+          // meant for user, yes we will do it in a thread and attach a collector to it
+          const submissionThread = await channel.threads.create({
+            name: `${targetUser.username} - Maze Images submissions`,
+            autoArchiveDuration: 60,
+          });
+
+          // create a new empty maze, we will keep updating it
+          const mazeOptions: IMaze = {
+            userID: targetUser.id,
             serverID: guild.id,
-            userID: targetUser ? targetUser.id : interaction.user.id,
             messageID: reply.id,
+            embedMessageID: reply.id,
             channelID: channel.id,
-            imageUrl: gquestImage.url,
+            submissionThreadID: submissionThread.id,
+            imageUrls: [],
+            startFloor: start_floor,
+            endFloor: end_floor,
             imageHash: "dummy hash",
             status: "pending",
-            reviewedBy: "none",
             submittedAt: Date.now(),
+            reviewedBy: "dummy admin",
           };
 
-          const newMaze = new GQuest(mazeOptions);
+          const newMaze = new Maze(mazeOptions);
           await newMaze.save();
 
-          // update user
-          user.gquests.lastSubmissionDate = new Date();
-          user.gquests.pending.push(newMaze._id);
-          await user.save();
+          const subNeeded = (end_floor - start_floor) / 100;
 
-          // create buttons and edit reply again, we didn't create them before to avoid interaction failure
-          const buttonsRow =
-            new ActionRowBuilder<ButtonBuilder>().addComponents(
-              new ButtonBuilder()
-                .setCustomId("reward")
-                .setEmoji("💵")
-                .setStyle(ButtonStyle.Secondary),
-              new ButtonBuilder()
-                .setCustomId("reject")
-                .setEmoji("❌")
-                .setStyle(ButtonStyle.Secondary)
-            );
-
-          // edit embed
-          submissionEmbed.addFields({
-            name: "\u200b",
-            value: `**🪪 Submission ID : **\`${reply.id}\``,
+          await submissionThread.send({
+            content: `Please make sure that you provide ${subNeeded} images for proof. 1 image per 100th floor you cover.`,
           });
 
-          await interaction.editReply({
-            embeds: [submissionEmbed],
-            components: [buttonsRow],
-          });
-
-          // attach collectors to this gquest message
-          await attachGquestCollector(client, newMaze as IGquestMaze, "maze");
+          await attachMazeThreadCollector(client, submissionThread.id);
         } catch (err) {
-          console.error("Error in gquest submit subcommand callback : ", err);
+          console.error("Error in maze submit subcommand callback : ", err);
         }
       },
     };
   } catch (err) {
-    console.error("Error in gquest submit subcommand :", err);
+    console.error("Error in maze submit subcommand :", err);
     return undefined;
   }
 };

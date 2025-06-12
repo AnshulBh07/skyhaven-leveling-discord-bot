@@ -1,8 +1,8 @@
 import { ApplicationCommandOptionType } from "discord.js";
-import { IGquestMaze, ISubcommand } from "../../../../utils/interfaces";
-import GQuest from "../../../../models/guildQuestsMazesSchema";
+import { IMaze, ISubcommand } from "../../../../utils/interfaces";
 import { generateGquestsListEmbed } from "../../../../utils/gquestUtils";
-import GQuestMaze from "../../../../models/guildQuestsMazesSchema";
+import Maze from "../../../../models/mazeSchema";
+
 
 const init = async (): Promise<ISubcommand | undefined> => {
   try {
@@ -36,27 +36,21 @@ const init = async (): Promise<ISubcommand | undefined> => {
           await interaction.deferReply({ flags: "Ephemeral" });
 
           //   fetch all pending gquests
-          let mazes: IGquestMaze[] = await GQuestMaze.find({
+          let mazes: IMaze[] = await Maze.find({
             serverID: guild.id,
             status: "pending",
-            type: "maze",
           });
           let title = "📃 List of all Pending Guild Mazes";
 
           if (targetUser) {
-            mazes = (mazes as IGquestMaze[]).filter(
+            mazes = (mazes as IMaze[]).filter(
               (maze) => maze.userID === targetUser.id
             );
             title = `📃 List of Pending Guild Mazes for ${targetUser.username}`;
           }
 
           //   create embed with buttons
-          await generateGquestsListEmbed(
-            interaction,
-            mazes,
-            title,
-            "pending"
-          );
+          await generateGquestsListEmbed(interaction, mazes, title, "pending");
         } catch (err) {
           console.error("Error in maze pending subcommand callback : ", err);
         }

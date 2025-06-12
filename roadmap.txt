@@ -195,3 +195,9 @@ All of the following are subcommands under: /xpconfig
 
 Notes: Fixes needed
  - leaderboard embed and interaction 
+
+ 
+----------------------------------------------------------------------------------------------
+                                       Guild Raids System
+----------------------------------------------------------------------------------------------
+

@@ -6,11 +6,30 @@ import {
 } from "discord.js";
 import User from "../../models/userSchema";
 import { leaderboardThumbnail } from "../../data/helperArrays";
-import GQuestMaze from "../../models/guildQuestsMazesSchema";
+import Config from "../../models/configSchema";
+import GQuest from "../../models/guildQuestsSchema";
+import Maze from "../../models/mazeSchema";
+import { IGquest, IMaze } from "../../utils/interfaces";
 
 const execute = async (client: Client, interaction: ModalSubmitInteraction) => {
   try {
     if (!interaction.isModalSubmit()) return;
+
+    const channel = interaction.channel;
+    const guild = interaction.guild;
+
+    if (!channel || !channel.isTextBased() || !guild) return;
+
+    const guildConfig = await Config.findOne({ serverID: guild.id });
+
+    if (!guildConfig) return;
+
+    const { gquestMazeConfig } = guildConfig;
+    const { gquestChannelID, mazeChannelID } = gquestMazeConfig;
+
+    // return if not from gquest or maze channel
+    if (!(channel.id === gquestChannelID || channel.id === mazeChannelID))
+      return;
 
     // handle gquest rejection modal
     if (
@@ -24,19 +43,33 @@ const execute = async (client: Client, interaction: ModalSubmitInteraction) => {
 
       if (!messageID) return;
 
-      //   fetch and update related gquest
-      const gquestMaze = await GQuestMaze.findOneAndUpdate(
-        { messageID: messageID, type: type },
-        {
-          $set: {
-            status: "rejected",
-            rejectedAt: Date.now(),
-            rejectionReason: reason,
-            reviewedBy: interaction.user.id,
-          },
-        },
-        { new: true }
-      );
+      //   fetch and update related gquest or maze
+      const gquestMaze =
+        type === "gquest"
+          ? await GQuest.findOneAndUpdate(
+              { messageID: messageID },
+              {
+                $set: {
+                  status: "rejected",
+                  rejectedAt: Date.now(),
+                  rejectionReason: reason,
+                  reviewedBy: interaction.user.id,
+                },
+              },
+              { new: true }
+            )
+          : await Maze.findOneAndUpdate(
+              { messageID: messageID },
+              {
+                $set: {
+                  status: "rejected",
+                  rejectedAt: Date.now(),
+                  rejectionReason: reason,
+                  reviewedBy: interaction.user.id,
+                },
+              },
+              { new: true }
+            );
 
       if (!gquestMaze) return;
 
@@ -71,9 +104,13 @@ const execute = async (client: Client, interaction: ModalSubmitInteraction) => {
 
       const msg = await channel.messages.fetch(messageID);
 
-      const gquestImage = new AttachmentBuilder(gquestMaze.imageUrl).setName(
-        "submitted_image.png"
-      );
+      let gquestImage;
+
+      if (type === "gquest")
+        gquestImage = new AttachmentBuilder(
+          (gquestMaze as IGquest).imageUrl
+        ).setName("submitted_image.png");
+
       const thumbnail = new AttachmentBuilder(leaderboardThumbnail).setName(
         "thumbnail.png"
       );
@@ -90,7 +127,7 @@ const execute = async (client: Client, interaction: ModalSubmitInteraction) => {
           },
           {
             name: "\u200b",
-            value: `**👤 Reviewed by : **<@${userID}>`,
+            value: `**👤 Reviewed by : **<@${interaction.user.id}>`,
             inline: false,
           },
           {
@@ -113,7 +150,6 @@ const execute = async (client: Client, interaction: ModalSubmitInteraction) => {
             inline: false,
           }
         )
-        .setImage("attachment://submitted_image.png")
         .setFooter({
           text: `${guild.name} Guild ${
             type.split("")[0].toUpperCase() + type.slice(1)
@@ -121,11 +157,31 @@ const execute = async (client: Client, interaction: ModalSubmitInteraction) => {
         })
         .setTimestamp();
 
-      await msg.edit({
-        embeds: [rejectEmbed],
-        components: [],
-        files: [thumbnail, gquestImage],
-      });
+      if (type === "gquest")
+        rejectEmbed.setImage("attachment://submitted_image.png");
+
+      // maze message
+      const imageUrls = (gquestMaze as IMaze).imageUrls;
+
+      if (type === "gquest" && gquestImage) {
+        await msg.edit({
+          embeds: [rejectEmbed],
+          components: [],
+          files: [thumbnail, gquestImage],
+        });
+      } else {
+        // find the embed message
+        const embedMsg = await channel.messages.fetch(
+          (gquestMaze as IMaze).embedMessageID
+        );
+
+        await embedMsg.edit({ embeds: [rejectEmbed], files: [thumbnail] });
+        await msg.edit({
+          embeds: [],
+          files: [thumbnail, ...imageUrls],
+          components: [],
+        });
+      }
 
       await interaction.editReply({
         content: "✅ Rejection processed successfully.",
@@ -140,10 +196,13 @@ const execute = async (client: Client, interaction: ModalSubmitInteraction) => {
         try {
           await user.send({
             embeds: [rejectEmbed],
-            files: [thumbnail, gquestImage],
+            files:
+              type === "gquest"
+                ? [thumbnail, gquestImage!]
+                : [thumbnail, ...imageUrls],
           });
         } catch (err) {
-          console.warn("Cannot sen DM to user");
+          console.warn("Cannot send DM to user");
         }
       }
     }

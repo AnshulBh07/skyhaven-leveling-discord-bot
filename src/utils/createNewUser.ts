@@ -84,6 +84,16 @@ export const createNewUser = async (
         lastSubmissionDate: null,
         totalRewarded: 0,
       },
+      mazes: {
+        dmNotif: true,
+        pending: [],
+        rejected: [],
+        rewarded: [],
+        lastRejectionDate: null,
+        lastRewardDate: null,
+        lastSubmissionDate: null,
+        totalRewarded: 0,
+      },
     };
 
     if (userInGuildConfig) {
