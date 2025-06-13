@@ -124,6 +124,15 @@ const execute = async (client: Client) => {
         gquestRewardAmount: 0,
         mazeRewardAmount: 0,
       },
+      raidConfig: {
+        raidChannelID: "",
+        raidRole: "",
+        managerRoles: [],
+        tankEmojiID: "",
+        dpsEmojiID: "",
+        supportEmojiID: "",
+        banList: [],
+      },
       users: [],
     };
 

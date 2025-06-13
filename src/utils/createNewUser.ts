@@ -94,6 +94,12 @@ export const createNewUser = async (
         lastSubmissionDate: null,
         totalRewarded: 0,
       },
+      raids: {
+        dmNotif: true,
+        completed: [],
+        noShows: [],
+        reliability: 0,
+      },
     };
 
     if (userInGuildConfig) {

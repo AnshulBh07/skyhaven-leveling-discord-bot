@@ -5,7 +5,6 @@ import mongoose from "mongoose";
 
 const Schema = mongoose.Schema;
 
-
 const LevelRolesSchema = new Schema(
   {
     minLevel: { type: Number, requird: true },
@@ -23,7 +22,7 @@ const GiveawayRolesSchema = new Schema(
   { timestamps: false, _id: false, _v: false }
 );
 
-const GiveawayBanSchema = new Schema(
+const BanSchema = new Schema(
   {
     userID: { type: String, required: true, default: "" },
     reason: { type: String, default: "" },
@@ -64,7 +63,7 @@ const GiveawayConfig = new Schema(
   {
     roles: { type: [GiveawayRolesSchema], default: [] },
     giveawayChannelID: { type: String, default: "" },
-    banList: { type: [GiveawayBanSchema], default: [] },
+    banList: { type: [BanSchema], default: [] },
   },
   { timestamps: false, _id: false, _v: false }
 );
@@ -82,6 +81,19 @@ const GquestMazeConfig = new Schema(
   { timestamps: false, _id: false, _v: false }
 );
 
+const RaidConfig = new Schema(
+  {
+    raidChannelID: { type: String, default: "" },
+    raidRole: { type: String, default: "" },
+    managerRoles: { type: [String], default: [] },
+    banList: { type: [BanSchema], default: [] },
+    tankEmojiID: { type: String, default: "" },
+    dpsEmojiID: { type: String, default: "" },
+    supportEmojiID: { type: String, default: "" },
+  },
+  { timestamps: false, _id: false, _v: false }
+);
+
 const ConfigSchema = new Schema(
   {
     serverID: { type: String, required: true, unique: true, default: "" },
@@ -91,6 +103,7 @@ const ConfigSchema = new Schema(
     moderationConfig: { type: ModerationConfig, required: true },
     giveawayConfig: { type: GiveawayConfig, required: true },
     gquestMazeConfig: { type: GquestMazeConfig, required: true },
+    raidConfig: { type: RaidConfig, required: true },
     users: [
       {
         type: mongoose.Schema.Types.ObjectId,

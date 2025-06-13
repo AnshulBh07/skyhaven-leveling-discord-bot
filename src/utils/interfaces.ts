@@ -160,6 +160,13 @@ interface IGquestConfig {
   mazeRewardAmount: number;
 }
 
+interface IUserRaid {
+  dmNotif: boolean;
+  completed: Types.ObjectId[] | string[];
+  noShows: Types.ObjectId[] | string[];
+  reliability: number;
+}
+
 export interface IUser {
   userID: string;
   serverID: string;
@@ -169,8 +176,48 @@ export interface IUser {
   giveaways: IUserGiveaways;
   gquests: IUserGquests;
   mazes: IUserMaze;
+  raids: IUserRaid;
   createdAt?: Date;
   updatedAt?: Date;
+}
+
+export interface IRaid {
+  serverID: string;
+  channelID: string;
+  announcementMessageID: string;
+  scoutMessageID: string;
+  teamAllotmentMessageID: string;
+  bosses: ("roaring_thruma" | "dark_skull" | "bison" | "chimera" | "celdyte")[];
+  participants: {
+    tank: string[];
+    dps: string[];
+    support: string[];
+  };
+  stage:
+    | "announced"
+    | "scouted"
+    | "alloted"
+    | "finished"
+    | "reviewed"
+    | "completed";
+  timetsamps: {
+    announcementTime: number;
+    scoutTime?: number;
+    allotmentTime?: number;
+    finishTime?: number;
+    reviewTime?: number;
+    completedTime?: number;
+  };
+}
+
+interface IRaidConfig {
+  raidChannelID: string;
+  raidRole: string;
+  managerRoles: string[];
+  banList: string[];
+  tankEmojiID: string;
+  dpsEmojiID: string;
+  supportEmojiID: string;
 }
 
 interface IModerationConfig {
@@ -191,6 +238,7 @@ export interface IConfig {
   moderationConfig: IModerationConfig;
   giveawayConfig: IGiveawayConfig;
   gquestMazeConfig: IGquestConfig;
+  raidConfig: IRaidConfig;
   users: Types.ObjectId[] | IUser[];
   createdAt?: Date;
   updatedAt?: Date;

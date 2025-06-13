@@ -54,6 +54,16 @@ const Mazes = new Schema(
   { _id: false, timestamps: false, _v: false }
 );
 
+const Raids = new Schema(
+  {
+    dmNotif: { type: Boolean, default: true },
+    completed: [{ type: mongoose.Schema.Types.ObjectId, ref: "Raid" }],
+    noShows: [{ type: mongoose.Schema.Types.ObjectId, ref: "Raid" }],
+    reliability: { type: Number, default: 0 },
+  },
+  { _id: false, timestamps: false, _v: false }
+);
+
 const UserSchema = new Schema(
   {
     userID: { type: String, required: true, unique: true },
@@ -64,6 +74,7 @@ const UserSchema = new Schema(
     giveaways: { type: Giveaways, required: true },
     gquests: { type: GQuests, required: true },
     mazes: { type: Mazes, required: true },
+    raids: { type: Raids, required: true },
   },
   { timestamps: true }
 );

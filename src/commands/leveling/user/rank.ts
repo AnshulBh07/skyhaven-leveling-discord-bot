@@ -81,6 +81,7 @@ const init = async (): Promise<ICommandObj | undefined> => {
               giveaways: user.giveaways,
               gquests: user.gquests,
               mazes: user.mazes,
+              raids: user.raids,
             };
           });
 
