@@ -9,13 +9,14 @@
   "scripts": {
     "dev": "nodemon",
     "start": "ts-node src/index.ts",
-    "count":"count-code-line",
+    "count": "count-code-line",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
     "@types/dotenv": "^6.1.1",
     "@types/node": "^22.15.21",
     "@types/nodemon": "^1.19.6",
+    "clinic": "^13.0.0",
     "count-code-line": "^0.0.4",
     "dotenv": "^16.5.0",
     "nodemon": "^3.1.10",
@@ -31,6 +32,7 @@
     "canvas": "^3.1.0",
     "color-thief-ts": "^1.1.1",
     "colorthief": "^2.6.0",
+    "dayjs": "^1.11.13",
     "discord-arts": "^0.7.1",
     "discord.js": "^14.19.3",
     "distance": "^1.0.0",

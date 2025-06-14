@@ -127,6 +127,8 @@ const execute = async (client: Client) => {
       raidConfig: {
         raidChannelID: "",
         raidRole: "",
+        raidDay: 5,
+        raidTime: "22:30",
         managerRoles: [],
         tankEmojiID: "",
         dpsEmojiID: "",

@@ -193,6 +193,8 @@ export interface IRaid {
     dps: string[];
     support: string[];
   };
+  bossBuffsImageUrl: string;
+  bossDebuffsImageUrl: string;
   stage:
     | "announced"
     | "scouted"
@@ -213,6 +215,8 @@ export interface IRaid {
 interface IRaidConfig {
   raidChannelID: string;
   raidRole: string;
+  raidDay: number;
+  raidTime: string;
   managerRoles: string[];
   banList: string[];
   tankEmojiID: string;

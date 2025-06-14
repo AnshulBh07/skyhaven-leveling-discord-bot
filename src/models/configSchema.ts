@@ -85,6 +85,8 @@ const RaidConfig = new Schema(
   {
     raidChannelID: { type: String, default: "" },
     raidRole: { type: String, default: "" },
+    raidDay: { type: Number, default: 5 }, //defaults to saturday
+    raidTime: { type: String, default: "22:30" }, //raid time in jst
     managerRoles: { type: [String], default: [] },
     banList: { type: [BanSchema], default: [] },
     tankEmojiID: { type: String, default: "" },

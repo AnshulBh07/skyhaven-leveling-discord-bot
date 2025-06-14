@@ -201,3 +201,4 @@ Notes: Fixes needed
                                        Guild Raids System
 ----------------------------------------------------------------------------------------------
 
+raid flow is something like announce date time (ask for participation in same) -> scout raid bosses and announce buffs and debuffs -> allot teams and announce allotment -> raid finish announcement -> review message for admin who will provide a review on who actually joined and who didn't

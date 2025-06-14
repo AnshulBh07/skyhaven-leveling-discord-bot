@@ -9,6 +9,7 @@ const RaidSchema = new Schema(
     scoutMessageID: { type: String, required: true, default: "" },
     teamAllotmentMessageID: { type: String, required: true, default: "" },
     bosses: {
+      //the first element will be the boss that is to be scouted
       type: [
         {
           type: String,
@@ -17,6 +18,8 @@ const RaidSchema = new Schema(
       ],
       default: [],
     },
+    bossBuffsImageUrl: { type: String, default: "" },
+    bossDebuffsImageUrl: { type: String, default: "" },
     participants: {
       type: {
         tank: { type: [String], required: true, default: [] },
