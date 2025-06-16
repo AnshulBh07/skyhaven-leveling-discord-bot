@@ -40,7 +40,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
             {
               serverID: guild.id,
             },
-            { $set: { "raidConfig.mazeRole": role.id } }
+            { $set: { "raidConfig.raidRole": role.id } }
           );
 
           if (!updatedConfig) {

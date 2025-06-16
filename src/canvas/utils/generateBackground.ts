@@ -9,8 +9,8 @@ export const generateBackground = (bgColor: string, baseColor: string) => {
   const ctx = canvas.getContext("2d");
 
   const luminance = getLuminance(baseColor);
-  const percOffset = 20;
-  const percentagesArr = [50, 60, 70, 90, 75, 95, 83];
+  const percOffset = 10;
+  const percentagesArr = [50, 60, 70, 75, 80, 95, 40];
   const bubblesColors = (
     luminance < 0.5
       ? percentagesArr

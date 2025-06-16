@@ -1,4 +1,3 @@
-import { createCanvas, Image, loadImage } from "canvas";
 import { User } from "discord.js";
 import fetch from "node-fetch";
 import path from "path";
@@ -11,6 +10,7 @@ export const generateAvatar = async (
   baseColor: string,
   size = 126
 ) => {
+  const { createCanvas, Image, loadImage } = await import("canvas");
   const canvas = createCanvas(800, 180);
   const ctx = canvas.getContext("2d");
 
@@ -20,7 +20,7 @@ export const generateAvatar = async (
 
     let arrayBuffer: ArrayBuffer;
     let buffer: Buffer<ArrayBuffer>;
-    let avatar: Image;
+    let avatar: InstanceType<typeof Image>;
 
     // get random default pfps
     const defaultPfp = getAllFiles(

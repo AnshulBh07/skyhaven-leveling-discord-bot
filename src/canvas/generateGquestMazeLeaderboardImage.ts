@@ -1,4 +1,3 @@
-import { createCanvas, Image, loadImage } from "@napi-rs/canvas";
 import getAllFiles from "../utils/getAllFiles";
 import path from "path";
 import { AttachmentBuilder, Client } from "discord.js";
@@ -30,6 +29,7 @@ export const generateGquestMazeLeaderboardImage = async (
   client: Client,
   users: questMazeLeaderboardUser[]
 ) => {
+  const { createCanvas, Image, loadImage } = await import("canvas");
   const width = 900,
     height = 1280;
   const canvas = createCanvas(width, height);
@@ -109,7 +109,7 @@ export const generateGquestMazeLeaderboardImage = async (
 
       let arrayBuffer: ArrayBuffer;
       let buffer: Buffer<ArrayBuffer>;
-      let avatar: Image;
+      let avatar: InstanceType<typeof Image>;
 
       // get random default pfps
       const defaultPfp = getAllFiles(

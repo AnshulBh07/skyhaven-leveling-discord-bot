@@ -8,8 +8,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
       isSubCommand: true,
       data: {
         name: "channel",
-        description:
-          "Channel where guild raid announcements are made.",
+        description: "Channel where guild raid announcements are made.",
         type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
@@ -41,7 +40,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
             {
               serverID: guild.id,
             },
-            { $set: { "raidConfig.mazeChannelID": channel.id } }
+            { $set: { "raidConfig.raidChannelID": channel.id } }
           );
 
           if (!updatedConfig) {

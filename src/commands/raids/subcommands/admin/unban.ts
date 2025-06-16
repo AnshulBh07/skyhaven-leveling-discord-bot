@@ -1,21 +1,24 @@
 import { ApplicationCommandOptionType } from "discord.js";
-import { ICommandObj } from "../../../../utils/interfaces";
+import { ISubcommand } from "../../../../utils/interfaces";
 import Config from "../../../../models/configSchema";
 
-const init = async (): Promise<ICommandObj | undefined> => {
+const init = async (): Promise<ISubcommand | undefined> => {
   try {
     return {
-      name: "unban",
-      description: "Removes a user from guild raids ban list.",
-      options: [
-        {
-          name: "user",
-          description: "target user",
-          type: ApplicationCommandOptionType.User,
-          required: true,
-        },
-      ],
-      permissionsRequired: [],
+      isSubCommand: true,
+      data: {
+        name: "unban",
+        description: "Removes a user from guild raids ban list.",
+        type: ApplicationCommandOptionType.Subcommand,
+        options: [
+          {
+            name: "user",
+            description: "target user",
+            type: ApplicationCommandOptionType.User,
+            required: true,
+          },
+        ],
+      },
 
       callback: async (client, interaction) => {
         try {

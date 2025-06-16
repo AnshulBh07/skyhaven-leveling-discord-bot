@@ -25,6 +25,11 @@ dotenv.config({ path: envFile });
 
 eventHandler(bot);
 
+// setInterval(() => {
+//   const used = process.memoryUsage().heapUsed / 1024 / 1024;
+//   console.log(`Heap used: ${Math.round(used * 100) / 100} MB`);
+// }, 2000);
+
 // connect to db and initialise bot
 const main = async () => {
   try {

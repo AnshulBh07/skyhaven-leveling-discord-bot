@@ -8,6 +8,7 @@ const RaidSchema = new Schema(
     announcementMessageID: { type: String, required: true, default: "" },
     scoutMessageID: { type: String, required: true, default: "" },
     teamAllotmentMessageID: { type: String, required: true, default: "" },
+    bannerUrl: { type: String, rquired: true, default: "" },
     bosses: {
       //the first element will be the boss that is to be scouted
       type: [
@@ -26,6 +27,15 @@ const RaidSchema = new Schema(
         dps: { type: [String], required: true, default: [] },
         support: { type: [String], required: true, default: [] },
       },
+      required: true,
+    },
+    waitlist: {
+      type: {
+        tank: { type: [String], required: true, default: [] },
+        dps: { type: [String], required: true, default: [] },
+        support: { type: [String], required: true, default: [] },
+      },
+      required: true,
     },
     stage: {
       type: String,
@@ -39,8 +49,9 @@ const RaidSchema = new Schema(
       ],
       default: "announced",
     },
-    timetsamps: {
+    raidTimestamps: {
       announcementTime: { type: Number, required: true, default: Date.now() },
+      startTime: { type: Number, default: null },
       scoutTime: { type: Number, default: null },
       allotmentTime: { type: Number, default: null },
       finishTime: { type: Number, default: null },

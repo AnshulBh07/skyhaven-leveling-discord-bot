@@ -1,4 +1,3 @@
-import { createCanvas, loadImage } from "@napi-rs/canvas";
 import { AttachmentBuilder, Client, Role } from "discord.js";
 import { generateLeaderboardUserTile } from "./utils/generateLeaderboardUserTile";
 import { LeaderboardUserTileInfo } from "../utils/interfaces";
@@ -10,6 +9,7 @@ export const generateLeaderboardCanvas = async (
   randomBg: string,
   roles: Role[]
 ) => {
+  const { createCanvas, loadImage } = await import("canvas");
   const width = 2600;
   const height = 1600;
   const canvas = createCanvas(width, height);

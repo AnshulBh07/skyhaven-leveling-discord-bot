@@ -188,7 +188,13 @@ export interface IRaid {
   scoutMessageID: string;
   teamAllotmentMessageID: string;
   bosses: ("roaring_thruma" | "dark_skull" | "bison" | "chimera" | "celdyte")[];
+  bannerUrl: string;
   participants: {
+    tank: string[];
+    dps: string[];
+    support: string[];
+  };
+  waitlist: {
     tank: string[];
     dps: string[];
     support: string[];
@@ -202,8 +208,9 @@ export interface IRaid {
     | "finished"
     | "reviewed"
     | "completed";
-  timetsamps: {
+  raidTimestamps: {
     announcementTime: number;
+    startTime?: number;
     scoutTime?: number;
     allotmentTime?: number;
     finishTime?: number;

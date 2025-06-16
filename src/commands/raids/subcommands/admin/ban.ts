@@ -1,27 +1,30 @@
 import { ApplicationCommandOptionType } from "discord.js";
-import { ICommandObj } from "../../../../utils/interfaces";
+import { ISubcommand } from "../../../../utils/interfaces";
 import Config from "../../../../models/configSchema";
 
-const init = async (): Promise<ICommandObj | undefined> => {
+const init = async (): Promise<ISubcommand | undefined> => {
   try {
     return {
-      name: "ban",
-      description: "Bans a user from participating in guild raids.",
-      options: [
-        {
-          name: "user",
-          description: "user to ban",
-          type: ApplicationCommandOptionType.User,
-          required: true,
-        },
-        {
-          name: "reason",
-          description: "reason for ban",
-          type: ApplicationCommandOptionType.String,
-          required: true,
-        },
-      ],
-      permissionsRequired: [],
+      isSubCommand: true,
+      data: {
+        name: "ban",
+        description: "Bans a user from participating in guild raids.",
+        type: ApplicationCommandOptionType.Subcommand,
+        options: [
+          {
+            name: "user",
+            description: "user to ban",
+            type: ApplicationCommandOptionType.User,
+            required: true,
+          },
+          {
+            name: "reason",
+            description: "reason for ban",
+            type: ApplicationCommandOptionType.String,
+            required: true,
+          },
+        ],
+      },
 
       callback: async (client, interaction) => {
         try {

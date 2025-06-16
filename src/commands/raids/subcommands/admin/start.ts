@@ -1,18 +1,24 @@
 import {
   ApplicationCommandOptionType,
   AttachmentBuilder,
+  ChannelType,
   EmbedBuilder,
 } from "discord.js";
-import { ISubcommand } from "../../../../utils/interfaces";
+import { IRaid, ISubcommand } from "../../../../utils/interfaces";
 import Config from "../../../../models/configSchema";
 import {
+  announceAllocation,
+  attachRaidParticipationCollector,
   getRandomRaidImage,
   getRelativeDiscordTime,
+  raidRemindParticipants,
+  sendScoutReminder,
 } from "../../../../utils/raidUtils";
 import {
   leaderboardThumbnail,
   raidMessages,
 } from "../../../../data/helperArrays";
+import Raid from "../../../../models/raidSchema";
 
 const validBosses = [
   "roaring_thruma",
@@ -77,10 +83,11 @@ const init = async (): Promise<ISubcommand | undefined> => {
       callback: async (client, interaction) => {
         try {
           const guild = interaction.guild;
+          const channel = interaction.channel;
 
-          if (!guild) {
+          if (!guild || !channel || channel.type !== ChannelType.GuildText) {
             await interaction.reply({
-              content: "No guild found",
+              content: "Invalid command.",
               flags: "Ephemeral",
             });
             return;
@@ -110,6 +117,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
           }
 
           await interaction.deferReply({ flags: "Ephemeral" });
+
           // send an embed at raid channel for raid
           const guildConfig = await Config.findOne({ serverID: guild.id });
 
@@ -119,19 +127,13 @@ const init = async (): Promise<ISubcommand | undefined> => {
           }
 
           const { raidConfig } = guildConfig;
-          const {
-            raidChannelID,
-            raidDay,
-            raidTime,
-            tankEmojiID,
-            supportEmojiID,
-            dpsEmojiID,
-          } = raidConfig;
+          const { raidDay, raidTime, tankEmojiID, supportEmojiID, dpsEmojiID } =
+            raidConfig;
 
           const day = interaction.options.getNumber("day") ?? raidDay;
           const time = interaction.options.getString("time") ?? raidTime;
 
-          const relativeTime = getRelativeDiscordTime(day, time); //gives unix epoch in seconds
+          const relativeTime = getRelativeDiscordTime(day + 1, time); //gives unix epoch in seconds
 
           const thumbnail = new AttachmentBuilder(leaderboardThumbnail).setName(
             "thumbnail.png"
@@ -140,36 +142,132 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const raidMessage = raidMessages[
             Math.floor(Math.random() * raidMessages.length)
           ].replace(
-            "<t:RAID_TIMESTAMP: R>",
+            /<t:TIMESTAMP:[FR]>/g,
             `<t:${relativeTime}:F> (<t:${relativeTime}:R>)`
           );
 
-          const bossesMsg = `\n\***Bosses : **\n${selectedBosses.map(
-            (boss) =>
-              `• ${validBossesMapped.find((b) => b.value === boss)?.name} - ${
-                bossElements[validBosses.indexOf(boss)]
-              } Element\n`
-          )}`;
-
-          const roleMsg = `💬 **Pick your role below**:\n <:_:${dpsEmojiID}> **DPS** – Be the damage. Live fast, crit hard.\n <:_:${tankEmojiID}> **Tank** – Take the hits, flex your aggro.\n <:_:${supportEmojiID}> **Support** – Buff the party, carry the team emotionally.`;
-
-          const raidImage = getRandomRaidImage();
+          const [raidImage, raidImageUrl] = getRandomRaidImage();
 
           const raidEmbed = new EmbedBuilder()
             .setTitle(`${guild.name} Guild Raids`)
             .setThumbnail("attachment://thumbnail.png")
             .setColor("DarkRed")
-            .setDescription(raidMessage + bossesMsg + roleMsg)
+            .addFields(
+              { name: "\u200b", value: raidMessage, inline: false },
+              {
+                name: "\u200b",
+                value: `**Bosses : **\n${selectedBosses
+                  .map(
+                    (boss, idx) =>
+                      `${idx + 1}. **${
+                        validBossesMapped.find((b) => b.value === boss)?.name
+                      }** - ${bossElements[validBosses.indexOf(boss)]} Element`
+                  )
+                  .join("\n")}`,
+                inline: false,
+              },
+              {
+                name: "\u200b",
+                value: `\n💬 Pick your role below : `,
+                inline: false,
+              },
+              {
+                name: `\n`,
+                value: `<:_:${dpsEmojiID}> **DPS** - Be the damage. Live fast, crit hard.`,
+                inline: false,
+              },
+              {
+                name: `\n`,
+                value: `<:_:${supportEmojiID}> **SUPPORT** - Buff the party, carry the team emotionally.`,
+                inline: false,
+              },
+              {
+                name: `\n`,
+                value: `<:_:${tankEmojiID}> **TANK** - Take the hits, flex your aggro.`,
+                inline: false,
+              }
+            )
             .setImage("attachment://raid.png")
             .setFooter({
-              text: `${guild.name} Raids\n Buffs and debuffs will be announced soon.`,
+              text: `${guild.name} Raids\nBuffs and debuffs will be announced soon.`,
             })
             .setTimestamp();
 
-          await interaction.editReply({
+          await interaction.editReply({ content: "Raid process started." });
+
+          const raidMsg = await channel.send({
             embeds: [raidEmbed],
             files: [thumbnail, raidImage],
           });
+
+          // update raid schema
+          const newRaid = new Raid({
+            serverID: guild.id,
+            channelID: channel.id,
+            announcementMessageID: raidMsg.id,
+            bannerUrl: raidImageUrl,
+            scoutMessageID: "dummy id",
+            teamAllotmentMessageID: "dummy id",
+            bosses: selectedBosses,
+            participants: { tank: [], dps: [], support: [] },
+            waitlist: { tank: [], dps: [], support: [] },
+            stage: "announced",
+            raidTimestamps: {
+              announcementTime: Date.now(),
+              startTime: relativeTime * 1000,
+              finishTime: relativeTime * 1000 + 3 * 60 * 60 * 1000, //rais start time + 3 hours roughly
+            },
+          });
+          await newRaid.save();
+
+          // attach collector for participation
+          await attachRaidParticipationCollector(client, newRaid as IRaid);
+
+          // send scout reminder embed
+          setTimeout(async () => {
+            try {
+              const freshRaid = await Raid.findOne({
+                announcementMessageID: raidMsg.id,
+              });
+
+              if (
+                freshRaid &&
+                (!freshRaid.bossBuffsImageUrl.length ||
+                  !freshRaid.bossDebuffsImageUrl.length)
+              )
+                await sendScoutReminder(client, freshRaid as IRaid);
+            } catch (err) {
+              console.error("Error in scout reminder timer : ", err);
+            }
+          }, 60 * 1000);
+
+          // send a reminder to all participants 30 minutes before raid
+          setTimeout(async () => {
+            try {
+              const freshRaid = await Raid.findOne({
+                announcementMessageID: raidMsg.id,
+              });
+
+              if (freshRaid)
+                await raidRemindParticipants(client, freshRaid as IRaid);
+            } catch (err) {
+              console.error("Error in raid reminder timer : ", err);
+            }
+          }, 90 * 1000);
+
+          // allocate teams and send a message
+          setTimeout(async () => {
+            try {
+              const freshRaid = await Raid.findOne({
+                announcementMessageID: raidMsg.id,
+              });
+
+              if (freshRaid)
+                await announceAllocation(client, freshRaid as IRaid);
+            } catch (err) {
+              console.error("Error in team allocation timer : ", err);
+            }
+          }, 120 * 1000);
         } catch (err) {
           console.error("Error in raid start subcommand callback : ", err);
         }

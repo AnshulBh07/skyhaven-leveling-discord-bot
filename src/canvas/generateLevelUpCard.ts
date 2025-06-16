@@ -1,7 +1,6 @@
 import { AttachmentBuilder, User } from "discord.js";
 import { generateBackground } from "./utils/generateBackground";
 import { generateLvlTransition } from "./utils/generateLvlTransition";
-import { createCanvas } from "canvas";
 import { generateAvatar } from "./utils/generateAvatar";
 import { getDominantColor } from "./utils/getDominantColor";
 import { makeColorReadableOnWhite } from "./utils/adjustHexShades";
@@ -12,6 +11,8 @@ export const generateLvlUpCard = async (
   current_level: number
 ) => {
   try {
+    const { createCanvas } = await import("canvas");
+
     const canvas = createCanvas(800, 180);
     const ctx = canvas.getContext("2d");
     const avatarUrl = user.displayAvatarURL({ extension: "jpg", size: 256 });

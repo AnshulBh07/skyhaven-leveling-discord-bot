@@ -14,8 +14,12 @@
   },
   "devDependencies": {
     "@types/dotenv": "^6.1.1",
+    "@types/long": "^4.0.2",
     "@types/node": "^22.15.21",
     "@types/nodemon": "^1.19.6",
+    "@types/offscreencanvas": "^2019.7.3",
+    "@types/seedrandom": "^3.0.8",
+    "@types/webgl-ext": "^0.0.37",
     "clinic": "^13.0.0",
     "count-code-line": "^0.0.4",
     "dotenv": "^16.5.0",

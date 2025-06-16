@@ -1,15 +1,19 @@
-import { AttachmentBuilder, EmbedBuilder } from "discord.js";
-import { ICommandObj } from "../../../../utils/interfaces";
+import { ApplicationCommandOptionType, AttachmentBuilder, EmbedBuilder } from "discord.js";
+import { ISubcommand } from "../../../../utils/interfaces";
 import Config from "../../../../models/configSchema";
 import { leaderboardThumbnail } from "../../../../data/helperArrays";
 
-const init = async (): Promise<ICommandObj | undefined> => {
+const init = async (): Promise<ISubcommand | undefined> => {
   try {
     return {
-      name: "banlist",
-      description: "Displays all users banned from participating in guild raids.",
-      options: [],
-      permissionsRequired: [],
+      isSubCommand: true,
+      data: {
+        name: "banlist",
+        description:
+          "Displays all users banned from participating in guild raids.",
+        type: ApplicationCommandOptionType.Subcommand,
+        options: [],
+      },
 
       callback: async (client, interaction) => {
         try {

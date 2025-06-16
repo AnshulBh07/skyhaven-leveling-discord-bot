@@ -1,4 +1,3 @@
-import { createCanvas, Image, loadImage } from "@napi-rs/canvas";
 import { LeaderboardUserTileInfo } from "../../utils/interfaces";
 import { Client, Role } from "discord.js";
 import getAllFiles from "../../utils/getAllFiles";
@@ -7,6 +6,8 @@ import { getNextLvlXP } from "../../utils/getNextLevelXP";
 
 export const getCrownImage = async (rank: number) => {
   try {
+    const { loadImage } = await import("canvas");
+
     const allLogos = getAllFiles(
       path.join(__dirname, "../..", "assets/logos"),
       false
@@ -53,6 +54,7 @@ export const generateLeaderboardUserTile = async (
   type: string,
   role?: Role
 ) => {
+  const { createCanvas, Image, loadImage } = await import("canvas");
   const canvas = createCanvas(width, height);
   const ctx = canvas.getContext("2d");
 
@@ -68,7 +70,7 @@ export const generateLeaderboardUserTile = async (
 
     let arrayBuffer: ArrayBuffer;
     let buffer: Buffer<ArrayBuffer>;
-    let avatar: Image;
+    let avatar: InstanceType<typeof Image>;
 
     // get random default pfps
     const defaultPfp = getAllFiles(

@@ -202,3 +202,10 @@ Notes: Fixes needed
 ----------------------------------------------------------------------------------------------
 
 raid flow is something like announce date time (ask for participation in same) -> scout raid bosses and announce buffs and debuffs -> allot teams and announce allotment -> raid finish announcement -> review message for admin who will provide a review on who actually joined and who didn't
+- raid start time is taken as input
+- ask for scout buff debuff for the latest raid exactly 5 hours before raid (only if not provided yet)
+- team allocation before 3 hours of raid start time (if not allocated yet)
+- DM all the participants with an embed reminder 30 min before raid 
+- after 3 hours of raid completion send a review message to all the admins on raid channel. This will contain a checklist of who participated and who didn't.
+admin will also be able to add people who joined raids but didn't participated
+- raid is completely finished

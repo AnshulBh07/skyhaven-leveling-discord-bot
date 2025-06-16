@@ -7,7 +7,7 @@ const init = async (): Promise<ICommandObj | undefined> => {
     // fetch all commands from the parent folder and map them to their names
     const subcommandsMap = new Map<string, ISubcommand>();
     const allSubcommandFiles = getAllFiles(
-      path.join(__dirname, "..", "raids"),
+      path.join(__dirname, "", "subcommands"),
       false
     );
 

@@ -1,5 +1,4 @@
 import path from "path";
-import { IUser } from "../utils/interfaces";
 import { ColorResolvable } from "discord.js";
 
 type LevelRole = {
@@ -521,14 +520,14 @@ export const raidMessages = [
   `**📯 THE RAID HORN HAS BEEN BLOWN — ALL HANDS ON DECK!**
 The time has come once again, brave adventurers. 
 Though there be no chests to plunder nor Spina to hoard, this battle will carve your name into the annals of guild history! The bosses await, smug and unbothered, and it's our divine duty to ruin their day.
-Join us at <t:TIMESTAMP:F> and show them why [YourGuildName] is feared, revered, and occasionally pitied.`,
+Join us at <t:TIMESTAMP:F> and show them why we feared, revered, and occasionally pitied.`,
 
   `**🧩 GUILD RAID INITIATED: GLORY OVER GOLD**
 This isn't your average dungeon crawl. No, this is a synchronized storm of questionable builds, scuffed strategies, and unmatched team spirit. The bosses won’t drop loot, but every second you survive (or don’t) is a contribution to the guild’s legacy.
 Prepare your memes, potions, and backup excuses. We raid at <t:TIMESTAMP:F>. Attendance is not mandatory — it's legendary.`,
 
   `**🌪️ SUMMONING THE CHAOS — A RAID UNLIKE ANY OTHER**
-The sky darkens. The wind howls. Chimera just updated his block list again. That can only mean one thing: [YourGuildName] is raiding.
+The sky darkens. The wind howls. Chimera just updated his block list again. That can only mean one thing: we are raiding.
 We don’t raid for loot. We raid because we have *absolutely nothing better to do*, and because guild progress doesn’t grind itself.  
 Arrive at <t:TIMESTAMP:F>, preferably alive. Bring your worst ideas — we’ll make them work.`,
 
@@ -547,7 +546,7 @@ Progress is the only thing we’re collecting — well, that and stories of narr
 Join us at <t:TIMESTAMP:F>. Come for the progress, stay for the post-raid memes.`,
 
   `**🔮 THE PROPHECY HAS UNFOLDED — YOU'RE IN IT**
-An ancient scroll foretold this day: five bosses would rise, and only one guild — [YourGuildName] — would have the audacity to show up without a proper plan.
+An ancient scroll foretold this day: five bosses would rise, and only one guild would have the audacity to show up without a proper plan.
 There is no loot to be claimed. Only progress, pride, and possible emotional scarring.  
 Raid begins at <t:TIMESTAMP:F>. Your fate awaits.`,
 
@@ -661,7 +660,7 @@ Join the mob at <t:TIMESTAMP:F>. Rage optional. Results guaranteed.`,
 
   `**💪 The Guild Rises, Lootless but United**
 We don’t raid for shinies. We raid for status.  
-Be part of the wave that makes [YourGuildName] unstoppable.  
+Be part of the wave that makes us unstoppable.  
 🕒 Launching raid at <t:TIMESTAMP:F>`,
 
   `**🚫 This Raid Has No Drops. Only Dreams.**
@@ -710,7 +709,7 @@ Contribute to the guild’s progress and eternal bragging rights.`,
   `**🧙‍♂️ Legendary Guild Raid Approaches!**
 Sofya’s Magic Council is panicking. The alchemists are crying. The merchants are selling “anti-death potions” that are just apple juice.
 
-Only one force can tip the balance: **[YourGuildName]**.  
+Only one force can tip the balance: **Skyhaven**.  
 And no, this time you won’t be raiding for loot—you’ll be fighting for **honor**, **guild prestige**, and **the right to yell "EZ" in GC**.
 
 Raid begins: <t:TIMESTAMP:F>. Be there or be demoted to fish bait duty.`,
@@ -773,7 +772,7 @@ You heard right. This one’s for the guild. The XP. The rankings. The feeling o
 Still coming? Good. We’re counting on you, warrior.  
 Raid goes live <t:TIMESTAMP:F>. Bring fire. Bring friends. Bring that spirit.`,
 
-  `**🛡️ BRING GLORY TO [YourGuildName]**
+  `**🛡️ BRING GLORY TO SKYHAVEN**
 No boss is too tough. No motivation is too small. Even without loot, our name will rise.
 
 Join the formation, clash blades, and make sure the enemy knows: **this guild fights together.**
@@ -785,106 +784,106 @@ Let’s raid like legends—even if all we get is a line on a spreadsheet.`,
 Meambles, radiant in her perfectly coordinated outfit, tightens her grip on her shield — ready to tank, look cute, and maybe die for the cause. 
 Pinku stands beside her, casually juggling support buffs and DPS gear like it’s no big deal. 
 There’s no loot this time, only contribution to the sacred guild progress bar. 
-We ride at <t:RAID_TIMESTAMP: R>.`,
+We ride at <t:TIMESTAMP:R>.`,
 
   `⚔️ Yaze already pulled aggro — and the boss hasn’t even spawned yet. 
 With his halberd raised high, he radiates pure unfiltered violence. 
 Rauk, meanwhile, meditates in the corner, mumbling about “frame-perfect counters” and “katana superiority.” 
 Together, they form the perfect storm of overconfidence. 
-The raid begins <t:RAID_TIMESTAMP: R>. Prepare accordingly.`,
+The raid begins <t:TIMESTAMP:R>. Prepare accordingly.`,
 
   `✨ Minyu has lit the ground on fire. 
 Not metaphorically — she actually dropped a Fire Lance in spawn for dramatic effect. 
 Toro walks in late, fiddling with his one-handed sword and magic device combo that no guide recommends, but somehow still works. 
 Will we survive? Maybe. Will it be stylish? Absolutely. 
-Join the madness <t:RAID_TIMESTAMP: R>.`,
+Join the madness <t:TIMESTAMP:R>.`,
 
   `💥 Barkydle is already stretching his shoulders — you know what that means: 
 another raid, another attacker rank farmed like wheat in Sofya. 
 Leve, swinging his dual swords while yelling “SAO style!”, claims this is the time he outdamages Barky. 
 It’s not about loot. It’s about vengeance and validation. 
-Be there <t:RAID_TIMESTAMP: R>.`,
+Be there <t:TIMESTAMP:R>.`,
 
   `🌈 Karma arrives 10 minutes late, bowgun on shoulder, glowing with chaotic femboy vibes. 
 Edoras stands beside him, tossing 100k spina into the guild fund like spare change. 
 The aura is immaculate, the damage will be nuclear, and the loot nonexistent. 
 It’s time to flex, die fabulously, and earn meaningless points. 
-Raid begins <t:RAID_TIMESTAMP: R>.`,
+Raid begins <t:TIMESTAMP:R>.`,
 
   `🧙 Erina has once again assumed her role as guild mom, raid tank, and emotional support system all in one. 
 Thinkpitz hovers ominously nearby, his buffs already active before the battle even begins. 
 With this duo leading the charge, even the server lag trembles. 
 No drops, no excuses — only results. 
-We begin <t:RAID_TIMESTAMP: R>.`,
+We begin <t:TIMESTAMP:R>.`,
 
   `😢 Somewhere in the quiet before the raid, someone whispers: “Incipiencibus…” 
 Though he hasn’t logged in for centuries, his ghostly presence fuels us still. 
 Goku, unaware of the solemn moment, yells about what he ate for lunch in VC. 
-The raid begins <t:RAID_TIMESTAMP: R> — whether you’re nostalgic, chatty, or both, you belong here.`,
+The raid begins <t:TIMESTAMP:R> — whether you’re nostalgic, chatty, or both, you belong here.`,
 
   `🎯 Seravon has been on standby since yesterday, arrow drawn and eyes locked. 
 He says nothing, only nods. 
 Von appears briefly to say, “Fine, I’ll participate this time,” before vanishing again into admin duties. 
 This is the kind of emotional rollercoaster your therapist warned you about. 
-Brace yourself — <t:RAID_TIMESTAMP: R>.`,
+Brace yourself — <t:TIMESTAMP:R>.`,
 
   `🎆 Nino swears he's still young and ready for action, despite accidentally trying to buff himself with a cooking recipe. 
 Ayu brings in a platoon of tuyuls and claims they’re “strategic assets.” 
 No one has the heart to say no. 
-It’s pure Toram madness, and it begins <t:RAID_TIMESTAMP: R>.`,
+It’s pure Toram madness, and it begins <t:TIMESTAMP:R>.`,
 
   `🌀 Toro insists his hybrid build is “meta-adjacent.” 
 Karma, now perched on a magic broomstick for dramatic flair, simply smiles and says, “Just watch me.” 
 Expect flair, drama, and possibly unintentional PvP. 
-We start <t:RAID_TIMESTAMP: R>.`,
+We start <t:TIMESTAMP:R>.`,
 
   `🧚‍♂️ Meambles showed up in her newest outfit, looking like a fairytale boss herself. 
 Pinku has already composed an anthem for this raid and is rehearsing it mid-combat. 
 We may not win fast, but we’ll do it fabulously. 
-Raid drops <t:RAID_TIMESTAMP: R>.`,
+Raid drops <t:TIMESTAMP:R>.`,
 
   `🗡️ Leve posted a screenshot of his sword with the caption “Skill > Stats.” 
 Rauk replied with a 4-paragraph essay on katana superiority. 
 Tension is high. 
 Only one can win top attacker — but both will win your heart. 
-Join in <t:RAID_TIMESTAMP: R>.`,
+Join in <t:TIMESTAMP:R>.`,
 
   `💎 Edoras casually asked if the guild needs another 5 million spina for “raid snacks.” 
 Minyu, levitating slightly with magical energy, replied, “Only if you want extra buffs.” 
 This is a team that raids with style and wallets. 
-Countdown begins <t:RAID_TIMESTAMP: R>.`,
+Countdown begins <t:TIMESTAMP:R>.`,
 
   `🎤 Goku is already narrating the battle before it begins, complete with sound effects and unnecessary commentary. 
 Von sighs quietly and opens the raid channel, muttering something about “responsibility.” 
 Together, they are chaos and order. 
-The raid begins <t:RAID_TIMESTAMP: R>.`,
+The raid begins <t:TIMESTAMP:R>.`,
 
   `🎽 Yaze is doing pushups in the waiting room to “psych up.” 
 Meanwhile, Toro is calculating damage formulas that even the devs don’t understand. 
 Whatever happens, it’ll be legendary — or at least meme-worthy. 
-Join <t:RAID_TIMESTAMP: R>.`,
+Join <t:TIMESTAMP:R>.`,
 
   `🎀 Meambles and Karma walk in side by side — one a glowing tank of cuteness, the other a radiant menace with glitter and gunpowder. 
 Nobody knows what the strategy is, but everyone agrees it will be fabulous. 
-Be there <t:RAID_TIMESTAMP: R>.`,
+Be there <t:TIMESTAMP:R>.`,
 
   `🌟 Pinku is already buffed, healed, and somehow top DPS, all while complimenting everyone’s outfits. 
 Leve is still loading in, practicing his ultimate combo in town. 
 The raid may not have loot, but it will have screenshots. 
-Starting <t:RAID_TIMESTAMP: R>.`,
+Starting <t:TIMESTAMP:R>.`,
 
   `🕊️ ARainA calmly checks gear, stats, and strategy documents. 
 Yaze bursts into the channel yelling “AGGRO TIME.” 
 This is fine. Everything is under control. Probably. 
-Meet at <t:RAID_TIMESTAMP: R>.`,
+Meet at <t:TIMESTAMP:R>.`,
 
   `🔮 Thinkpitz cast buffs so early, no one knew the raid was even scheduled. 
 Barkydle sharpened his sword so hard it cut through voice chat. 
 It’s going to be bloody, beautiful, and entirely boss-free of loot. 
-Let’s go <t:RAID_TIMESTAMP: R>.`,
+Let’s go <t:TIMESTAMP:R>.`,
 
   `🍵 Nino brings snacks. Ayu brings tuyuls. 
 That’s the kind of raid composition we’re working with. 
 If you came for structure, you’re in the wrong guild — but if you came for chaos-driven success, welcome home. 
-Join the fray <t:RAID_TIMESTAMP: R>.`,
+Join the fray <t:TIMESTAMP:R>.`,
 ];

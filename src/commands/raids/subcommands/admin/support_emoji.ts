@@ -31,9 +31,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
           }
 
           //   check if emoji is present in guild or not
-          const emoji = guild.emojis.cache.find(
-            (emoji) => emoji.id === emoji_id
-          );
+          const emoji = await guild.emojis.fetch(emoji_id);
 
           if (!emoji) {
             await interaction.reply({
@@ -56,12 +54,16 @@ const init = async (): Promise<ISubcommand | undefined> => {
 
           const { raidConfig } = guildConfig;
           raidConfig.supportEmojiID = emoji.id;
+          await guildConfig.save();
 
           await interaction.editReply({
             content: `Set ${emoji} as support emoji for guild raids.`,
           });
         } catch (err) {
-          console.error("Error in raid support emoji subcommand callback : ", err);
+          console.error(
+            "Error in raid support emoji subcommand callback : ",
+            err
+          );
         }
       },
     };
