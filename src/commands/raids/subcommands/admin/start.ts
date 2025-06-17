@@ -200,6 +200,14 @@ const init = async (): Promise<ISubcommand | undefined> => {
             files: [thumbnail, raidImage],
           });
 
+          raidEmbed.addFields({
+            name: "\u200b",
+            value: `**🪪 Raid ID ** : \`${raidMsg.id}\``,
+            inline: false,
+          });
+
+          await raidMsg.edit({ embeds: [raidEmbed] });
+
           // update raid schema
           const newRaid = new Raid({
             serverID: guild.id,
@@ -239,7 +247,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
             } catch (err) {
               console.error("Error in scout reminder timer : ", err);
             }
-          }, 60 * 1000);
+          }, 60 * 1000 * 2);
 
           // send a reminder to all participants 30 minutes before raid
           setTimeout(async () => {
@@ -253,7 +261,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
             } catch (err) {
               console.error("Error in raid reminder timer : ", err);
             }
-          }, 90 * 1000);
+          }, 60 * 1000 * 4);
 
           // allocate teams and send a message
           setTimeout(async () => {
@@ -267,7 +275,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
             } catch (err) {
               console.error("Error in team allocation timer : ", err);
             }
-          }, 120 * 1000);
+          }, 120 * 1000 * 3);
         } catch (err) {
           console.error("Error in raid start subcommand callback : ", err);
         }

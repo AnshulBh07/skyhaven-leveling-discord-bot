@@ -10,12 +10,15 @@ import {
   ButtonStyle,
   ChannelType,
   Client,
+  ComponentType,
   EmbedBuilder,
+  MessageActionRowComponentBuilder,
 } from "discord.js";
 import { IRaid } from "./interfaces";
 import Config from "../models/configSchema";
 import Raid from "../models/raidSchema";
 import { leaderboardThumbnail } from "../data/helperArrays";
+import User from "../models/userSchema";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -252,7 +255,7 @@ export const attachRaidParticipationCollector = async (
           await btnInt.editReply({
             content:
               totalRegistered < 16
-                ? "You registered as a dps for next raid."
+                ? "You registered as a support for next raid."
                 : "Raid is full! You’ve been added to the waitlist.",
           });
 
@@ -368,13 +371,18 @@ export const sendScoutReminder = async (client: Client, raid: IRaid) => {
                 `${idx + 1}. **${boss
                   .split("_")
                   .map((name) => name.at(0)?.toUpperCase() + name.slice(1))
-                  .join(" ")}** - ${bossElements[idx]}`
+                  .join(" ")}** - ${bossElements[bosses.indexOf(boss)]}`
             )
             .join("\n")}\n` +
           `**Scheduled Time:** <t:${Math.floor(
             raid.raidTimestamps.startTime! / 1000
           )}:F> (<t:${Math.floor(raid.raidTimestamps.startTime! / 1000)}:R>)`
       )
+      .addFields({
+        name: "\u200b",
+        value: `**🪪 Raid ID ** : \`${raid.announcementMessageID}\``,
+        inline: false,
+      })
       .setColor("Orange")
       .setFooter({ text: "Please scout and update raid details promptly." })
       .setTimestamp();
@@ -416,7 +424,7 @@ export const raidRemindParticipants = async (client: Client, raid: IRaid) => {
                 `${idx + 1}. **${boss
                   .split("_")
                   .map((name) => name.at(0)?.toUpperCase() + name.slice(1))
-                  .join(" ")}** - ${bossElements[idx]}`
+                  .join(" ")}** - ${bossElements[bosses.indexOf(boss)]}`
             )
             .join("\n")}\n`
       )
@@ -431,7 +439,10 @@ export const raidRemindParticipants = async (client: Client, raid: IRaid) => {
     for (const participant of allParticipants) {
       const user = await client.users.fetch(participant);
 
-      await user.send({ embeds: [embed], files: [thumbnail, banner] });
+      const userDb = await User.findOne({ userID: participant });
+
+      if (userDb && userDb.raids.dmNotif)
+        await user.send({ embeds: [embed], files: [thumbnail, banner] });
     }
   } catch (err) {
     console.error("Error in raid reminder function : ", err);
@@ -550,6 +561,11 @@ export const announceAllocation = async (client: Client, raid: IRaid) => {
           `⏳ Players who registered but didn't make the main roster have been placed on the **waitlist** and may be subbed in if needed.\n\n` +
           `Prepare yourselves — the raid begins soon!`
       )
+      .addFields({
+        name: "\u200b",
+        value: `**🪪 Raid ID ** : \`${raid.announcementMessageID}\``,
+        inline: false,
+      })
       .setTimestamp();
 
     // Format each team
@@ -582,8 +598,99 @@ export const announceAllocation = async (client: Client, raid: IRaid) => {
       });
     }
 
-    await channel.send({ embeds: [embed], files: [thumbnail] });
+    const allocationMsg = await channel.send({
+      embeds: [embed],
+      files: [thumbnail],
+    });
+
+    // also change the original message of announcement, remove components and add link button to
+    // allocation message
+    // find the message
+    const announceMsg = await channel.messages.fetch(
+      raid.announcementMessageID
+    );
+
+    const link = `https://discord.com/channels/${guild.id}/${channel.id}/${allocationMsg.id}`;
+
+    const linkButton = new ActionRowBuilder<ButtonBuilder>().addComponents(
+      new ButtonBuilder()
+        .setLabel("Jumpt to team allocation")
+        .setStyle(ButtonStyle.Link)
+        .setURL(link)
+    );
+
+    // only get the link button
+    const allActionRows = announceMsg.components.map((row) =>
+      ActionRowBuilder.from(row as any)
+    ) as ActionRowBuilder<MessageActionRowComponentBuilder>[];
+
+    // filter them now
+    const persistComponents = allActionRows
+      .map((row) => {
+        const filteredButtons = row.components.filter(
+          (component): component is ButtonBuilder => {
+            return (
+              component instanceof ButtonBuilder &&
+              component.data.style === ButtonStyle.Link
+            );
+          }
+        );
+
+        if (!filteredButtons.length) return null;
+
+        return new ActionRowBuilder<ButtonBuilder>().addComponents(
+          filteredButtons
+        );
+      })
+      .filter((row): row is ActionRowBuilder<ButtonBuilder> => row !== null);
+
+    await announceMsg.edit({ components: [...persistComponents, linkButton] });
+
+    // update schema as well
+    await Raid.findOneAndUpdate(
+      {
+        announcementMessageID: raid.announcementMessageID,
+      },
+      {
+        $set: {
+          teamAllotmentMessageID: allocationMsg.id,
+          stage: "alloted",
+          "raidTimestamps.allotmentTime": Date.now(),
+        },
+      }
+    );
   } catch (err) {
     console.error("Error in allocation and annoucnement function");
+  }
+};
+
+// utility function to check whether the person to send text on a thread has manager role
+// for raids
+export const isManager = async (
+  client: Client,
+  userID: string,
+  guildID: string
+) => {
+  try {
+    const guildConfig = await Config.findOne({ serverID: guildID });
+
+    if (!guildConfig) return;
+
+    const { raidConfig } = guildConfig;
+    const { managerRoles } = raidConfig;
+
+    const guild = await client.guilds.fetch(guildID);
+    const member = await guild.members.fetch(userID);
+    const member_roles = Array.from(member.roles.cache.entries()).map(
+      ([_, role]) => role.id
+    );
+
+    for (const role of managerRoles) {
+      if (member_roles.includes(role)) return true;
+    }
+
+    return false;
+  } catch (err) {
+    console.error("Error in isManager function");
   }
 };
