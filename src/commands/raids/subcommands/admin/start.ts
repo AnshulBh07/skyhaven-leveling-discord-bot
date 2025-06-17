@@ -12,6 +12,7 @@ import {
   getRandomRaidImage,
   getRelativeDiscordTime,
   raidRemindParticipants,
+  raidReviewReminder,
   sendScoutReminder,
 } from "../../../../utils/raidUtils";
 import {
@@ -236,6 +237,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
             try {
               const freshRaid = await Raid.findOne({
                 announcementMessageID: raidMsg.id,
+                serverID: guild.id,
               });
 
               if (
@@ -254,6 +256,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
             try {
               const freshRaid = await Raid.findOne({
                 announcementMessageID: raidMsg.id,
+                serverID: guild.id,
               });
 
               if (freshRaid)
@@ -268,6 +271,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
             try {
               const freshRaid = await Raid.findOne({
                 announcementMessageID: raidMsg.id,
+                serverID: guild.id,
               });
 
               if (freshRaid)
@@ -276,6 +280,26 @@ const init = async (): Promise<ISubcommand | undefined> => {
               console.error("Error in team allocation timer : ", err);
             }
           }, 120 * 1000 * 3);
+
+          // timer for sending a review reminder
+          setTimeout(async () => {
+            const freshRaid = await Raid.findOneAndUpdate(
+              {
+                announcementMessageID: raidMsg.id,
+                serverID: guild.id,
+              },
+              {
+                $set: {
+                  stage: "finished",
+                  "raidTimestamps.finishTime": Date.now(),
+                },
+              },
+              { new: true }
+            );
+
+            if (freshRaid && !freshRaid.raidTimestamps?.reviewTime)
+              await raidReviewReminder(client, freshRaid as IRaid);
+          }, 60 * 1000 * 8);
         } catch (err) {
           console.error("Error in raid start subcommand callback : ", err);
         }

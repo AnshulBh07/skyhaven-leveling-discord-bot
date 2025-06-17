@@ -376,7 +376,10 @@ export const sendScoutReminder = async (client: Client, raid: IRaid) => {
             .join("\n")}\n` +
           `**Scheduled Time:** <t:${Math.floor(
             raid.raidTimestamps.startTime! / 1000
-          )}:F> (<t:${Math.floor(raid.raidTimestamps.startTime! / 1000)}:R>)`
+          )}:F> (<t:${Math.floor(
+            raid.raidTimestamps.startTime! / 1000
+          )}:R>)\n\n` +
+          `Use \`/raid scout <raid_id>\` on designated guild channel`
       )
       .addFields({
         name: "\u200b",
@@ -692,5 +695,55 @@ export const isManager = async (
     return false;
   } catch (err) {
     console.error("Error in isManager function");
+  }
+};
+
+export const raidReviewReminder = async (client: Client, raid: IRaid) => {
+  try {
+    const guild = await client.guilds.fetch(raid.serverID);
+    const guildConfig = await Config.findOne({ serverID: guild.id });
+
+    if (!guildConfig) return;
+
+    const { raidConfig } = guildConfig;
+    const { managerRoles } = raidConfig;
+
+    // get all admins
+    const admins = Array.from(guild.members.cache.entries())
+      .map(([_, member]) => member)
+      .filter((member) => {
+        for (const role of managerRoles)
+          if (member.roles.cache.get(role)) return true;
+
+        return false;
+      })
+      .map((member) => member.user);
+
+    const reviewEmbed = new EmbedBuilder()
+      .setTitle("📋 Raid Participation Review")
+      .setColor("Blue")
+      .setThumbnail("attachment://thumbnail.png")
+      .setDescription(
+        `The raid has concluded. Please take a moment to review attendance and note any discrepancies between sign-ups and actual participation.\n\n` +
+          `🔍 **Action Required:**\n` +
+          `• Cross-check in-game attendance against the reaction list.\n` +
+          `• Mark any absentees who did not provide prior notice.\n` +
+          `• Record any substitutions or unexpected participants.\n\n` +
+          `Maintaining accurate records ensures smoother coordination and accountability for future events.\n` +
+          `Use command \`/raid review <raid_id>\` on the designated guild channel.`
+      )
+      .addFields({
+        name: "\u200b",
+        value: `**🪪 Raid ID : ${raid.announcementMessageID}`,
+        inline: false,
+      })
+      .setFooter({ text: "Thank you for your support and cooperation." })
+      .setTimestamp();
+
+    for (const admin of admins) {
+      await admin.send({ embeds: [reviewEmbed] });
+    }
+  } catch (err) {
+    console.error("Error in raid review reminder function : ", err);
   }
 };
