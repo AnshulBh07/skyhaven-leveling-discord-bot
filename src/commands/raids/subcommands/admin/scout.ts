@@ -8,9 +8,9 @@ import {
   EmbedBuilder,
 } from "discord.js";
 import { ISubcommand } from "../../../../utils/interfaces";
-import { isManager } from "../../../../utils/raidUtils";
 import Raid from "../../../../models/raidSchema";
 import { leaderboardThumbnail } from "../../../../data/helperArrays";
+import { isManager } from "../../../../utils/permissionsCheck";
 
 const init = async (): Promise<ISubcommand | undefined> => {
   try {

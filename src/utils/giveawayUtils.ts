@@ -227,12 +227,17 @@ export const endGiveaway = async (client: Client, giveawayID: string) => {
     const { participants, winnersCount, messageID, channelID, serverID } =
       giveaway;
 
-    const guild = await client.guilds.fetch(serverID);
-    const messageChannel = await guild.channels.fetch(channelID);
+    const guild = await client.guilds.fetch({ guild: serverID, force: true });
+    const messageChannel = await guild.channels.fetch(channelID, {
+      force: true,
+    });
 
     if (!messageChannel || !messageChannel.isTextBased()) return;
 
-    const giveawayMessage = await messageChannel.messages.fetch(messageID);
+    const giveawayMessage = await messageChannel.messages.fetch({
+      message: messageID,
+      force: true,
+    });
 
     // get giveaway notification channel from config
     const guildConfig = await Config.findOne({ serverID: guild.id });

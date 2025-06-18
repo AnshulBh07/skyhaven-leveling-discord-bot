@@ -5,25 +5,29 @@ import {
   ButtonBuilder,
   ButtonStyle,
 } from "discord.js";
-import { ICommandObj, IGiveaway } from "../../../utils/interfaces";
-import User from "../../../models/userSchema";
-import { generateGiveawayListEmbed } from "../../../utils/giveawayUtils";
-import { leaderboardThumbnail } from "../../../data/helperArrays";
+import { IGiveaway, ISubcommand } from "../../../../utils/interfaces";
+import User from "../../../../models/userSchema";
+import { generateGiveawayListEmbed } from "../../../../utils/giveawayUtils";
+import { leaderboardThumbnail } from "../../../../data/helperArrays";
 
-const init = async (): Promise<ICommandObj | undefined> => {
+const init = async (): Promise<ISubcommand | undefined> => {
   try {
     return {
-      name: "gwins",
-      description: "Displays list of all the giveaways won by user.",
-      options: [
-        {
-          name: "user",
-          description: "target user",
-          type: ApplicationCommandOptionType.User,
-          required: false,
-        },
-      ],
-      permissionsRequired: [],
+      isSubCommand: true,
+      data: {
+        name: "entries",
+        description:
+          "Displays list of all the giveaways user has taken part in.",
+        type: ApplicationCommandOptionType.Subcommand,
+        options: [
+          {
+            name: "user",
+            description: "target user",
+            type: ApplicationCommandOptionType.User,
+            required: false,
+          },
+        ],
+      },
 
       callback: async (client, interaction) => {
         try {
@@ -32,24 +36,34 @@ const init = async (): Promise<ICommandObj | undefined> => {
 
           const guild = interaction.guild;
 
-          await interaction.deferReply({ flags: "Ephemeral" });
+          if (!guild) {
+            await interaction.reply({
+              content: `⚠️ Invalid command. Please check your input and try again.`,
+            });
+            return;
+          }
+
+          await interaction.deferReply();
 
           const user = await User.findOne({ userID: targetUser.id }).populate(
-            "giveaways.giveawaysWon"
+            "giveaways.giveawaysEntries"
           );
 
-          if (!user || !guild) {
-            await interaction.editReply({ content: "User not found." });
+          if (!user) {
+            await interaction.editReply({
+              content: `❌ User not found. Please check the input and try again.`,
+            });
             return;
           }
 
           const allGiveaways = user.giveaways
-            .giveawaysWon as unknown as IGiveaway[];
+            .giveawaysEntries as unknown as IGiveaway[];
           let page = 0;
           const pageSize = 3;
           const totalPages = Math.ceil(allGiveaways.length / pageSize);
 
-          const description = `🎁 List of all the giveaways ${targetUser.username} has won.`;
+          const description = `📦 List of all the giveaways for ${targetUser.username}`;
+
           const embed = generateGiveawayListEmbed(
             allGiveaways,
             page,
@@ -66,12 +80,12 @@ const init = async (): Promise<ICommandObj | undefined> => {
             const buttonsRow =
               new ActionRowBuilder<ButtonBuilder>().addComponents(
                 new ButtonBuilder()
-                  .setCustomId("prev")
+                  .setCustomId("entries_prev")
                   .setEmoji("⬅️")
                   .setDisabled(page === 0)
                   .setStyle(ButtonStyle.Secondary),
                 new ButtonBuilder()
-                  .setCustomId("next")
+                  .setCustomId("entries_next")
                   .setEmoji("➡️")
                   .setDisabled(page === totalPages - 1)
                   .setStyle(ButtonStyle.Secondary)
@@ -90,15 +104,17 @@ const init = async (): Promise<ICommandObj | undefined> => {
           const reply = await interaction.fetchReply();
 
           const collector = reply.createMessageComponentCollector({
-            filter: (i) => ["prev", "next"].includes(i.customId),
+            filter: (i) =>
+              ["entries_prev", "entries_next"].includes(i.customId) &&
+              i.user.id === interaction.user.id,
             time: 60_000 * 10, //10 minutes
           });
 
           collector.on("collect", async (btnInt) => {
             try {
               await btnInt.deferUpdate();
-              if (btnInt.customId === "prev") page--;
-              if (btnInt.customId === "next") page++;
+              if (btnInt.customId === "entries_prev") page--;
+              if (btnInt.customId === "entries_next") page++;
 
               const newPage = generateGiveawayListEmbed(
                 allGiveaways,
@@ -128,12 +144,12 @@ const init = async (): Promise<ICommandObj | undefined> => {
             }
           });
         } catch (err) {
-          console.error("Error in gentries callback :", err);
+          console.error("Error in giveaway entries callback :", err);
         }
       },
     };
   } catch (err) {
-    console.error("Error in gentries command :", err);
+    console.error("Error in giveaway entries command :", err);
     return undefined;
   }
 };

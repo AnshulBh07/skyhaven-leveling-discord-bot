@@ -4,43 +4,52 @@ import {
   ColorResolvable,
   EmbedBuilder,
 } from "discord.js";
-import { ICommandObj } from "../../../utils/interfaces";
-import Giveaway from "../../../models/giveawaySchema";
-import { leaderboardThumbnail } from "../../../data/helperArrays";
+import { ISubcommand } from "../../../../utils/interfaces";
+import Giveaway from "../../../../models/giveawaySchema";
+import { leaderboardThumbnail } from "../../../../data/helperArrays";
+import { isUser } from "../../../../utils/permissionsCheck";
 
-const init = async (): Promise<ICommandObj | undefined> => {
+const init = async (): Promise<ISubcommand | undefined> => {
   try {
     return {
-      name: "greroll",
-      description: "Reroll a giveway for new winners",
-      options: [
-        {
-          name: "giveaway_id",
-          description: "ID of the giveaway you want to reroll",
-          type: ApplicationCommandOptionType.String,
-          required: true,
-        },
-      ],
-      permissionsRequired: [],
+      isSubCommand: true,
+      data: {
+        name: "reroll",
+        description: "Reroll a giveway for new winners",
+        type: ApplicationCommandOptionType.Subcommand,
+        options: [
+          {
+            name: "giveaway_id",
+            description: "ID of the giveaway you want to reroll",
+            type: ApplicationCommandOptionType.String,
+            required: true,
+          },
+        ],
+      },
 
       callback: async (client, interaction) => {
         try {
           const giveaway_id = interaction.options.getString("giveaway_id");
+          const guildID = interaction.guildId;
 
-          if (!giveaway_id) {
+          if (!giveaway_id || !guildID) {
             await interaction.reply({
-              content: "Invalid command",
-              flags: "Ephemeral",
+              content: `⚠️ Invalid command. Please check your input and try again.`,
             });
             return;
           }
 
-          const giveaway = await Giveaway.findOne({ messageID: giveaway_id });
+          await interaction.deferReply();
+
+          const giveaway = await Giveaway.findOne({
+            messageID: giveaway_id,
+            serverID: guildID,
+          });
 
           if (!giveaway) {
-            await interaction.reply({
-              content: "No giveaway found.",
-              flags: "Ephemeral",
+            await interaction.editReply({
+              content:
+                "🚫 Giveaway not found. Please ensure the provided ID is correct.",
             });
             return;
           }
@@ -54,13 +63,18 @@ const init = async (): Promise<ICommandObj | undefined> => {
             endMessageID,
           } = giveaway;
 
-          const guild = await client.guilds.fetch(serverID);
-          const channel = await guild.channels.fetch(channelID);
+          const guild = await client.guilds.fetch({
+            guild: serverID,
+            force: true,
+          });
+          const channel = await guild.channels.fetch(channelID, {
+            force: true,
+          });
 
           if (!channel || !channel.isTextBased() || endMessageID.length === 0) {
-            await interaction.reply({
-              content: "Giveaway data is corrupted",
-              flags: "Ephemeral",
+            await interaction.editReply({
+              content:
+                "Giveaway data appears to be corrupted. Please try again or contact an admin.",
             });
             return;
           }
@@ -69,10 +83,9 @@ const init = async (): Promise<ICommandObj | undefined> => {
             participants.length === 0 ||
             participants.length <= winnersCount
           ) {
-            await interaction.reply({
+            await interaction.editReply({
               content:
-                "Cannot reroll giveaway. Possible reaons: \n1. No participants\n2. Number of winners is less than or same as number of participants",
-              flags: "Ephemeral",
+                "⚠️ Cannot reroll the giveaway.\nPossible reasons:\n1️⃣ No participants\n2️⃣ 🏆 Winners ≥ 👥 Participants",
             });
             return;
           }
@@ -122,12 +135,12 @@ const init = async (): Promise<ICommandObj | undefined> => {
           //   save winners
           await giveaway.save();
         } catch (err) {
-          console.error("Error in greroll callback", err);
+          console.error("Error in giveaway reroll callback", err);
         }
       },
     };
   } catch (err) {
-    console.error("Error in greroll command", err);
+    console.error("Error in giveaway reroll command", err);
     return undefined;
   }
 };

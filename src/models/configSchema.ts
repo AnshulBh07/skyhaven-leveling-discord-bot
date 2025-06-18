@@ -63,6 +63,7 @@ const ModerationConfig = new Schema(
 const GiveawayConfig = new Schema(
   {
     roles: { type: [GiveawayRolesSchema], default: [] },
+    giveawayRole: { type: String, default: "" },
     managerRoles: { type: [String], default: [] },
     giveawayChannelID: { type: String, default: "" },
     banList: { type: [BanSchema], default: [] },

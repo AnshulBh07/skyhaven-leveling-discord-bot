@@ -679,57 +679,6 @@ export const announceAllocation = async (client: Client, raid: IRaid) => {
   }
 };
 
-// utility function to check whether the person to send text on a thread has manager role
-// for raids
-export const isManager = async (
-  client: Client,
-  userID: string,
-  guildID: string,
-  type: string
-) => {
-  try {
-    const guildConfig = await Config.findOne({ serverID: guildID });
-
-    if (!guildConfig) return;
-
-    const { raidConfig, gquestMazeConfig, giveawayConfig, levelConfig } =
-      guildConfig;
-
-    const getManagerRoles = () => {
-      switch (type) {
-        case "gquest":
-          return gquestMazeConfig.managerRoles;
-        case "maze":
-          return gquestMazeConfig.managerRoles;
-        case "giveaway":
-          return giveawayConfig.managerRoles;
-        case "leveling":
-          return levelConfig.managerRoles;
-        case "raid":
-          return raidConfig.managerRoles;
-        default:
-          return new Array<string>();
-      }
-    };
-
-    const managerRoles = getManagerRoles();
-
-    const guild = await client.guilds.fetch(guildID);
-    const member = await guild.members.fetch(userID);
-    const member_roles = Array.from(member.roles.cache.entries()).map(
-      ([_, role]) => role.id
-    );
-
-    for (const role of managerRoles) {
-      if (member_roles.includes(role)) return true;
-    }
-
-    return false;
-  } catch (err) {
-    console.error("Error in isManager function");
-  }
-};
-
 export const raidReviewReminder = async (client: Client, raid: IRaid) => {
   try {
     const guild = await client.guilds.fetch(raid.serverID);

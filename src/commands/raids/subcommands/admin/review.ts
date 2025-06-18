@@ -13,8 +13,9 @@ import {
 import { ISubcommand } from "../../../../utils/interfaces";
 import Raid from "../../../../models/raidSchema";
 import { leaderboardThumbnail } from "../../../../data/helperArrays";
-import { calculateReliability, isManager } from "../../../../utils/raidUtils";
+import { calculateReliability} from "../../../../utils/raidUtils";
 import User from "../../../../models/userSchema";
+import { isManager } from "../../../../utils/permissionsCheck";
 
 // so if an admin doesn't review a raid it's on them entirely
 const init = async (): Promise<ISubcommand | undefined> => {

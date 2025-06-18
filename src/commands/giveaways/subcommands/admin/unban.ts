@@ -1,21 +1,24 @@
 import { ApplicationCommandOptionType } from "discord.js";
-import { ICommandObj } from "../../../utils/interfaces";
-import Config from "../../../models/configSchema";
+import { ISubcommand } from "../../../../utils/interfaces";
+import Config from "../../../../models/configSchema";
 
-const init = async (): Promise<ICommandObj | undefined> => {
+const init = async (): Promise<ISubcommand | undefined> => {
   try {
     return {
-      name: "gunban",
-      description: "Removes a user from giveaways ban list.",
-      options: [
-        {
-          name: "user",
-          description: "target user",
-          type: ApplicationCommandOptionType.User,
-          required: true,
-        },
-      ],
-      permissionsRequired: [],
+      isSubCommand: true,
+      data: {
+        name: "unban",
+        description: "Removes a user from giveaways ban list.",
+        type: ApplicationCommandOptionType.Subcommand,
+        options: [
+          {
+            name: "user",
+            description: "target user",
+            type: ApplicationCommandOptionType.User,
+            required: true,
+          },
+        ],
+      },
 
       callback: async (client, interaction) => {
         try {
@@ -23,17 +26,21 @@ const init = async (): Promise<ICommandObj | undefined> => {
           const guildID = interaction.guildId;
 
           if (!targetUser || !guildID) {
-            await interaction.reply({ content: `Invalid command.` });
+            await interaction.reply({
+              content: `⚠️ Invalid command. Please check your input and try again.`,
+            });
             return;
           }
 
-          await interaction.deferReply({ flags: "Ephemeral" });
+          await interaction.deferReply();
 
           //   get banlist and see if the user is already banned
           const guildConfig = await Config.findOne({ serverID: guildID });
 
           if (!guildConfig) {
-            await interaction.editReply("Invalid server.");
+            await interaction.editReply(
+              "🔍 This server could not be identified. Check if the bot has access."
+            );
             return;
           }
 
@@ -46,7 +53,7 @@ const init = async (): Promise<ICommandObj | undefined> => {
 
           if (!isBanned) {
             await interaction.editReply(
-              `<@${targetUser.id}> is not present in giveaways ban list.`
+              `⚠️ <@${targetUser.id}> is not in the giveaways ban list.`
             );
             return;
           }
@@ -57,15 +64,15 @@ const init = async (): Promise<ICommandObj | undefined> => {
           );
 
           await interaction.editReply(
-            `<@${targetUser.id}> has been removed from ban list.`
+            `✅ <@${targetUser.id}> has been removed from the giveaways ban list.`
           );
         } catch (err) {
-          console.error(err);
+          console.error("Error in giveaway unban command callback : ", err);
         }
       },
     };
   } catch (err) {
-    console.error(err);
+    console.error("Error in giveaway unban command : ", err);
     return undefined;
   }
 };

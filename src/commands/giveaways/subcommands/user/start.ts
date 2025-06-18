@@ -7,60 +7,64 @@ import {
   EmbedBuilder,
   Role,
 } from "discord.js";
-import { ICommandObj, IGiveaway } from "../../../utils/interfaces";
+import { IGiveaway, ISubcommand } from "../../../../utils/interfaces";
 import {
   giveawayStartMessages,
   leaderboardThumbnail,
-} from "../../../data/helperArrays";
+} from "../../../../data/helperArrays";
 import ms, { StringValue } from "ms";
-import Giveaway from "../../../models/giveawaySchema";
-import { attachCollector, endGiveaway } from "../../../utils/giveawayUtils";
+import Giveaway from "../../../../models/giveawaySchema";
+import { attachCollector, endGiveaway } from "../../../../utils/giveawayUtils";
+import { isUser } from "../../../../utils/permissionsCheck";
 
-const init = async (): Promise<ICommandObj | undefined> => {
+const init = async (): Promise<ISubcommand | undefined> => {
   try {
     return {
-      name: "gstart",
-      description: "Starts a giveaway.",
-      options: [
-        {
-          name: "prize",
-          description: "item to giveaway",
-          type: ApplicationCommandOptionType.String,
-          required: true,
-        },
-        {
-          name: "duration",
-          description: "duration for giveaway. Ex- 1h, 2d, 30m .. etc.",
-          type: ApplicationCommandOptionType.String,
-          required: true,
-        },
-        {
-          name: "winners",
-          description: "number of winners",
-          type: ApplicationCommandOptionType.Number,
-          min_value: 1,
-          required: true,
-        },
-        {
-          name: "role",
-          description: "role required to enter giveaway",
-          type: ApplicationCommandOptionType.Role,
-          required: false,
-        },
-        {
-          name: "host",
-          description: "hosted by",
-          type: ApplicationCommandOptionType.User,
-          required: false,
-        },
-        {
-          name: "image",
-          description: "screenshot of giveaway item.",
-          type: ApplicationCommandOptionType.Attachment,
-          required: false,
-        },
-      ],
-      permissionsRequired: [],
+      isSubCommand: true,
+      data: {
+        name: "start",
+        description: "Starts a giveaway.",
+        type: ApplicationCommandOptionType.Subcommand,
+        options: [
+          {
+            name: "prize",
+            description: "item to giveaway",
+            type: ApplicationCommandOptionType.String,
+            required: true,
+          },
+          {
+            name: "duration",
+            description: "duration for giveaway. Ex- 1h, 2d, 30m .. etc.",
+            type: ApplicationCommandOptionType.String,
+            required: true,
+          },
+          {
+            name: "winners",
+            description: "number of winners",
+            type: ApplicationCommandOptionType.Number,
+            min_value: 1,
+            required: true,
+          },
+          {
+            name: "role",
+            description: "role required to enter giveaway",
+            type: ApplicationCommandOptionType.Role,
+            required: false,
+          },
+          {
+            name: "host",
+            description: "hosted by",
+            type: ApplicationCommandOptionType.User,
+            required: false,
+          },
+          {
+            name: "image",
+            description: "screenshot of giveaway item.",
+            type: ApplicationCommandOptionType.Attachment,
+            required: false,
+          },
+        ],
+      },
 
       callback: async (client, interaction) => {
         try {
@@ -82,8 +86,7 @@ const init = async (): Promise<ICommandObj | undefined> => {
             !channelID
           ) {
             await interaction.reply({
-              content: "Invalid giveaway.",
-              flags: "Ephemeral",
+              content: `⚠️ Invalid command. Please check your input and try again.`,
             });
             return;
           }
@@ -91,7 +94,6 @@ const init = async (): Promise<ICommandObj | undefined> => {
           if (giveawayItem.length <= 0) {
             await interaction.reply({
               content: "Prize cannot be an empty string.",
-              flags: "Ephemeral",
             });
             return;
           }
@@ -102,7 +104,6 @@ const init = async (): Promise<ICommandObj | undefined> => {
             await interaction.reply({
               content:
                 "Invalid duration format. Use formats like `1h`, `30m`, `2d`, etc.",
-              ephemeral: true,
             });
             return;
           }
@@ -114,7 +115,6 @@ const init = async (): Promise<ICommandObj | undefined> => {
           ) {
             await interaction.reply({
               content: "Please provide a valid image.",
-              flags: "Ephemeral",
             });
             return;
           }
@@ -236,6 +236,7 @@ const init = async (): Promise<ICommandObj | undefined> => {
               // to avoid fetching stale state from db fetch a fresh one
               const freshGiveaway = await Giveaway.findOne({
                 messageID: newGiveaway.messageID,
+                serverID: guildID,
               });
 
               if (!freshGiveaway) return;
@@ -243,12 +244,12 @@ const init = async (): Promise<ICommandObj | undefined> => {
               await endGiveaway(client, freshGiveaway.messageID);
             }, endTime - Date.now());
         } catch (err) {
-          console.error("Error in gstart callback", err);
+          console.error("Error in giveaway start callback : ", err);
         }
       },
     };
   } catch (err) {
-    console.error("Error in gstart command", err);
+    console.error("Error in giveaway start command : ", err);
     return undefined;
   }
 };

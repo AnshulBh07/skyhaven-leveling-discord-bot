@@ -5,54 +5,53 @@ import {
   ButtonBuilder,
   ButtonStyle,
 } from "discord.js";
-import { ICommandObj, IGiveaway } from "../../../utils/interfaces";
-import User from "../../../models/userSchema";
-import { generateGiveawayListEmbed } from "../../../utils/giveawayUtils";
-import { leaderboardThumbnail } from "../../../data/helperArrays";
+import { ISubcommand } from "../../../../utils/interfaces";
+import Giveaway from "../../../../models/giveawaySchema";
+import { generateGiveawayListEmbed } from "../../../../utils/giveawayUtils";
+import { leaderboardThumbnail } from "../../../../data/helperArrays";
+import { isUser } from "../../../../utils/permissionsCheck";
 
-const init = async (): Promise<ICommandObj | undefined> => {
+const init = async (): Promise<ISubcommand | undefined> => {
   try {
     return {
-      name: "gentries",
-      description: "Displays list of all the giveaways user has taken part in.",
-      options: [
-        {
-          name: "user",
-          description: "target user",
-          type: ApplicationCommandOptionType.User,
-          required: false,
-        },
-      ],
-      permissionsRequired: [],
+      isSubCommand: true,
+      data: {
+        name: "list",
+        description:
+          "Displays a list of all active giveaways for current server.",
+        type: ApplicationCommandOptionType.Subcommand,
+        options: [],
+      },
 
       callback: async (client, interaction) => {
         try {
-          const targetUser =
-            interaction.options.getUser("user") ?? interaction.user;
+          const guildID = interaction.guildId;
 
-          const guild = interaction.guild;
-
-          await interaction.deferReply({ flags: "Ephemeral" });
-
-          const user = await User.findOne({ userID: targetUser.id }).populate(
-            "giveaways.giveawaysEntries"
-          );
-
-          if (!user || !guild) {
-            await interaction.editReply({ content: "User not found." });
+          if (!guildID) {
+            await interaction.reply({
+              content: `⚠️ Invalid command. Please check your input and try again.`,
+            });
             return;
           }
 
-          const allGiveaways = user.giveaways
-            .giveawaysEntries as unknown as IGiveaway[];
+          await interaction.deferReply();
+
+          const guild = await client.guilds.fetch(guildID);
+
+          //   get all the giveaways for current server
+          const giveaways = await Giveaway.find({
+            serverID: guildID,
+            isEnded: false,
+          });
+
           let page = 0;
           const pageSize = 3;
-          const totalPages = Math.ceil(allGiveaways.length / pageSize);
+          const totalPages = Math.ceil(giveaways.length / pageSize);
 
-          const description = `📦 List of all the giveaways for ${targetUser.username}`;
+          const description = `🎁 List of Active Giveaways`;
 
           const embed = generateGiveawayListEmbed(
-            allGiveaways,
+            giveaways,
             page,
             pageSize,
             guild.name,
@@ -67,12 +66,12 @@ const init = async (): Promise<ICommandObj | undefined> => {
             const buttonsRow =
               new ActionRowBuilder<ButtonBuilder>().addComponents(
                 new ButtonBuilder()
-                  .setCustomId("prev")
+                  .setCustomId("list_prev")
                   .setEmoji("⬅️")
                   .setDisabled(page === 0)
                   .setStyle(ButtonStyle.Secondary),
                 new ButtonBuilder()
-                  .setCustomId("next")
+                  .setCustomId("list_next")
                   .setEmoji("➡️")
                   .setDisabled(page === totalPages - 1)
                   .setStyle(ButtonStyle.Secondary)
@@ -91,18 +90,20 @@ const init = async (): Promise<ICommandObj | undefined> => {
           const reply = await interaction.fetchReply();
 
           const collector = reply.createMessageComponentCollector({
-            filter: (i) => ["prev", "next"].includes(i.customId),
+            filter: (i) =>
+              ["list_prev", "list_next"].includes(i.customId) &&
+              i.user.id === interaction.user.id,
             time: 60_000 * 10, //10 minutes
           });
 
           collector.on("collect", async (btnInt) => {
             try {
               await btnInt.deferUpdate();
-              if (btnInt.customId === "prev") page--;
-              if (btnInt.customId === "next") page++;
+              if (btnInt.customId === "list_prev") page--;
+              if (btnInt.customId === "list_next") page++;
 
               const newPage = generateGiveawayListEmbed(
-                allGiveaways,
+                giveaways,
                 page,
                 pageSize,
                 guild.name,
@@ -115,7 +116,10 @@ const init = async (): Promise<ICommandObj | undefined> => {
                 components: [newButtonsRow],
               });
             } catch (err) {
-              console.error("Error in collector");
+              console.error(
+                "Error in giveaway list collector on collect : ",
+                err
+              );
               return;
             }
           });
@@ -129,12 +133,12 @@ const init = async (): Promise<ICommandObj | undefined> => {
             }
           });
         } catch (err) {
-          console.error("Error in gentries callback :", err);
+          console.error("Error in giveaway list callback : ", err);
         }
       },
     };
   } catch (err) {
-    console.error("Error in gentries command :", err);
+    console.error("Error in giveaway list command :", err);
     return undefined;
   }
 };
