@@ -34,6 +34,7 @@ const BanSchema = new Schema(
 const LevelingConfig = new Schema(
   {
     levelRoles: { type: [LevelRolesSchema], default: [] },
+    managerRoles: { type: [String], default: [] },
     notificationChannelID: { type: String, default: null },
     blacklistedChannels: { type: [String], default: [] }, //bot cannot be operated in these channels
     ignoredChannels: { type: [String], default: [] }, //bot ignores xp gain from these channels
@@ -62,6 +63,7 @@ const ModerationConfig = new Schema(
 const GiveawayConfig = new Schema(
   {
     roles: { type: [GiveawayRolesSchema], default: [] },
+    managerRoles: { type: [String], default: [] },
     giveawayChannelID: { type: String, default: "" },
     banList: { type: [BanSchema], default: [] },
   },

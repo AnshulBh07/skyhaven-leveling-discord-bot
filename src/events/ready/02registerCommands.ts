@@ -3,61 +3,90 @@ import getLocalCommands from "../../utils/getLocalCommands";
 import getApplicationCommands from "../../utils/getApplicationCommands";
 import { areCommandsSame } from "../../utils/areCommandsSame";
 
-const execute = async (client: Client) => {
+const TEST_GUILD_NAME = "Test Server"; // replace with your dev server name
+
+const registerCommands = async (client: Client) => {
   try {
-    // get local commands (in file system)
     const localCommands = await getLocalCommands();
-    const guild = client.guilds.cache.find(
-      (guild) => guild.name == "Test Server"
-    );
+    const isDev = process.env.NODE_ENV !== "production";
 
-    if (!guild) return;
-
-    const commandManager = guild.commands;
-    const appCommands = await getApplicationCommands(client, guild.id);
-
-    if (!appCommands) {
-      console.log(
-        `No application commands found for the the server named ${guild.name}`
+    if (isDev) {
+      // 🔁 Register for dev guild instantly
+      const devGuild = client.guilds.cache.find(
+        (guild) => guild.name === TEST_GUILD_NAME
       );
-      return;
-    }
+      if (!devGuild) {
+        console.error("⚠️ Dev guild not found.");
+        return;
+      }
 
-    for (const localCommand of localCommands) {
-      const { isDeleted, callback, ...command } = localCommand;
-      // check if local command exists in application command
-      const existingCommand = appCommands.find(
-        (cmd) => cmd.name === localCommand.name
-      );
+      const guildCommands = await getApplicationCommands(client, devGuild.id);
+      const manager = devGuild.commands;
 
-      // if command does not exist then create one
-      if (!existingCommand) {
-        await commandManager.create(command);
-        console.log(
-          `✅ Command ${command.name} created successfully for guild ${guild.name}`
-        );
-      } else {
-        // first check if the command is deleted
+      if (!guildCommands) {
+        console.log("No guild commands found while registering.");
+        return;
+      }
+
+      for (const localCommand of localCommands) {
+        const { isDeleted, callback, ...command } = localCommand;
+        const existing = guildCommands.find((c) => c.name === command.name);
+
         if (isDeleted) {
-          await commandManager.delete(existingCommand);
-          console.log(
-            `🗑️ Command ${command.name} deleted for guild ${guild.name}.`
-          );
+          if (existing) {
+            await manager.delete(existing.id);
+            console.log(`🗑️ Deleted command ${command.name} (guild)`);
+          }
           continue;
         }
 
-        // check if commands are same or not
-        if (!areCommandsSame(localCommand, existingCommand)) {
-          await commandManager.edit(existingCommand, { ...command });
-          console.log(
-            `👍 Command ${command.name} updated successfully for guild ${guild.name}.`
-          );
+        if (!existing) {
+          await manager.create(command);
+          console.log(`✅ Created command ${command.name} (guild)`);
+        } else if (!areCommandsSame(localCommand, existing)) {
+          await manager.edit(existing.id, command);
+          console.log(`🔄 Updated command ${command.name} (guild)`);
+        }
+      }
+    } else {
+      // 🌍 Register globally (may take up to 1 hour)
+      const globalCommands = await getApplicationCommands(client);
+      const manager = client.application?.commands;
+
+      if (!globalCommands) {
+        console.log("No global commands found while registering");
+        return;
+      }
+
+      if (!manager) {
+        console.error("❌ Could not access application.commands");
+        return;
+      }
+
+      for (const localCommand of localCommands) {
+        const { isDeleted, callback, ...command } = localCommand;
+        const existing = globalCommands.find((c) => c.name === command.name);
+
+        if (isDeleted) {
+          if (existing) {
+            await manager.delete(existing.id);
+            console.log(`🗑️ Deleted command ${command.name} (global)`);
+          }
+          continue;
+        }
+
+        if (!existing) {
+          await manager.create(command);
+          console.log(`🌐 Created command ${command.name} (global)`);
+        } else if (!areCommandsSame(localCommand, existing)) {
+          await manager.edit(existing.id, command);
+          console.log(`🌐 Updated command ${command.name} (global)`);
         }
       }
     }
   } catch (err) {
-    console.error(err);
+    console.error("Error registering commands:", err);
   }
 };
 
-export default execute;
+export default registerCommands;

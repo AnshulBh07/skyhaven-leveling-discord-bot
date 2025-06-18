@@ -93,6 +93,10 @@ export const attachRaidParticipationCollector = async (
       new ButtonBuilder()
         .setCustomId("raid_support")
         .setEmoji(supportEmojiID)
+        .setStyle(ButtonStyle.Secondary),
+      new ButtonBuilder()
+        .setCustomId("raid_remove")
+        .setEmoji("❌")
         .setStyle(ButtonStyle.Secondary)
     );
 
@@ -101,12 +105,17 @@ export const attachRaidParticipationCollector = async (
     const collector = announceMsg.createMessageComponentCollector({
       time: raid.raidTimestamps.finishTime! - Date.now(),
       filter: (i) =>
-        ["raid_tank", "raid_support", "raid_dps"].includes(i.customId),
+        ["raid_tank", "raid_support", "raid_dps", "raid_remove"].includes(
+          i.customId
+        ),
     });
 
     let tanks: string[] = [],
       dps: string[] = [],
-      supports: string[] = [];
+      supports: string[] = [],
+      waitlist_tanks: string[] = [],
+      waitlist_supports: string[] = [],
+      waitlist_dps: string[] = [];
 
     const banner = new AttachmentBuilder(raid.bannerUrl).setName("raid.png");
 
@@ -116,14 +125,15 @@ export const attachRaidParticipationCollector = async (
         // each user participating must have the required role
         await btnInt.deferReply({ flags: "Ephemeral" });
 
-        const guild = btnInt.guild;
-
         if (!guild) {
           await btnInt.editReply({ content: "No guild found." });
           return;
         }
 
-        const guild_member = await guild.members.fetch(btnInt.user.id);
+        const guild_member = await guild.members.fetch({
+          user: btnInt.user.id,
+          force: true,
+        });
         const member_roles = Array.from(guild_member.roles.cache.entries()).map(
           ([_, role]) => role.id
         );
@@ -146,31 +156,19 @@ export const attachRaidParticipationCollector = async (
 
         // now check which button is clicked
         if (btnInt.customId === "raid_tank") {
-          totalRegistered < 16
-            ? await Raid.findOneAndUpdate(
-                {
-                  announcementMessageID: announceMsg.id,
-                },
-                {
-                  $addToSet: { "participants.tank": user.id },
-                  $pull: {
-                    "participants.dps": user.id,
-                    "participants.support": user.id,
-                  },
-                }
-              )
-            : await Raid.findOneAndUpdate(
-                {
-                  announcementMessageID: announceMsg.id,
-                },
-                {
-                  $addToSet: { "waitlist.tank": user.id },
-                  $pull: {
-                    "waitlist.dps": user.id,
-                    "waitlist.support": user.id,
-                  },
-                }
-              );
+          if (totalRegistered < 16) {
+            supports = supports.filter((member) => member !== user.id);
+            dps = dps.filter((member) => member !== user.id);
+
+            if (!tanks.includes(user.id)) tanks.push(user.id);
+          } else {
+            waitlist_supports = waitlist_supports.filter(
+              (member) => member !== user.id
+            );
+            waitlist_dps = waitlist_dps.filter((member) => member !== user.id);
+
+            if (!waitlist_tanks.includes(user.id)) waitlist_tanks.push(user.id);
+          }
 
           await btnInt.editReply({
             content:
@@ -178,39 +176,24 @@ export const attachRaidParticipationCollector = async (
                 ? "You registered as a tank for next raid."
                 : "Raid is full! You’ve been added to the waitlist.",
           });
-
-          supports = supports.filter((member) => member !== user.id);
-          dps = dps.filter((member) => member !== user.id);
-
-          if (!tanks.includes(user.id)) tanks.push(user.id);
         }
 
         if (btnInt.customId === "raid_dps") {
-          totalRegistered < 16
-            ? await Raid.findOneAndUpdate(
-                {
-                  announcementMessageID: announceMsg.id,
-                },
-                {
-                  $addToSet: { "participants.dps": user.id },
-                  $pull: {
-                    "participants.tank": user.id,
-                    "participants.support": user.id,
-                  },
-                }
-              )
-            : await Raid.findOneAndUpdate(
-                {
-                  announcementMessageID: announceMsg.id,
-                },
-                {
-                  $addToSet: { "waitlist.dps": user.id },
-                  $pull: {
-                    "waitlist.tank": user.id,
-                    "waitlist.support": user.id,
-                  },
-                }
-              );
+          if (totalRegistered < 16) {
+            tanks = tanks.filter((member) => member !== user.id);
+            supports = supports.filter((member) => member !== user.id);
+
+            if (!dps.includes(user.id)) dps.push(user.id);
+          } else {
+            waitlist_tanks = waitlist_tanks.filter(
+              (member) => member !== user.id
+            );
+            waitlist_supports = waitlist_supports.filter(
+              (member) => member !== user.id
+            );
+
+            if (!waitlist_dps.includes(user.id)) waitlist_dps.push(user.id);
+          }
 
           await btnInt.editReply({
             content:
@@ -218,39 +201,23 @@ export const attachRaidParticipationCollector = async (
                 ? "You registered as a dps for next raid."
                 : "Raid is full! You’ve been added to the waitlist.",
           });
-
-          tanks = tanks.filter((member) => member !== user.id);
-          supports = supports.filter((member) => member !== user.id);
-
-          if (!dps.includes(user.id)) dps.push(user.id);
         }
 
         if (btnInt.customId === "raid_support") {
-          totalRegistered < 16
-            ? await Raid.findOneAndUpdate(
-                {
-                  announcementMessageID: announceMsg.id,
-                },
-                {
-                  $addToSet: { "participants.support": user.id },
-                  $pull: {
-                    "participants.dps": user.id,
-                    "participants.tank": user.id,
-                  },
-                }
-              )
-            : await Raid.findOneAndUpdate(
-                {
-                  announcementMessageID: announceMsg.id,
-                },
-                {
-                  $addToSet: { "waitlist.support": user.id },
-                  $pull: {
-                    "waitlist.dps": user.id,
-                    "waitlist.tank": user.id,
-                  },
-                }
-              );
+          if (totalRegistered < 16) {
+            dps = dps.filter((member) => member !== user.id);
+            tanks = tanks.filter((member) => member !== user.id);
+
+            if (!supports.includes(user.id)) supports.push(user.id);
+          } else {
+            waitlist_dps = waitlist_dps.filter((member) => member !== user.id);
+            waitlist_tanks = waitlist_tanks.filter(
+              (member) => member !== user.id
+            );
+
+            if (!waitlist_supports.includes(user.id))
+              waitlist_supports.push(user.id);
+          }
 
           await btnInt.editReply({
             content:
@@ -258,12 +225,48 @@ export const attachRaidParticipationCollector = async (
                 ? "You registered as a support for next raid."
                 : "Raid is full! You’ve been added to the waitlist.",
           });
-
-          dps = dps.filter((member) => member !== user.id);
-          tanks = tanks.filter((member) => member !== user.id);
-
-          if (!supports.includes(user.id)) supports.push(user.id);
         }
+
+        if (btnInt.customId === "raid_remove") {
+          tanks = tanks.filter((member) => member !== user.id);
+          supports = supports.filter((member) => member !== user.id);
+          dps = dps.filter((member) => member !== user.id);
+          waitlist_tanks = waitlist_tanks.filter(
+            (member) => member !== user.id
+          );
+          waitlist_supports = waitlist_supports.filter(
+            (member) => member !== user.id
+          );
+          waitlist_dps = waitlist_dps.filter((member) => member !== user.id);
+
+          await btnInt.editReply({
+            content: "You are not a part of this raid anymore.",
+          });
+        }
+
+        // update schema
+        await Raid.findOneAndUpdate(
+          {
+            announcementMessageID: announceMsg.id,
+            serverID: raid.serverID,
+          },
+          {
+            $set: {
+              "participants.tank": tanks,
+              "participants.support": supports,
+              "participants.dps": dps,
+              "waitlist.tank": waitlist_tanks,
+              "waitlist.support": waitlist_supports,
+              "waitlist.dps": waitlist_dps,
+            },
+          }
+        );
+
+        const waitlisted = [
+          ...waitlist_dps,
+          ...waitlist_supports,
+          ...waitlist_tanks,
+        ];
 
         const newEmbed = EmbedBuilder.from(ogEmbed);
 
@@ -292,16 +295,25 @@ export const attachRaidParticipationCollector = async (
               value: `${supports.map((member) => `<@${member}>`).join("\n")}`,
               inline: true,
             },
-            {
-              name: "\u200b",
-              value: `**Total Participants : **${
-                tanks.length + supports.length + dps.length
-              }`,
-              inline: false,
-            },
           ])
           .setThumbnail("attachment://thumbnail.png")
           .setImage("attachment://raid.png");
+
+        if (waitlisted.length > 0) {
+          newEmbed.addFields({
+            name: "\u200b",
+            value: `${waitlisted.map((user) => `<@${user}>`).join("\n")}`,
+            inline: false,
+          });
+        }
+
+        newEmbed.addFields({
+          name: "\u200b",
+          value: `**Total Participants : **${
+            tanks.length + supports.length + dps.length + waitlisted.length
+          }`,
+          inline: false,
+        });
 
         await announceMsg.edit({
           embeds: [newEmbed],
@@ -672,15 +684,35 @@ export const announceAllocation = async (client: Client, raid: IRaid) => {
 export const isManager = async (
   client: Client,
   userID: string,
-  guildID: string
+  guildID: string,
+  type: string
 ) => {
   try {
     const guildConfig = await Config.findOne({ serverID: guildID });
 
     if (!guildConfig) return;
 
-    const { raidConfig } = guildConfig;
-    const { managerRoles } = raidConfig;
+    const { raidConfig, gquestMazeConfig, giveawayConfig, levelConfig } =
+      guildConfig;
+
+    const getManagerRoles = () => {
+      switch (type) {
+        case "gquest":
+          return gquestMazeConfig.managerRoles;
+        case "maze":
+          return gquestMazeConfig.managerRoles;
+        case "giveaway":
+          return giveawayConfig.managerRoles;
+        case "leveling":
+          return levelConfig.managerRoles;
+        case "raid":
+          return raidConfig.managerRoles;
+        default:
+          return new Array<string>();
+      }
+    };
+
+    const managerRoles = getManagerRoles();
 
     const guild = await client.guilds.fetch(guildID);
     const member = await guild.members.fetch(userID);
@@ -746,4 +778,10 @@ export const raidReviewReminder = async (client: Client, raid: IRaid) => {
   } catch (err) {
     console.error("Error in raid review reminder function : ", err);
   }
+};
+
+export const calculateReliability = (completed: number, noShow: number) => {
+  const total = completed + noShow;
+
+  return Math.round((completed / total) * 100);
 };

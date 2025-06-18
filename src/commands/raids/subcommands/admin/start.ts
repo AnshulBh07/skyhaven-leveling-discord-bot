@@ -186,6 +186,11 @@ const init = async (): Promise<ISubcommand | undefined> => {
                 name: `\n`,
                 value: `<:_:${tankEmojiID}> **TANK** - Take the hits, flex your aggro.`,
                 inline: false,
+              },
+              {
+                name: "\u200b",
+                value: "Use ❌ to de-register from raid.",
+                inline: false,
               }
             )
             .setImage("attachment://raid.png")

@@ -72,7 +72,12 @@ const init = async (): Promise<ISubcommand | undefined> => {
           rootCollector.on("collect", async (msg) => {
             try {
               // check if the message author is valid
-              const isAdmin = await isManager(client, msg.author.id, guild.id);
+              const isAdmin = await isManager(
+                client,
+                msg.author.id,
+                guild.id,
+                "raid"
+              );
 
               if (!isAdmin) {
                 await buffsThread.send({
