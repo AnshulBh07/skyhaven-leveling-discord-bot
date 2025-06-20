@@ -47,6 +47,7 @@ export interface IGiveawayRoles {
 
 interface ILevelConfig {
   levelRoles: ILevelRoles[];
+  managerRoles: string[];
   notificationChannelID: string;
   blacklistedChannels: string[];
   ignoredChannels: string[];
@@ -210,7 +211,7 @@ export interface IRaid {
     | "completed";
   raidTimestamps: {
     announcementTime: number;
-    startTime?: number;
+    startTime: number;
     scoutTime?: number;
     allotmentTime?: number;
     finishTime?: number;
@@ -234,17 +235,25 @@ interface IRaidConfig {
 interface IModerationConfig {
   welcomeMessage: string;
   welcomeChannelID: string;
+  farewellMessage: string;
+  farewellChannelID: string;
+  botAdminIDs: string[];
 }
+
+type UserBan = { userID: string; reason?: string; banDate: Date };
 
 interface IGiveawayConfig {
   giveawayChannelID: "";
   roles: IGiveawayRoles[];
+  giveawayRole: string;
+  managerRoles: string[];
+  banList: UserBan[];
 }
 
 export interface IConfig {
   serverID: string;
   botID: string;
-  devsIDs: string[];
+  devsIDs?: string[];
   levelConfig: ILevelConfig;
   moderationConfig: IModerationConfig;
   giveawayConfig: IGiveawayConfig;

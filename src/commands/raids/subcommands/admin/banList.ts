@@ -1,4 +1,8 @@
-import { ApplicationCommandOptionType, AttachmentBuilder, EmbedBuilder } from "discord.js";
+import {
+  ApplicationCommandOptionType,
+  AttachmentBuilder,
+  EmbedBuilder,
+} from "discord.js";
 import { ISubcommand } from "../../../../utils/interfaces";
 import Config from "../../../../models/configSchema";
 import { leaderboardThumbnail } from "../../../../data/helperArrays";
@@ -20,16 +24,21 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const guildId = interaction.guildId;
 
           if (!guildId) {
-            await interaction.reply("Invalid command.");
+            await interaction.reply({
+              content:
+                "⚠️ Invalid command. Please check your input and try again.",
+            });
             return;
           }
 
-          await interaction.deferReply();
+          await interaction.deferReply({ flags: "Ephemeral" });
 
           const guildConfig = await Config.findOne({ serverID: guildId });
 
           if (!guildConfig) {
-            await interaction.editReply("No server found");
+            await interaction.editReply(
+              "🔍 This server could not be identified. Check if the bot has access."
+            );
             return;
           }
 

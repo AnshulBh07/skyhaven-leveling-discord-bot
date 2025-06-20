@@ -9,7 +9,6 @@ import { IGiveaway, ISubcommand } from "../../../../utils/interfaces";
 import User from "../../../../models/userSchema";
 import { generateGiveawayListEmbed } from "../../../../utils/giveawayUtils";
 import { leaderboardThumbnail } from "../../../../data/helperArrays";
-import { isUser } from "../../../../utils/permissionsCheck";
 
 const init = async (): Promise<ISubcommand | undefined> => {
   try {
@@ -35,13 +34,14 @@ const init = async (): Promise<ISubcommand | undefined> => {
             interaction.options.getUser("user") ?? interaction.user;
 
           const guild = interaction.guild;
+          const channel = interaction.channel;
 
-          if (!guild) {
-            await interaction.reply({ content: "🏰 Guild not found." });
+          if (!guild || !channel || channel.type !== 0 || targetUser.bot) {
+            await interaction.editReply({
+              content: `⚠️ Invalid command. Please check your input and try again.`,
+            });
             return;
           }
-
-          await interaction.deferReply();
 
           const user = await User.findOne({
             userID: targetUser.id,
@@ -92,14 +92,15 @@ const init = async (): Promise<ISubcommand | undefined> => {
 
           const initialButtons = generateButtons();
 
-          await interaction.editReply({
+          await interaction.deleteReply();
+
+          const winsMsg = await channel.send({
             embeds: [embed],
             files: [thumbnail],
             components: [initialButtons],
           });
-          const reply = await interaction.fetchReply();
 
-          const collector = reply.createMessageComponentCollector({
+          const collector = winsMsg.createMessageComponentCollector({
             filter: (i) =>
               ["wins_prev", "wins_next"].includes(i.customId) &&
               i.user.id === interaction.user.id,
@@ -121,7 +122,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
               );
 
               const newButtonsRow = generateButtons();
-              await interaction.editReply({
+              await winsMsg.edit({
                 embeds: [newPage],
                 components: [newButtonsRow],
               });
@@ -136,7 +137,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
 
           collector.on("end", async (collected, reason) => {
             if (reason === "time") {
-              await interaction.editReply({
+              await winsMsg.edit({
                 content: "⏱️ Interaction timeout.",
                 components: [],
               });

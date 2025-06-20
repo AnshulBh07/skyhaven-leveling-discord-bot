@@ -26,15 +26,13 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const targetUser = interaction.options.getUser("user");
           const guild = interaction.guild;
 
-          if (!guild || !targetUser) {
-            await interaction.reply({
+          if (!guild || !targetUser || targetUser.bot) {
+            await interaction.editReply({
               content:
                 "⚠️ Invalid command. Please check your input and try again.",
             });
             return;
           }
-
-          await interaction.deferReply();
 
           const guildConfig = await Config.findOne({ serverID: guild.id });
 

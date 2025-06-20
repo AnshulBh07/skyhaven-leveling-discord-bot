@@ -33,19 +33,21 @@ const init = async (): Promise<ISubcommand | undefined> => {
 
           if (!message_id || !guild) {
             await interaction.reply({
-              content: "Invalid command.",
+              content: `⚠️ Invalid command. Please check your input and try again.`,
               flags: "Ephemeral",
             });
             return;
           }
 
-          await interaction.deferReply({ flags: "Ephemeral" });
+          await interaction.deferReply();
 
           //   find the gquest
           const gquest = await GQuest.findOne({ messageID: message_id });
 
           if (!gquest) {
-            await interaction.editReply({ content: "No guild quest found." });
+            await interaction.editReply({
+              content: "📜 No guild quest found.",
+            });
             return;
           }
 
@@ -59,7 +61,10 @@ const init = async (): Promise<ISubcommand | undefined> => {
                 .setStyle(ButtonStyle.Link)
             );
 
-          await interaction.editReply({ components: [LinkButton] });
+          await interaction.followUp({
+            components: [LinkButton],
+            ephemeral: false,
+          });
         } catch (err) {
           console.error("Error in gquest find subcommand callback : ", err);
         }

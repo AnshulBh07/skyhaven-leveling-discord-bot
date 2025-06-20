@@ -88,8 +88,8 @@ const init = async (): Promise<ISubcommand | undefined> => {
 
           if (!guild || !channel || channel.type !== ChannelType.GuildText) {
             await interaction.reply({
-              content: "Invalid command.",
-              flags: "Ephemeral",
+              content:
+                "⚠️ Invalid command. Please check your input and try again.",
             });
             return;
           }
@@ -131,10 +131,47 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const { raidDay, raidTime, tankEmojiID, supportEmojiID, dpsEmojiID } =
             raidConfig;
 
+          const currTime = Date.now();
+          // cannot start a new raid if a raid is already scheduled, that is the currtime is smaller than
+          // the startime of latest raid
+          const raids = await Raid.find({ serverID: guild.id }).sort({
+            "raidTimestamps.startTime": -1,
+          });
+
+          if (!raids.length) {
+            await interaction.editReply({ content: "No raids found." });
+            return;
+          }
+
+          const latestRaid = raids[0] as IRaid;
+
+          if (
+            !latestRaid.raidTimestamps.finishTime &&
+            latestRaid.raidTimestamps.startTime > currTime
+          ) {
+            await interaction.editReply({
+              content:
+                "Cannot start a new raid when a raid is already scheduled.",
+            });
+            return;
+          }
+
           const day = interaction.options.getNumber("day") ?? raidDay;
           const time = interaction.options.getString("time") ?? raidTime;
 
           const relativeTime = getRelativeDiscordTime(day + 1, time); //gives unix epoch in seconds
+
+          // cannot create a raid with time that is less than 3 hours close
+          const threshold = 3 * 60 * 60 * 1000; //3 hours
+          const startTime = relativeTime * 1000;
+
+          if (startTime - currTime < threshold) {
+            await interaction.editReply({
+              content:
+                "⚠️ Raid start time must be at least 3 hours from now. Please schedule accordingly.",
+            });
+            return;
+          }
 
           const thumbnail = new AttachmentBuilder(leaderboardThumbnail).setName(
             "thumbnail.png"
@@ -199,7 +236,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
             })
             .setTimestamp();
 
-          await interaction.editReply({ content: "Raid process started." });
+          await interaction.editReply({ content: "Raid process started..." });
 
           const raidMsg = await channel.send({
             embeds: [raidEmbed],
@@ -229,7 +266,6 @@ const init = async (): Promise<ISubcommand | undefined> => {
             raidTimestamps: {
               announcementTime: Date.now(),
               startTime: relativeTime * 1000,
-              finishTime: relativeTime * 1000 + 3 * 60 * 60 * 1000, //rais start time + 3 hours roughly
             },
           });
           await newRaid.save();
@@ -237,7 +273,33 @@ const init = async (): Promise<ISubcommand | undefined> => {
           // attach collector for participation
           await attachRaidParticipationCollector(client, newRaid as IRaid);
 
-          // send scout reminder embed
+          // send scout reminder embed 24 hrs before raid time, take edge case in consideration
+          // what if admin creates a raid that is within next few hours (less than 24)
+          // if that's the case send scout reminder immediately
+          const isWithin24H = startTime - currTime < 24 * 60 * 60 * 1000;
+
+          setTimeout(
+            async () => {
+              try {
+                const freshRaid = await Raid.findOne({
+                  announcementMessageID: raidMsg.id,
+                  serverID: guild.id,
+                });
+
+                if (
+                  freshRaid &&
+                  (!freshRaid.bossBuffsImageUrl.length ||
+                    !freshRaid.bossDebuffsImageUrl.length)
+                )
+                  await sendScoutReminder(client, freshRaid as IRaid);
+              } catch (err) {
+                console.error("Error in scout reminder timer : ", err);
+              }
+            },
+            isWithin24H ? 1000 : startTime - 24 * 60 * 60 * 1000 - currTime
+          );
+
+          // allocate teams and send a message, do this 1 hr before raid
           setTimeout(async () => {
             try {
               const freshRaid = await Raid.findOne({
@@ -245,16 +307,12 @@ const init = async (): Promise<ISubcommand | undefined> => {
                 serverID: guild.id,
               });
 
-              if (
-                freshRaid &&
-                (!freshRaid.bossBuffsImageUrl.length ||
-                  !freshRaid.bossDebuffsImageUrl.length)
-              )
-                await sendScoutReminder(client, freshRaid as IRaid);
+              if (freshRaid)
+                await announceAllocation(client, freshRaid as IRaid);
             } catch (err) {
-              console.error("Error in scout reminder timer : ", err);
+              console.error("Error in team allocation timer : ", err);
             }
-          }, 60 * 1000 * 2);
+          }, startTime - currTime - 60 * 60 * 1000);
 
           // send a reminder to all participants 30 minutes before raid
           setTimeout(async () => {
@@ -269,24 +327,9 @@ const init = async (): Promise<ISubcommand | undefined> => {
             } catch (err) {
               console.error("Error in raid reminder timer : ", err);
             }
-          }, 60 * 1000 * 4);
+          }, startTime - currTime - 30 * 60 * 1000);
 
-          // allocate teams and send a message
-          setTimeout(async () => {
-            try {
-              const freshRaid = await Raid.findOne({
-                announcementMessageID: raidMsg.id,
-                serverID: guild.id,
-              });
-
-              if (freshRaid)
-                await announceAllocation(client, freshRaid as IRaid);
-            } catch (err) {
-              console.error("Error in team allocation timer : ", err);
-            }
-          }, 120 * 1000 * 3);
-
-          // timer for sending a review reminder
+          // timer for sending a review reminder, do this 3 hour after raid
           setTimeout(async () => {
             const freshRaid = await Raid.findOneAndUpdate(
               {
@@ -302,9 +345,9 @@ const init = async (): Promise<ISubcommand | undefined> => {
               { new: true }
             );
 
-            if (freshRaid && !freshRaid.raidTimestamps?.reviewTime)
+            if (freshRaid && !freshRaid.raidTimestamps.reviewTime)
               await raidReviewReminder(client, freshRaid as IRaid);
-          }, 60 * 1000 * 8);
+          }, startTime - currTime + 3 * 60 * 60 * 1000);
         } catch (err) {
           console.error("Error in raid start subcommand callback : ", err);
         }

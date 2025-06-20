@@ -1,6 +1,19 @@
 import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
+const TimestampsSchema = new Schema(
+  {
+    announcementTime: { type: Number, required: true, default: Date.now() },
+    startTime: { type: Number, required: true, default: null },
+    scoutTime: { type: Number, default: null },
+    allotmentTime: { type: Number, default: null },
+    finishTime: { type: Number, default: null },
+    reviewTime: { type: Number, default: null },
+    completedTime: { type: Number, default: null },
+  },
+  { timestamps: false, _v: false, _id: false }
+);
+
 const RaidSchema = new Schema(
   {
     serverID: { type: String, required: true, default: "" },
@@ -49,15 +62,7 @@ const RaidSchema = new Schema(
       ],
       default: "announced",
     },
-    raidTimestamps: {
-      announcementTime: { type: Number, required: true, default: Date.now() },
-      startTime: { type: Number, default: null },
-      scoutTime: { type: Number, default: null },
-      allotmentTime: { type: Number, default: null },
-      finishTime: { type: Number, default: null },
-      reviewTime: { type: Number, default: null },
-      completedTime: { type: Number, default: null },
-    },
+    raidTimestamps: { type: TimestampsSchema, required: true },
   },
   { timestamps: false }
 );

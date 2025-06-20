@@ -34,11 +34,15 @@ const init = async (): Promise<ISubcommand | undefined> => {
             interaction.options.getUser("user") ?? interaction.user;
 
           if (!toggleVal || !guild) {
-            await interaction.reply({ content: "Invalid command." });
+            await interaction.reply({
+              content:
+                "⚠️ Invalid command. Please check your input and try again.",
+              flags: "Ephemeral",
+            });
             return;
           }
 
-          await interaction.deferReply({ flags: "Ephemeral" });
+          await interaction.deferReply();
           //   update toggle in db
           await User.findOneAndUpdate(
             { userID: targetUser.id },

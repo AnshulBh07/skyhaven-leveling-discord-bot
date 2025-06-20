@@ -19,6 +19,7 @@ import Config from "../models/configSchema";
 import Raid from "../models/raidSchema";
 import { leaderboardThumbnail } from "../data/helperArrays";
 import User from "../models/userSchema";
+import { isUser } from "./permissionsCheck";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -66,13 +67,14 @@ export const attachRaidParticipationCollector = async (
   try {
     // fetch the message to attach collector on
     const guild = await client.guilds.fetch(raid.serverID);
-    const channel = await guild.channels.fetch(raid.channelID);
+    const channel = await guild.channels.fetch(raid.channelID, { force: true });
 
     if (!channel || channel.type !== ChannelType.GuildText) return;
 
-    const announceMsg = await channel.messages.fetch(
-      raid.announcementMessageID
-    );
+    const announceMsg = await channel.messages.fetch({
+      message: raid.announcementMessageID,
+      force: true,
+    });
 
     const guildConfig = await Config.findOne({ serverID: guild.id });
 
@@ -125,23 +127,10 @@ export const attachRaidParticipationCollector = async (
         // each user participating must have the required role
         await btnInt.deferReply({ flags: "Ephemeral" });
 
-        if (!guild) {
-          await btnInt.editReply({ content: "No guild found." });
-          return;
-        }
-
-        const guild_member = await guild.members.fetch({
-          user: btnInt.user.id,
-          force: true,
-        });
-        const member_roles = Array.from(guild_member.roles.cache.entries()).map(
-          ([_, role]) => role.id
-        );
-
-        if (!member_roles.includes(raidRole)) {
+        if (!(await isUser(client, btnInt.user.id, guild.id, "raid"))) {
           await btnInt.editReply({
             content:
-              "User does not have the required role to perform this action.",
+              "You do not have the required role to perform this action.",
           });
           return;
         }
@@ -353,7 +342,10 @@ const bossElements = [
 
 export const sendScoutReminder = async (client: Client, raid: IRaid) => {
   try {
-    const guild = await client.guilds.fetch(raid.serverID);
+    const guild = await client.guilds.fetch({
+      guild: raid.serverID,
+      force: true,
+    });
 
     const guildConfig = await Config.findOne({ serverID: guild.id });
 

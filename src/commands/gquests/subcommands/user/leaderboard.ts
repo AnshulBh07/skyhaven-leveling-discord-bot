@@ -20,7 +20,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
 
           if (!guild) {
             await interaction.reply({
-              content: "Invalid command.",
+              content: `⚠️ Invalid command. Please check your input and try again.`,
               flags: "Ephemeral",
             });
             return;

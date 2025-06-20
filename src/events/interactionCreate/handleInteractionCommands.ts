@@ -14,7 +14,7 @@ const execute = async (client: Client, interaction: Interaction) => {
   try {
     if (!interaction.isChatInputCommand()) return;
 
-    const allowedCommands = ["xpconfig", "gchannel"];
+    const allowedCommands = ["mod"];
 
     const guildConfig = await Config.findOne({ serverID: interaction.guildId });
 
@@ -26,14 +26,21 @@ const execute = async (client: Client, interaction: Interaction) => {
       return;
     }
 
+    const { botAdminIDs } = guildConfig.moderationConfig;
+    const isAdmin = botAdminIDs.includes(interaction.user.id);
+
+    // 1. bot must be configured
+    // 2. only mod commands are allowed otherwise (mod commands only usable by bot admins)
     if (
       !guildConfigCheck(guildConfig as unknown as IConfig) &&
       interaction.command &&
-      !allowedCommands.includes(interaction.command.name)
+      !allowedCommands.includes(interaction.command.name) &&
+      !isAdmin
     ) {
       await interaction.reply({
-        content:
-          "⚠️ This server isn't configured yet.\nPlease run `/xpconfig` to initialize the bot before using any other commands.",
+        content: isAdmin
+          ? "⚠️ **Server Configuration Not Found**\nAs a bot admin, please initialize the server by running `/mod setup`. This will guide you through the required configuration steps.\n\nUntil it's set up, most features will remain disabled."
+          : "⚠️ **Server Not Yet Configured**\nThe bot hasn't been set up for this server. Please contact a server admin or bot manager.",
         flags: "Ephemeral",
       });
       return;

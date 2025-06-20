@@ -15,7 +15,8 @@ const init = async (): Promise<ICommandObj | undefined> => {
     );
 
     const adminCommands: string[] = [],
-      userCommands: string[] = [];
+      userCommands: string[] = [],
+      ownerCommands: string[] = [];
 
     for (const file of allSubcommandFiles) {
       const module = await import(file);
@@ -37,7 +38,7 @@ const init = async (): Promise<ICommandObj | undefined> => {
 
       if (type === "admin") adminCommands.push(cmdName);
       if (type === "user") userCommands.push(cmdName);
-      // ignore owner commands, they can only be used by server owner and checked in command logic itself
+      if (type === "owner") ownerCommands.push(cmdName);
     }
 
     return {
@@ -50,13 +51,15 @@ const init = async (): Promise<ICommandObj | undefined> => {
 
       callback: async (client, interaction) => {
         try {
+          await interaction.deferReply({ flags: "Ephemeral" });
+
           // for a valid command call the clalback function using map
           const subcommandName = interaction.options.getSubcommand(false);
           const guild = interaction.guild;
           const channel = interaction.channel;
 
           if (!guild || !channel) {
-            await interaction.reply({
+            await interaction.editReply({
               content:
                 "⚠️ Invalid command. Please check your input and try again.",
             });
@@ -64,10 +67,9 @@ const init = async (): Promise<ICommandObj | undefined> => {
           }
 
           if (!subcommandName) {
-            await interaction.reply({
+            await interaction.editReply({
               content:
                 "⚠️ No subcommands detected. Make sure you're using the correct syntax.",
-              flags: "Ephemeral",
             });
             return;
           }
@@ -76,10 +78,9 @@ const init = async (): Promise<ICommandObj | undefined> => {
           const subCmd = subcommandsMap.get(subCmdKey);
 
           if (!subCmd) {
-            await interaction.reply({
+            await interaction.editReply({
               content:
                 "⚠️ No subcommands detected. Make sure you're using the correct syntax.",
-              flags: "Ephemeral",
             });
             return;
           }
@@ -93,7 +94,20 @@ const init = async (): Promise<ICommandObj | undefined> => {
             return;
           }
 
-          const { raidChannelID } = guildConfig.raidConfig;
+          const { botAdminIDs } = guildConfig.moderationConfig;
+          const { giveawayChannelID } = guildConfig.giveawayConfig;
+
+          // if it is an owner command and user is not owner
+          if (
+            ownerCommands.includes(subcommandName) &&
+            !botAdminIDs.includes(interaction.user.id)
+          ) {
+            await interaction.editReply({
+              content:
+                "⚠️ You lack the required permissions to use this command.",
+            });
+            return;
+          }
 
           // check permissions
           // command name is gonna be unique for given root command
@@ -124,15 +138,17 @@ const init = async (): Promise<ICommandObj | undefined> => {
               });
               return;
             }
+          }
 
-            // also user related commands can only be used in designated channel
-            if (channel.id !== raidChannelID) {
-              await interaction.editReply({
-                content:
-                  "⚠️ You cannot use this command in this channel. Please use it in <#${raidChannelID}>.",
-              });
-              return;
-            }
+          // admins and users will be forced to use designated channel
+          if (
+            !botAdminIDs.includes(interaction.user.id) &&
+            channel.id !== giveawayChannelID
+          ) {
+            await interaction.editReply({
+              content: `⚠️ You cannot use this command in this channel. Please use it in <#${giveawayChannelID}>.`,
+            });
+            return;
           }
 
           // call the function

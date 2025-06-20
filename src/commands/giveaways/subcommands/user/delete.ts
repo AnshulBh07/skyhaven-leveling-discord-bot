@@ -1,7 +1,6 @@
 import { ApplicationCommandOptionType } from "discord.js";
 import { ISubcommand } from "../../../../utils/interfaces";
 import Giveaway from "../../../../models/giveawaySchema";
-import { isUser } from "../../../../utils/permissionsCheck";
 
 const init = async (): Promise<ISubcommand | undefined> => {
   try {
@@ -28,13 +27,11 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const guildID = interaction.guildId;
 
           if (!giveaway_id || !guildID) {
-            await interaction.reply({
+            await interaction.editReply({
               content: `⚠️ Invalid command. Please check your input and try again.`,
             });
             return;
           }
-
-          await interaction.deferReply();
 
           const giveaway = await Giveaway.findOne({
             serverID: guildID,

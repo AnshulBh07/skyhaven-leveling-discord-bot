@@ -33,15 +33,13 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const reason = interaction.options.getString("reason") ?? "";
           const guildID = interaction.guildId;
 
-          if (!targetUser || !guildID) {
-            await interaction.reply({
+          if (!targetUser || !guildID || targetUser.bot) {
+            await interaction.editReply({
               content:
                 "⚠️ Invalid command. Please check your input and try again.",
             });
             return;
           }
-
-          await interaction.deferReply();
 
           //   get banlist and see if the user is already banned
           const guildConfig = await Config.findOne({ serverID: guildID });

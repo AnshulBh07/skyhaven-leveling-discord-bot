@@ -45,8 +45,8 @@ const init = async (): Promise<ISubcommand | undefined> => {
             !raid_id
           ) {
             await interaction.reply({
-              content: "Invalid command.",
-              flags: "Ephemeral",
+              content:
+                "⚠️ Invalid command. Please check your input and try again.",
             });
             return;
           }

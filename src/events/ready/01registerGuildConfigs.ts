@@ -92,9 +92,9 @@ const execute = async (client: Client) => {
     const configOptions: IConfig = {
       serverID: guildId,
       botID: client.user.id,
-      devsIDs: [adminId],
       levelConfig: {
         levelRoles: levelRolesConfig,
+        managerRoles: [],
         notificationChannelID: "",
         blacklistedChannels: [],
         ignoredChannels: [],
@@ -108,10 +108,16 @@ const execute = async (client: Client) => {
         xpFromVoice: true,
       },
       moderationConfig: {
+        botAdminIDs: [adminId],
         welcomeChannelID: "",
         welcomeMessage: "",
+        farewellMessage: "",
+        farewellChannelID: "",
       },
       giveawayConfig: {
+        giveawayRole: "",
+        managerRoles: [],
+        banList: [],
         giveawayChannelID: "",
         roles: giveawayRolesConfig,
       },

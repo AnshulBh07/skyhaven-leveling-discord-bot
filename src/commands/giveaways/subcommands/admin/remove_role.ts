@@ -24,15 +24,12 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const targetUser = interaction.options.getUser("user");
           const guild = interaction.guild;
 
-          if (!guild || !targetUser) {
-            await interaction.reply({
+          if (!guild || !targetUser || targetUser.bot) {
+            await interaction.editReply({
               content: `⚠️ Invalid command. Please check your input and try again.`,
-              flags: "Ephemeral",
             });
             return;
           }
-
-          await interaction.deferReply();
 
           //   get the role to assign
           const grole = guild.roles.cache.find(

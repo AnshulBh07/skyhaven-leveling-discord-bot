@@ -44,7 +44,10 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const guild = interaction.guild;
 
           if (!gquestImage || !channel || !channel.isTextBased() || !guild) {
-            await interaction.reply({ content: "Invalid command/submission." });
+            await interaction.reply({
+              content: `⚠️ Invalid command. Please check your input and try again.`,
+              flags: "Ephemeral",
+            });
             return;
           }
 

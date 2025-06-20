@@ -13,7 +13,7 @@ import {
 import { ISubcommand } from "../../../../utils/interfaces";
 import Raid from "../../../../models/raidSchema";
 import { leaderboardThumbnail } from "../../../../data/helperArrays";
-import { calculateReliability} from "../../../../utils/raidUtils";
+import { calculateReliability } from "../../../../utils/raidUtils";
 import User from "../../../../models/userSchema";
 import { isManager } from "../../../../utils/permissionsCheck";
 
@@ -43,8 +43,8 @@ const init = async (): Promise<ISubcommand | undefined> => {
 
           if (!raid_id || !channel || channel.type !== 0) {
             await interaction.reply({
-              content: "Invalid command.",
-              flags: "Ephemeral",
+              content:
+                "⚠️ Invalid command. Please check your input and try again.",
             });
             return;
           }
@@ -154,7 +154,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
           compCollector.on("collect", async (i) => {
             try {
               if (!i.isUserSelectMenu()) return;
-              await i.deferReply({ ephemeral: true });
+              await i.deferReply({ flags: "Ephemeral" });
 
               if (!(await isManager(client, i.user.id, guild.id, "raid"))) {
                 await i.editReply({
@@ -191,6 +191,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
                   },
                   { new: true }
                 );
+
                 if (updatedUser) {
                   updatedUser.raids.reliability = calculateReliability(
                     updatedUser.raids.completed.length,
@@ -209,6 +210,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
                   },
                   { new: true }
                 );
+
                 if (updatedUser) {
                   updatedUser.raids.reliability = calculateReliability(
                     updatedUser.raids.completed.length,

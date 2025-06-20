@@ -8,7 +8,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
       isSubCommand: true,
       data: {
         name: "ban",
-        description: "Bans a user from participating in guild raids.",
+        description: "Bans a user from participating in guild raids",
         type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
@@ -33,7 +33,10 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const guildID = interaction.guildId;
 
           if (!targetUser || !guildID) {
-            await interaction.reply({ content: `Invalid command.` });
+            await interaction.reply({
+              content:
+                "⚠️ Invalid command. Please check your input and try again.",
+            });
             return;
           }
 
@@ -43,7 +46,9 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const guildConfig = await Config.findOne({ serverID: guildID });
 
           if (!guildConfig) {
-            await interaction.editReply("Invalid server.");
+            await interaction.editReply(
+              "🔍 This server could not be identified. Check if the bot has access."
+            );
             return;
           }
 

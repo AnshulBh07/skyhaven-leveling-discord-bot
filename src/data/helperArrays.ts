@@ -10,38 +10,44 @@ type LevelRole = {
 
 export const levelRoles: LevelRole[] = [
   {
-    name: "Certified Lurker",
+    name: "Noob",
     minLevel: 1,
-    maxLevel: 5,
+    maxLevel: 4,
+    color: "#dfa8ff", // Gray
+  },
+  {
+    name: "Certified Lurker",
+    minLevel: 5,
+    maxLevel: 10,
     color: "#808080", // Gray
   },
   {
     name: "Yapmaster Apprentice",
-    minLevel: 6,
-    maxLevel: 10,
+    minLevel: 11,
+    maxLevel: 20,
     color: "#1E90FF", // Dodger Blue
   },
   {
     name: "Message Goblin",
-    minLevel: 11,
-    maxLevel: 20,
+    minLevel: 21,
+    maxLevel: 30,
     color: "#32CD32", // Lime Green
   },
   {
     name: "Keyboard Crusader",
-    minLevel: 21,
-    maxLevel: 30,
+    minLevel: 31,
+    maxLevel: 40,
     color: "#FFA500", // Orange
   },
   {
     name: "Legendary Typist",
-    minLevel: 31,
-    maxLevel: 50,
+    minLevel: 41,
+    maxLevel: 55,
     color: "#8A2BE2", // Blue Violet
   },
   {
     name: "The Yapfather",
-    minLevel: 51,
+    minLevel: 56,
     maxLevel: 70,
     color: "#FF69B4", // Hot Pink
   },
@@ -500,6 +506,21 @@ export const welcomeMessages = [
   Their starting class: Confused Wanderer.  
   Current quest: Figure out what this server is about. 🤖`,
 
+  `🎭 <@{userId}> just stepped into the guild.  
+  Minyu sensed a magical disturbance. Probably another mage rival... 🔮`,
+
+  `🪓 <@{userId}> has joined the fray!  
+  Yaze already pulled aggro on them. That halberd has no chill. 💢`,
+
+  `💥 <@{userId}> logged in!  
+  Barlydle flexed their top DPS spot. Expect sword swings and ego clashes soon. 🗡️`,
+
+  `🧃 <@{userId}> appeared!  
+  Erina is already prepping shields and juice boxes. Guild Mom energy. 🛡️✨`,
+
+  `🔫 <@{userId}> just arrived.  
+  Karma winked, reloaded, and whispered, “Another cute soul for the team~” 💖🔫`,
+
   `🎮 <@{userId}> entered the guild base.  
   Warning: may cause sudden laughter, questionable build advice, and an urge to farm minibosses at 3AM. 🌙`,
 
@@ -514,6 +535,53 @@ export const welcomeMessages = [
 
   `🧪 <@{userId}> drank a strange potion labeled "Join Server"...  
   They’re now permanently confused, slightly buffed, and 100% welcomed. 🍷`,
+
+  `💀 <@{userId}> was last seen running into Boss Colon solo.  
+  We tried to stop them. They said “I got this.” Welcome, brave soul. 🫡`,
+
+  `🐄 <@{userId}> spawned near a Potum and tried to tame it.  
+  It now owns them. Welcome to the server, property of the Potums. 🐾`,
+
+  `🌸 <@{userId}> joined the server!  
+  Meambles gasped. “Omg finally someone as cute as me?” 🌷💕`,
+
+  `📈 <@{userId}> just spawned.  
+  Von updated the guild spreadsheet. Efficiency never sleeps. 📊`,
+
+  `💸 <@{userId}> entered the scene.  
+  Edoras smiled gently and said, “Need gear? I’ll cover it.” 🤑`,
+
+  `🗣️ <@{userId}> is here!  
+  Goku immediately started a 20-message convo. You’ve been warned. 🎙️`,
+
+  `🌪️ <@{userId}> just landed in the guild base.  
+  Leve dual-slashed a dummy and yelled “Bet you can’t out-DPS me!” 🗡️🗡️`,
+
+  `📜 <@{userId}> has accepted the quest:  
+  “Survive Discord notifications without losing sanity.”  
+  Reward: ???. Welcome, adventurer! 🤪`,
+
+  `🧠 <@{userId}> joined with 0 INT, 0 STR, but 100% charisma.  
+  They're not meta, but they're here. Welcome! ✨`,
+
+  `🐉 <@{userId}> just entered the world, skipped the tutorial, and asked for dual swords.  
+  Classic. Welcome aboard! ⚔️`,
+
+  `🛑 <@{userId}> equipped a wooden sword, no armor, and walked into Venena.  
+  Bold. Reckless. One of us. Welcome! 😂`,
+
+  `🧱 <@{userId}> tried to tank Ultimate Mode in pajamas.  
+  They failed. But we respect the energy. Welcome, legend! 💪`,
+
+  `📊 <@{userId}> rolled a 1 on luck but a 100 on vibes.  
+  May your drop rates improve and your Wi-Fi never lag. Welcome! 📶`,
+
+  `🎭 <@{userId}> joined as a support.  
+  We asked “which stat build?” They said “emotional support.”  
+  We accept. Welcome! 🥲`,
+
+  `📞 <@{userId}> just logged in... and immediately opened the trade menu.  
+  Ah yes, another merchant has arrived. Welcome to Toramconomy! 💸`,
 ];
 
 export const raidMessages = [

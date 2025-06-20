@@ -26,12 +26,15 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const guild = interaction.guild;
 
           if (!emoji_id || !guild) {
-            await interaction.reply({ content: "Invalid command." });
+            await interaction.reply({
+              content:
+                "⚠️ Invalid command. Please check your input and try again.",
+            });
             return;
           }
 
           //   check if emoji is present in guild or not
-          const emoji = await guild.emojis.fetch(emoji_id);
+          const emoji = await guild.emojis.fetch(emoji_id, { force: true });
 
           if (!emoji) {
             await interaction.reply({
@@ -41,14 +44,14 @@ const init = async (): Promise<ISubcommand | undefined> => {
             return;
           }
 
-          await interaction.deferReply();
+          await interaction.deferReply({ flags: "Ephemeral" });
 
           const guildConfig = await Config.findOne({ serverID: guild.id });
 
           if (!guildConfig) {
-            await interaction.editReply({
-              content: "Cannot find guild config.",
-            });
+            await interaction.editReply(
+              "🔍 This server could not be identified. Check if the bot has access."
+            );
             return;
           }
 

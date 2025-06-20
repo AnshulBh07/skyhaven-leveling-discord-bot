@@ -1,7 +1,16 @@
-import { Client } from "discord.js";
+import {
+  AttachmentBuilder,
+  ChannelType,
+  Client,
+  EmbedBuilder,
+} from "discord.js";
 import Config from "../models/configSchema";
 import User from "../models/userSchema";
 import { ILevelRoles, IUser } from "./interfaces";
+import { welcomeMessages } from "../data/helperArrays";
+import getAllFiles from "./getAllFiles";
+import path from "path";
+import { getRandomImage, getThumbnail } from "./commonUtils";
 
 export const createNewUser = async (
   client: Client,
@@ -16,8 +25,7 @@ export const createNewUser = async (
     if (!guildConfig) return;
 
     const { levelConfig, moderationConfig } = guildConfig;
-    const { welcomeBackMessage, welcomeChannelID, welcomeMessage } =
-      moderationConfig;
+    const { welcomeChannelID, welcomeMessage } = moderationConfig;
     const usersArr = guildConfig.users as unknown as IUser[];
     const userInGuildConfig = usersArr.some((user) => user.userID === userID);
     const basicRole = (levelConfig.levelRoles as ILevelRoles[]).find(
@@ -27,14 +35,14 @@ export const createNewUser = async (
     if (!basicRole) return;
 
     // get user info
-    const guild = client.guilds.cache.find((guild) => guild.id === guildID);
+    const guild = await client.guilds.fetch({ guild: guildID, force: true });
 
     if (!guild) return;
 
     // get welcome channel
-    const welcomeChannel = guild.channels.cache.find(
-      (channel) => channel.id === welcomeChannelID
-    );
+    const welcomeChannel = await guild.channels.fetch(welcomeChannelID, {
+      force: true,
+    });
 
     const member = await guild.members.fetch(userID);
 
@@ -102,22 +110,50 @@ export const createNewUser = async (
       },
     };
 
+    // generate welcome embed
+    const randomMessage = welcomeMessages[
+      Math.floor(Math.random() * welcomeMessages.length)
+    ].replace("userId", userID);
+
+    const allImages = getAllFiles(
+      path.join(__dirname, "..", "assets/images/welcome_msg"),
+      false
+    );
+
+    const guildImg = new AttachmentBuilder(getRandomImage(allImages)).setName(
+      "guildImage.png"
+    );
+
+    const thumbnail = getThumbnail();
+
+    const welcomeEmbed = new EmbedBuilder()
+      .setTitle(`🛬 Welcome to ${guild.name}!`)
+      .setDescription(
+        [
+          randomMessage,
+          "",
+          "But before you take off on your adventure, we need to verify you're part of the guild. Follow the steps below:",
+          "",
+          "__**How to Verify:**__",
+          "📌 **Step 1:** Go to the `#verification` channel.",
+          "📝 **Step 2:** Type your **IGN** (in-game name).",
+          "📱 **Step 3:** Open Toram → Menu → Community → Guild.",
+          "📸 **Step 4:** Take a screenshot of your **guild page**.",
+          "📤 **Step 5:** Send **both** your IGN and screenshot.",
+          "",
+          "⏳ Once done, hang tight! We'll verify you shortly.",
+        ].join("\n")
+      )
+      .setColor("Blue")
+      .setImage("attachment://guildImg.png")
+      .setThumbnail("attachment://thumbnail.png")
+      .setFooter({ text: `${guild.name} • Let the adventure begin!` })
+      .setTimestamp();
+
     if (userInGuildConfig) {
       // if user is already in guildconfig find and reset the user in users model
       if (!initialConfig)
         await User.findOneAndUpdate({ userID: userID }, { $set: options });
-      //   send welcome back message here if it is set
-      if (
-        welcomeChannel &&
-        welcomeChannel.isTextBased() &&
-        welcomeMessage.length > 0 &&
-        !initialConfig
-      ) {
-        await welcomeChannel.send({
-          content:
-            welcomeBackMessage.length > 0 ? welcomeBackMessage : welcomeMessage,
-        });
-      }
     } else {
       // if the user is in user schema but not in guild
       const user = await User.findOneAndUpdate(
@@ -141,14 +177,17 @@ export const createNewUser = async (
       //   send welcome message
       if (
         welcomeChannel &&
-        welcomeChannel.isTextBased() &&
+        welcomeChannel.type === ChannelType.GuildText &&
         welcomeMessage.length > 0 &&
         !initialConfig
       ) {
-        await welcomeChannel.send({ content: welcomeMessage });
+        await welcomeChannel.send({
+          embeds: [welcomeEmbed],
+          files: [thumbnail, guildImg],
+        });
       }
     }
   } catch (err) {
-    console.error(err);
+    console.error("Error in create new user function : ", err);
   }
 };

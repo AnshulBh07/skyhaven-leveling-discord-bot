@@ -28,7 +28,7 @@ export const attachMazeThreadCollector = async (
     if (!maze) return;
 
     const guild = await client.guilds.fetch(maze.serverID);
-    const channel = await guild.channels.fetch(maze.channelID);
+    const channel = await guild.channels.fetch(maze.channelID, { force: true });
 
     if (!channel || channel.type !== ChannelType.GuildText) return;
 

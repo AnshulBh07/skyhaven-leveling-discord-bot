@@ -36,14 +36,12 @@ const init = async (): Promise<ISubcommand | undefined> => {
 
           const guild = interaction.guild;
 
-          if (!guild) {
-            await interaction.reply({
+          if (!guild || targetUser.bot) {
+            await interaction.editReply({
               content: `⚠️ Invalid command. Please check your input and try again.`,
             });
             return;
           }
-
-          await interaction.deferReply();
 
           const user = await User.findOne({ userID: targetUser.id }).populate(
             "giveaways.giveawaysEntries"

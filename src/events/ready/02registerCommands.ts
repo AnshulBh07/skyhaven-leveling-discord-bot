@@ -32,6 +32,10 @@ const registerCommands = async (client: Client) => {
         const { isDeleted, callback, ...command } = localCommand;
         const existing = guildCommands.find((c) => c.name === command.name);
 
+        // 🔍 Log the command before creating or editing
+        // console.log("🔧 Attempting to register command:", command.name);
+        // console.log(JSON.stringify(command, null, 2));
+
         if (isDeleted) {
           if (existing) {
             await manager.delete(existing.id);

@@ -25,7 +25,7 @@ export const isManager = async (
           return gquestMazeConfig.managerRoles;
         case "giveaway":
           return giveawayConfig.managerRoles;
-        case "leveling":
+        case "lvl":
           return levelConfig.managerRoles;
         case "raid":
           return raidConfig.managerRoles;

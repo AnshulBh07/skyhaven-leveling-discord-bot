@@ -7,7 +7,6 @@ import {
 import { ISubcommand } from "../../../../utils/interfaces";
 import Giveaway from "../../../../models/giveawaySchema";
 import { leaderboardThumbnail } from "../../../../data/helperArrays";
-import { isUser } from "../../../../utils/permissionsCheck";
 
 const init = async (): Promise<ISubcommand | undefined> => {
   try {
@@ -33,13 +32,11 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const guildID = interaction.guildId;
 
           if (!giveaway_id || !guildID) {
-            await interaction.reply({
+            await interaction.editReply({
               content: `⚠️ Invalid command. Please check your input and try again.`,
             });
             return;
           }
-
-          await interaction.deferReply();
 
           const giveaway = await Giveaway.findOne({
             messageID: giveaway_id,
@@ -74,7 +71,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
           if (!channel || !channel.isTextBased() || endMessageID.length === 0) {
             await interaction.editReply({
               content:
-                "Giveaway data appears to be corrupted. Please try again or contact an admin.",
+                "⚠️ Giveaway data appears to be corrupted. Please try again or contact an admin.",
             });
             return;
           }
@@ -121,6 +118,10 @@ const init = async (): Promise<ISubcommand | undefined> => {
                 winners.size > 1 && "s"
               }!`,
             });
+
+          await interaction.editReply({
+            content: "Reroll process started...",
+          });
 
           const giveawayEndMessage = await channel.messages.fetch(endMessageID);
 

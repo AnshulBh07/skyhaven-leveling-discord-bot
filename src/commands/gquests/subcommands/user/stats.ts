@@ -37,7 +37,9 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const user = await User.findOne({ userID: targetUser.id });
 
           if (!user || !guild) {
-            await interaction.editReply({ content: "No user found." });
+            await interaction.editReply({
+              content: `⚠️ Invalid command. Please check your input and try again.`,
+            });
             return;
           }
 
@@ -46,7 +48,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
           );
 
           const gquestStatusEmbed = new EmbedBuilder()
-            .setTitle(`📊 GQuest Status`)
+            .setTitle(`📊 Guild Quest Status`)
             .setColor("Blurple")
             .setThumbnail("attachment://thumbnail.png")
             .addFields(

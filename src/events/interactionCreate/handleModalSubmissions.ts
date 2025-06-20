@@ -97,7 +97,7 @@ const execute = async (client: Client, interaction: ModalSubmitInteraction) => {
       if (!updatedUser) return;
 
       const guild = await client.guilds.fetch(serverID);
-      const channel = await guild.channels.fetch(channelID);
+      const channel = await guild.channels.fetch(channelID,{force:true});
       const user = await client.users.fetch(userID);
 
       if (!channel || channel.type !== 0) return;

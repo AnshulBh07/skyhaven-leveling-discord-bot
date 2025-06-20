@@ -28,13 +28,13 @@ const init = async (): Promise<ISubcommand | undefined> => {
 
           if (!amount || !guild) {
             await interaction.reply({
-              content: "Invalid command",
-              flags: "Ephemeral",
+              content:
+                "⚠️ Invalid command. Please check your input and try again.",
             });
             return;
           }
 
-          await interaction.deferReply();
+          await interaction.deferReply({flags:"Ephemeral"});
 
           const updatedConfig = await Config.findOneAndUpdate(
             {
@@ -44,12 +44,14 @@ const init = async (): Promise<ISubcommand | undefined> => {
           );
 
           if (!updatedConfig) {
-            await interaction.editReply({ content: "Guild config not found." });
+            await interaction.editReply(
+              "🔍 This server could not be identified. Check if the bot has access."
+            );
             return;
           }
 
           await interaction.editReply({
-            content: `Set guild quest reward amount to ${amount}`,
+            content: `💰 Set guild quest reward amount to ${amount}.`,
           });
         } catch (err) {
           console.error("Error in gquest reward-amount callback : ", err);

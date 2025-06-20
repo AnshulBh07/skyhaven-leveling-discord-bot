@@ -44,7 +44,7 @@ const getUpdatedEmbed = (giveawayData: IGiveaway) => {
       },
       {
         name: "\u200b",
-        value: `**Giveaway ID : ** ${giveawayData.messageID}`,
+        value: `**Giveaway ID : ** \`${giveawayData.messageID}\``,
         inline: false,
       },
       ...(giveawayData.role_req
@@ -371,7 +371,7 @@ export const endGiveaway = async (client: Client, giveawayID: string) => {
       .addFields(
         {
           name: "\u200b",
-          value: `**🪪 Giveaway ID : ** ${giveaway.messageID}`,
+          value: `**🪪 Giveaway ID : ** \`${giveaway.messageID}\``,
           inline: false,
         },
         {

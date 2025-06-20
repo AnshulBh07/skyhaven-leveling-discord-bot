@@ -4,12 +4,12 @@ import {
   AttachmentBuilder,
   ButtonBuilder,
   ButtonStyle,
+  ChannelType,
 } from "discord.js";
 import { ISubcommand } from "../../../../utils/interfaces";
 import Giveaway from "../../../../models/giveawaySchema";
 import { generateGiveawayListEmbed } from "../../../../utils/giveawayUtils";
 import { leaderboardThumbnail } from "../../../../data/helperArrays";
-import { isUser } from "../../../../utils/permissionsCheck";
 
 const init = async (): Promise<ISubcommand | undefined> => {
   try {
@@ -26,15 +26,14 @@ const init = async (): Promise<ISubcommand | undefined> => {
       callback: async (client, interaction) => {
         try {
           const guildID = interaction.guildId;
+          const channel = interaction.channel;
 
-          if (!guildID) {
-            await interaction.reply({
+          if (!guildID || !channel || channel.type !== ChannelType.GuildText) {
+            await interaction.editReply({
               content: `⚠️ Invalid command. Please check your input and try again.`,
             });
             return;
           }
-
-          await interaction.deferReply();
 
           const guild = await client.guilds.fetch(guildID);
 
@@ -73,32 +72,34 @@ const init = async (): Promise<ISubcommand | undefined> => {
                 new ButtonBuilder()
                   .setCustomId("list_next")
                   .setEmoji("➡️")
-                  .setDisabled(page === totalPages - 1)
+                  .setDisabled(page >= totalPages - 1)
                   .setStyle(ButtonStyle.Secondary)
               );
 
             return buttonsRow;
           };
 
+          await interaction.deleteReply();
+
           const initialButtons = generateButtons();
 
-          await interaction.editReply({
+          const reply = await channel.send({
             embeds: [embed],
             files: [thumbnail],
             components: [initialButtons],
           });
-          const reply = await interaction.fetchReply();
 
           const collector = reply.createMessageComponentCollector({
             filter: (i) =>
               ["list_prev", "list_next"].includes(i.customId) &&
-              i.user.id === interaction.user.id,
+              i.user.id === interaction.user.id &&
+              !i.user.bot,
             time: 60_000 * 10, //10 minutes
           });
 
           collector.on("collect", async (btnInt) => {
             try {
-              await btnInt.deferUpdate();
+              await btnInt.deferReply();
               if (btnInt.customId === "list_prev") page--;
               if (btnInt.customId === "list_next") page++;
 
@@ -111,7 +112,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
               );
 
               const newButtonsRow = generateButtons();
-              await interaction.editReply({
+              await btnInt.editReply({
                 embeds: [newPage],
                 components: [newButtonsRow],
               });
@@ -126,7 +127,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
 
           collector.on("end", async (collected, reason) => {
             if (reason === "time") {
-              await interaction.editReply({
+              await reply.edit({
                 content: "⏱️ Interaction timeout.",
                 components: [],
               });

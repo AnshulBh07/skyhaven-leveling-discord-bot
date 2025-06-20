@@ -60,7 +60,8 @@ const init = async (): Promise<ISubcommand | undefined> => {
             start_floor >= end_floor
           ) {
             await interaction.reply({
-              content: "Invalid command/submission.",
+              content:
+                "⚠️ Invalid command. Please check your input and try again.",
               flags: "Ephemeral",
             });
             return;
@@ -123,7 +124,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const subNeeded = (end_floor - start_floor) / 100;
 
           await submissionThread.send({
-            content: `Please make sure that you provide ${subNeeded} images for proof. 1 image per 100th floor you cover.`,
+            content: `⚠️ Please submit exactly ${subNeeded} image(s) as proof — one for every 100 floors completed.`,
           });
 
           await attachMazeThreadCollector(client, submissionThread.id);

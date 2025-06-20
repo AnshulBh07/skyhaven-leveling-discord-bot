@@ -28,8 +28,8 @@ const init = async (): Promise<ISubcommand | undefined> => {
 
           if (!role || !guild) {
             await interaction.reply({
-              content: "Invalid command",
-              flags: "Ephemeral",
+              content:
+                "⚠️ Invalid command. Please check your input and try again.",
             });
             return;
           }
@@ -44,7 +44,9 @@ const init = async (): Promise<ISubcommand | undefined> => {
           );
 
           if (!updatedConfig) {
-            await interaction.editReply({ content: "Guild config not found." });
+            await interaction.editReply(
+              "🔍 This server could not be identified. Check if the bot has access."
+            );
             return;
           }
 

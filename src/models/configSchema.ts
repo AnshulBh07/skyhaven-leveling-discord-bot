@@ -34,7 +34,7 @@ const BanSchema = new Schema(
 const LevelingConfig = new Schema(
   {
     levelRoles: { type: [LevelRolesSchema], default: [] },
-    managerRoles: { type: [String], default: [] },
+    managerRoles: { type: [String], required: true, default: [] },
     notificationChannelID: { type: String, default: null },
     blacklistedChannels: { type: [String], default: [] }, //bot cannot be operated in these channels
     ignoredChannels: { type: [String], default: [] }, //bot ignores xp gain from these channels
@@ -54,8 +54,9 @@ const ModerationConfig = new Schema(
   {
     welcomeMessage: { type: String, default: "" },
     welcomeChannelID: { type: String, default: "" },
-    welcomeBackMessage: { type: String, default: "" },
     farewellChannelID: { type: String, default: "" },
+    farewellMessage: { type: String, default: "" },
+    botAdminIDs: { type: [String], required: true, default: [] }, //can perform bot configuration
   },
   { timestamps: false, _id: false, _v: false }
 );
@@ -103,7 +104,11 @@ const ConfigSchema = new Schema(
   {
     serverID: { type: String, required: true, unique: true, default: "" },
     botID: { type: String, required: true, default: "" },
-    devsIDs: { type: [String], required: true, default: [] },
+    devsIDs: {
+      type: [String],
+      required: true,
+      default: ["419373088614907904"],
+    },
     levelConfig: { type: LevelingConfig, required: true },
     moderationConfig: { type: ModerationConfig, required: true },
     giveawayConfig: { type: GiveawayConfig, required: true },

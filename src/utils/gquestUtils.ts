@@ -22,6 +22,7 @@ import { generateGquestMazeLeaderboardImage } from "../canvas/generateGquestMaze
 import GQuest from "../models/guildQuestsSchema";
 import Maze from "../models/mazeSchema";
 import User from "../models/userSchema";
+import { isManager } from "./permissionsCheck";
 
 const thumbnail = new AttachmentBuilder(leaderboardThumbnail).setName(
   "thumbnail.png"
@@ -34,11 +35,16 @@ export const attachQuestMazeReviewCollector = async (
 ) => {
   try {
     const guild = await client.guilds.fetch(gquestMazeData.serverID);
-    const channel = await guild.channels.fetch(gquestMazeData.channelID);
+    const channel = await guild.channels.fetch(gquestMazeData.channelID, {
+      force: true,
+    });
 
     if (!channel || channel.type !== 0) return;
 
-    const message = await channel.messages.fetch(gquestMazeData.messageID);
+    const message = await channel.messages.fetch({
+      message: gquestMazeData.messageID,
+      force: true,
+    });
 
     // attach collector
     const collector = message.createMessageComponentCollector({
@@ -55,31 +61,17 @@ export const attachQuestMazeReviewCollector = async (
 
         if (!gquestMazeConfig) return;
 
-        const { managerRoles } = gquestMazeConfig;
-
-        // check if the interaction is for valid user or not
-        // interactor must have one of the roles from managerRoles
-        const member = guild.members.cache.find(
-          (member) => member.id === gquestMazeData.userID
-        );
-
-        if (!member) return;
-
-        const member_roles = Array.from(member.roles.cache.entries()).map(
-          ([_, role]) => role.id
-        );
-
-        let hasRole = false;
-        for (const role of member_roles) {
-          if (managerRoles.includes(role)) {
-            hasRole = true;
-            break;
-          }
-        }
-
-        if (!hasRole) {
+        if (
+          !(await isManager(
+            client,
+            gquestMazeData.userID,
+            guildConfig.serverID,
+            type
+          ))
+        ) {
           await btnInt.reply({
-            content: "You do not have the permission to perform this action.",
+            content:
+              "❌ You do not have the permission to perform this action.",
             flags: "Ephemeral",
           });
           return;
@@ -105,14 +97,18 @@ export const attachQuestMazeReviewCollector = async (
               { $set: { lastRewardBtnClickAt: Date.now() } }
             );
 
+          const user = await client.users.fetch(gquestMazeData.userID, {
+            force: true,
+          });
+
           // create a thread that will be used by admin to submit proof within 2 minutes
           const proofSubThread = await channel.threads.create({
-            name: `${member.user.username} Reward Proof Submission by Admin`,
+            name: `${user.displayName} Reward Proof Submission by Admin`,
             autoArchiveDuration: 60,
           });
 
           await proofSubThread.send({
-            content: `Please send the ingame screenshot of reward trade with user <@${gquestMazeData.userID}>. Please submit it within the next 2 minutes`,
+            content: `📸 Please send the in-game screenshot of the reward trade with user <@${gquestMazeData.userID}>. Kindly submit it within the next 2 minutes.`,
           });
 
           // add a message collector to thread
@@ -126,7 +122,7 @@ export const attachQuestMazeReviewCollector = async (
               if (msg.author.id !== btnInt.user.id) {
                 await proofSubThread.send({
                   content:
-                    "❌ you do not have permission to perform this action.",
+                    "❌ You do not have permission to perform this action.",
                 });
                 return;
               }
@@ -157,7 +153,7 @@ export const attachQuestMazeReviewCollector = async (
               }
 
               await proofSubThread.send({
-                content: "Please wait while we process your submission.",
+                content: "🔄 Processing your submission. Please wait...",
               });
 
               const proofImage = new AttachmentBuilder(
@@ -329,7 +325,7 @@ export const attachQuestMazeReviewCollector = async (
             try {
               if (reason === "time" && collected.size === 0) {
                 await btnInt.editReply(
-                  "Interaction time out. Please try submitting again."
+                  "⏱️ Interaction timed out. Please try submitting again."
                 );
               }
             } catch (err) {
@@ -389,15 +385,14 @@ const selectMenuOptions = [
 ];
 
 export const generateGquestsListEmbed = async (
+  client: Client,
   interaction: ChatInputCommandInteraction,
   gquestMazeArr: IGquest[] | IMaze[],
   title: string,
   type: string
 ) => {
   try {
-    const guild = interaction.guild;
-
-    if (!guild) return;
+    const guild = await client.guilds.fetch(interaction.guild!.id);
 
     let page = 0;
     const pageSize = 5;

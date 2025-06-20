@@ -8,7 +8,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
       isSubCommand: true,
       data: {
         name: "cancel",
-        description: "Cancel a scheduled raid.",
+        description: "Cancel a scheduled raid",
         type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
@@ -27,8 +27,8 @@ const init = async (): Promise<ISubcommand | undefined> => {
 
           if (!guild || !raid_id) {
             await interaction.reply({
-              content: "Invalid command.",
-              flags: "Ephemeral",
+              content:
+                "⚠️ Invalid command. Please check your input and try again.",
             });
             return;
           }
