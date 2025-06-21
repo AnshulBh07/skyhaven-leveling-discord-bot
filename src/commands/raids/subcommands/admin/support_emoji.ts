@@ -26,14 +26,12 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const guild = interaction.guild;
 
           if (!emoji_id || !guild) {
-            await interaction.reply({
+            await interaction.editReply({
               content:
                 "⚠️ Invalid command. Please check your input and try again.",
             });
             return;
           }
-
-          await interaction.deferReply({ flags: "Ephemeral" });
 
           //   check if emoji is present in guild or not
           const emoji = await guild.emojis.fetch(emoji_id, { force: true });

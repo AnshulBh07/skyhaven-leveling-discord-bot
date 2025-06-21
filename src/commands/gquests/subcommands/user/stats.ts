@@ -1,6 +1,7 @@
 import {
   ApplicationCommandOptionType,
   AttachmentBuilder,
+  ChannelType,
   EmbedBuilder,
 } from "discord.js";
 import { ISubcommand } from "../../../../utils/interfaces";
@@ -31,12 +32,16 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const targetUser =
             interaction.options.getUser("user") ?? interaction.user;
           const guild = interaction.guild;
-
-          await interaction.deferReply();
+          const channel = interaction.channel;
 
           const user = await User.findOne({ userID: targetUser.id });
 
-          if (!user || !guild) {
+          if (
+            !user ||
+            !guild ||
+            !channel ||
+            channel.type !== ChannelType.GuildText
+          ) {
             await interaction.editReply({
               content: `⚠️ Invalid command. Please check your input and try again.`,
             });

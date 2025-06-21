@@ -466,13 +466,15 @@ export const generateGquestsListEmbed = async (
       components: [buttonsRow],
       files: [thumbnail],
     });
+
     const reply = await interaction.fetchReply();
 
     const collector = reply.createMessageComponentCollector({
       time: 60_000 * 10, //10 minutes
       filter: (i) =>
         [`${type}_prev`, `${type}_next`].includes(i.customId) &&
-        i.user.id === interaction.user.id,
+        i.user.id === interaction.user.id &&
+        !i.user.bot,
     });
 
     collector.on("collect", async (btnInt) => {
@@ -487,7 +489,7 @@ export const generateGquestsListEmbed = async (
 
         const newEmbed = getEmbed(page, pageSize);
 
-        await interaction.editReply({
+        await reply.edit({
           embeds: [newEmbed],
           components: [buttonsRow],
         });
@@ -499,7 +501,7 @@ export const generateGquestsListEmbed = async (
     collector.on("end", async (collected, reason) => {
       try {
         if (reason === "time") {
-          await interaction.editReply({
+          await reply.edit({
             content: "⏱️ Interaction timed out.",
             components: [],
           });
@@ -519,7 +521,8 @@ export const getGquestMazeLeaderboard = async (
   users: IUser[],
   guild: Guild,
   type: string,
-  interaction: ChatInputCommandInteraction
+  interaction: ChatInputCommandInteraction,
+  channel: TextChannel
 ) => {
   try {
     let page = 0;
@@ -619,21 +622,22 @@ export const getGquestMazeLeaderboard = async (
           )
       );
 
-    await interaction.editReply({
+    await interaction.deleteReply();
+
+    const reply = await channel.send({
       embeds: [embed],
       files: [leaderboardImage],
       components: [buttonsRow, selectMenuRow],
     });
-
-    // add collector
-    const reply = await interaction.fetchReply();
 
     const collector = reply.createMessageComponentCollector({
       time: 60_000 * 10,
       filter: (i) =>
         ["leaderboard_prev", "leaderboard_select", "leaderboard_next"].includes(
           i.customId
-        ) && i.user.id === interaction.user.id,
+        ) &&
+        i.user.id === interaction.user.id &&
+        !i.user.bot,
     });
 
     collector.on("collect", async (compInt) => {
@@ -661,7 +665,7 @@ export const getGquestMazeLeaderboard = async (
               .join(" ")} Leaderboard`
           );
 
-          await interaction.editReply({
+          await reply.edit({
             embeds: [embed],
             components: [buttonsRow, selectMenuRow],
             files: [newLeaderboardImage],
@@ -701,7 +705,7 @@ export const getGquestMazeLeaderboard = async (
                 )
             );
 
-          await interaction.editReply({
+          await reply.edit({
             embeds: [embed],
             components: [buttonsRow, newSelectMenuRow],
             files: [leaderboardImage],

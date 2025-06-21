@@ -26,15 +26,12 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const guild_id = interaction.guildId;
 
           if (!guild_id || !ans_channel) {
-            await interaction.reply({
+            await interaction.editReply({
               content:
                 "⚠️ Invalid command. Please check your input and try again.",
-              flags: "Ephemeral",
             });
             return;
           }
-
-          await interaction.deferReply({ flags: "Ephemeral" });
 
           const guildConfig = await Config.findOne({ serverID: guild_id });
 

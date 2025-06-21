@@ -29,15 +29,12 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const guild = interaction.guild;
 
           if (!guild) {
-            await interaction.reply({
+            await interaction.editReply({
               content:
                 "⚠️ Invalid command. Please check your input and try again.",
-              flags: "Ephemeral",
             });
             return;
           }
-
-          await interaction.deferReply();
 
           //   fetch all rejected gquests
           let mazes: IMaze[] = await Maze.find({

@@ -9,7 +9,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
       data: {
         name: "add-admin",
         description:
-          "Adds a role that can manage member's guild quest submissions.",
+          "Adds a role that can manage member's guild quest submissions",
         type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
@@ -27,14 +27,12 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const guild = interaction.guild;
 
           if (!role || !guild) {
-            await interaction.reply({
+            await interaction.editReply({
               content:
                 "⚠️ Invalid command. Please check your input and try again.",
             });
             return;
           }
-
-          await interaction.deferReply();
 
           const config = await Config.findOne({ serverID: guild.id });
 

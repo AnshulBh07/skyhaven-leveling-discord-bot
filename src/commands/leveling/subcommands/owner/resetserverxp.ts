@@ -26,10 +26,9 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const guildID = interaction.guildId;
 
           if (!guildID) {
-            await interaction.reply({
+            await interaction.editReply({
               content:
                 "⚠️ Invalid command. Please check your input and try again.",
-              flags: "Ephemeral",
             });
             return;
           }
@@ -178,12 +177,15 @@ const init = async (): Promise<ISubcommand | undefined> => {
             }
           });
         } catch (err) {
-          console.error("Error in lvl resetserverxp subcommand callback : ",err);
+          console.error(
+            "Error in lvl resetserverxp subcommand callback : ",
+            err
+          );
         }
       },
     };
   } catch (err) {
-    console.error("Error in lvl resetserverxp subcommand : ",err);
+    console.error("Error in lvl resetserverxp subcommand : ", err);
     return undefined;
   }
 };

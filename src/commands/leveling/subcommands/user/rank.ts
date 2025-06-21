@@ -1,6 +1,7 @@
 import {
   ApplicationCommandOptionType,
   AttachmentBuilder,
+  ChannelType,
   PermissionFlagsBits,
 } from "discord.js";
 import {
@@ -33,17 +34,21 @@ const init = async (): Promise<ISubcommand | undefined> => {
         try {
           const targetUser = interaction.options.getUser("user");
           const guildID = interaction.guildId;
+          const channel = interaction.channel;
 
-          if (!targetUser || targetUser.bot || !guildID) {
-            await interaction.reply({
+          if (
+            !targetUser ||
+            targetUser.bot ||
+            !guildID ||
+            !channel ||
+            channel.type !== ChannelType.GuildText
+          ) {
+            await interaction.editReply({
               content:
                 "⚠️ Invalid command. Please check your input and try again.",
-              flags: "Ephemeral",
             });
             return;
           }
-
-          await interaction.deferReply({ flags: "Ephemeral" });
 
           // channel shouldn't be in blacklisted channels
           const guildConfig = await Config.findOne({

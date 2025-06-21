@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionType } from "discord.js";
+import { ApplicationCommandOptionType, ChannelType } from "discord.js";
 import { IGquest, ISubcommand } from "../../../../utils/interfaces";
 import GQuest from "../../../../models/guildQuestsSchema";
 import { generateGquestsListEmbed } from "../../../../utils/gquestUtils";
@@ -26,16 +26,15 @@ const init = async (): Promise<ISubcommand | undefined> => {
         try {
           const targetUser = interaction.options.getUser("user");
           const guild = interaction.guild;
+          const channel = interaction.channel;
 
-          if (!guild) {
+          if (!guild || !channel || channel.type !== ChannelType.GuildText) {
             await interaction.reply({
               content: `⚠️ Invalid command. Please check your input and try again.`,
               flags: "Ephemeral",
             });
             return;
           }
-
-          await interaction.deferReply();
 
           //   fetch all rewarded gquests
           let gquests: IGquest[] = await GQuest.find({
@@ -57,7 +56,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
             interaction,
             gquests,
             title,
-            "rewarded"
+            "rewarded",
           );
         } catch (err) {
           console.error("Error in gquest rewarded subcommand callback : ", err);

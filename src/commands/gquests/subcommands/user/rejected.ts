@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionType } from "discord.js";
+import { ApplicationCommandOptionType, ChannelType } from "discord.js";
 import { IGquest, ISubcommand } from "../../../../utils/interfaces";
 import GQuest from "../../../../models/guildQuestsSchema";
 import { generateGquestsListEmbed } from "../../../../utils/gquestUtils";
@@ -26,16 +26,14 @@ const init = async (): Promise<ISubcommand | undefined> => {
         try {
           const targetUser = interaction.options.getUser("user");
           const guild = interaction.guild;
+          const channel = interaction.channel;
 
-          if (!guild) {
-            await interaction.reply({
+          if (!guild || !channel || channel.type !== ChannelType.GuildText) {
+            await interaction.editReply({
               content: `⚠️ Invalid command. Please check your input and try again.`,
-              flags: "Ephemeral",
             });
             return;
           }
-
-          await interaction.deferReply();
 
           //   fetch all rejected gquests
           let gquests: IGquest[] = await GQuest.find({
@@ -58,7 +56,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
             interaction,
             gquests,
             title,
-            "rejected"
+            "rejected",
           );
         } catch (err) {
           console.error("Error in gquest rejected subcommand callback : ", err);

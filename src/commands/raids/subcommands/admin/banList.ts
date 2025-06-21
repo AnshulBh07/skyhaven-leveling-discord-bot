@@ -24,14 +24,12 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const guildId = interaction.guildId;
 
           if (!guildId) {
-            await interaction.reply({
+            await interaction.editReply({
               content:
                 "⚠️ Invalid command. Please check your input and try again.",
             });
             return;
           }
-
-          await interaction.deferReply({ flags: "Ephemeral" });
 
           const guildConfig = await Config.findOne({ serverID: guildId });
 

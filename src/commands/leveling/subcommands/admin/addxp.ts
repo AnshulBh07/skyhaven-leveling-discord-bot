@@ -39,15 +39,12 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const guildId = interaction.guildId;
 
           if (!targetUser || !amount || !guildId || targetUser.bot) {
-            await interaction.reply({
+            await interaction.editReply({
               content:
                 "⚠️ Invalid command. Please check your input and try again.",
-              flags: "Ephemeral",
             });
             return;
           }
-
-          await interaction.deferReply({ flags: "Ephemeral" });
 
           const user = await User.findOne({
             userID: targetUser.id,

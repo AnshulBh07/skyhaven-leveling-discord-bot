@@ -38,15 +38,12 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const targetLevel = interaction.options.getNumber("level");
 
           if (!targetUser || !guildID || targetUser.bot || !targetLevel) {
-            await interaction.reply({
+            await interaction.editReply({
               content:
                 "⚠️ Invalid command. Please check your input and try again.",
-              flags: "Ephemeral",
             });
             return;
           }
-
-          await interaction.deferReply({ flags: "Ephemeral" });
 
           const guildConfig = await Config.findOne({ serverID: guildID });
 

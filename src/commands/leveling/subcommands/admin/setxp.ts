@@ -41,15 +41,12 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const guildID = interaction.guildId;
 
           if (!targetUser || !amount || targetUser.bot || !guildID) {
-            await interaction.reply({
+            await interaction.editReply({
               content:
                 "⚠️ Invalid command. Please check your input and try again.",
-              flags: "Ephemeral",
             });
             return;
           }
-
-          await interaction.deferReply({ flags: "Ephemeral" });
 
           // channel shouldn't be in blacklisted channels
           const guildConfig = await Config.findOne({ serverID: guildID });

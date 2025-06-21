@@ -4,6 +4,7 @@ import {
   AttachmentBuilder,
   ButtonBuilder,
   ButtonStyle,
+  ChannelType,
   EmbedBuilder,
   PermissionFlagsBits,
   StringSelectMenuBuilder,
@@ -66,16 +67,13 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const guild = interaction.guild;
           const channel = interaction.channel;
 
-          if (!guild || !channel || channel.type !== 0) {
-            await interaction.reply({
+          if (!guild || !channel || channel.type !== ChannelType.GuildText) {
+            await interaction.editReply({
               content:
                 "⚠️ Invalid command. Please check your input and try again.",
-              flags: "Ephemeral",
             });
             return;
           }
-
-          await interaction.deferReply();
 
           // get all users for current guild
           const users = await User.find({ serverID: guild.id });
@@ -252,13 +250,13 @@ const init = async (): Promise<ISubcommand | undefined> => {
 
           if (leaderboardCard) leaderboardEmbed.setImage("attachment://bg.png");
 
-          await interaction.editReply({
+          await interaction.deleteReply();
+
+          const reply = await channel.send({
             embeds: [leaderboardEmbed],
             components: [buttonRow, selectRow],
             files: [thumbnail, ...(leaderboardCard ? [leaderboardCard] : [])],
           });
-
-          const reply = await interaction.fetchReply();
 
           // now create a collector to enable interaction
           const collector = reply.createMessageComponentCollector({
@@ -303,7 +301,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
 
                 if (newCard) leaderboardEmbed.setImage("attachment://bg.png");
 
-                await interaction.editReply({
+                await reply.edit({
                   embeds: [leaderboardEmbed],
                   components: [buttonRow, selectRow],
                 });
@@ -355,7 +353,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
                       )
                   );
 
-                await interaction.editReply({
+                await reply.edit({
                   embeds: [leaderboardEmbed],
                   components: [buttonRow, newSelectMenu],
                 });
@@ -371,7 +369,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
           collector.on("end", async (collected, reason) => {
             try {
               if (reason === "time" && !collected.size) {
-                await interaction.editReply({
+                await reply.edit({
                   content:
                     "⏱️ Time out. No interaction was detected from user.",
                   components: [],
@@ -379,7 +377,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
                 return;
               }
 
-              await interaction.editReply({
+              await reply.edit({
                 content: "🔒 This leaderboard session has expired.",
                 components: [],
               });

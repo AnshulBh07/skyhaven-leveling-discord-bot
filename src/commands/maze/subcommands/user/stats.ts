@@ -32,8 +32,6 @@ const init = async (): Promise<ISubcommand | undefined> => {
             interaction.options.getUser("user") ?? interaction.user;
           const guild = interaction.guild;
 
-          await interaction.deferReply();
-
           const user = await User.findOne({ userID: targetUser.id });
 
           if (!user || !guild) {

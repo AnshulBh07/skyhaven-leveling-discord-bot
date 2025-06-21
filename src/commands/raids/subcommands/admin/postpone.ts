@@ -75,14 +75,12 @@ const init = async (): Promise<ISubcommand | undefined> => {
             !channel ||
             channel.type !== 0
           ) {
-            await interaction.reply({
+            await interaction.editReply({
               content:
                 "⚠️ Invalid command. Please check your input and try again.",
             });
             return;
           }
-
-          await interaction.deferReply({ flags: "Ephemeral" });
 
           const guildConfig = await Config.findOne({ serverID: guild.id });
 

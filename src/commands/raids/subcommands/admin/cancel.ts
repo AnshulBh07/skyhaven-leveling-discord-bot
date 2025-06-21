@@ -26,14 +26,12 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const raid_id = interaction.options.getString("raid_id");
 
           if (!guild || !raid_id) {
-            await interaction.reply({
+            await interaction.editReply({
               content:
                 "⚠️ Invalid command. Please check your input and try again.",
             });
             return;
           }
-
-          await interaction.deferReply({ flags: "Ephemeral" });
 
           const deleted = await Raid.findOneAndDelete({
             announcementMessageID: raid_id,

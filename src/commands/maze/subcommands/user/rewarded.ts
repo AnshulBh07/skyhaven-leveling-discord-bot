@@ -29,15 +29,12 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const guild = interaction.guild;
 
           if (!guild) {
-            await interaction.reply({
+            await interaction.editReply({
               content:
                 "⚠️ Invalid command. Please check your input and try again.",
-              flags: "Ephemeral",
             });
             return;
           }
-
-          await interaction.deferReply();
 
           //   fetch all rewarded gquests
           let mazes: IMaze[] = await Maze.find({
@@ -54,7 +51,13 @@ const init = async (): Promise<ISubcommand | undefined> => {
           }
 
           //   create embed with buttons
-          await generateGquestsListEmbed(client,interaction, mazes, title, "rewarded");
+          await generateGquestsListEmbed(
+            client,
+            interaction,
+            mazes,
+            title,
+            "rewarded"
+          );
         } catch (err) {
           console.error("Error in maze rewarded subcommand callback : ", err);
         }

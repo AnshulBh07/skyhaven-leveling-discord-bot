@@ -6,7 +6,7 @@ import {
   ChannelType,
 } from "discord.js";
 import { ISubcommand } from "../../../../utils/interfaces";
-import GQuest from "../../../../models/guildQuestsSchema";
+import Giveaway from "../../../../models/giveawaySchema";
 
 // gives the link to gquest submission message if u have the gquest id
 const init = async (): Promise<ISubcommand | undefined> => {
@@ -15,12 +15,12 @@ const init = async (): Promise<ISubcommand | undefined> => {
       isSubCommand: true,
       data: {
         name: "find",
-        description: "Find guild quest submission with gquest id.",
+        description: "Find a giveaway with giveaway ID",
         type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
-            name: "gquest_id",
-            description: "ID of guild quest",
+            name: "giveaway_id",
+            description: "ID of guild giveaway",
             type: ApplicationCommandOptionType.String,
             required: true,
           },
@@ -30,7 +30,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
       callback: async (client, interaction) => {
         try {
           const guild = interaction.guild;
-          const message_id = interaction.options.getString("gquest_id");
+          const message_id = interaction.options.getString("giveaway_id");
           const channel = interaction.channel;
 
           if (
@@ -46,16 +46,16 @@ const init = async (): Promise<ISubcommand | undefined> => {
           }
 
           //   find the gquest
-          const gquest = await GQuest.findOne({ messageID: message_id });
+          const giveaway = await Giveaway.findOne({ messageID: message_id });
 
-          if (!gquest) {
+          if (!giveaway) {
             await interaction.editReply({
-              content: "📜 No guild quest found.",
+              content: "📜 No giveaway found.",
             });
             return;
           }
 
-          const messageLink = `https://discord.com/channels/${guild.id}/${gquest.channelID}/${gquest.messageID}`;
+          const messageLink = `https://discord.com/channels/${guild.id}/${giveaway.channelID}/${giveaway.messageID}`;
 
           const LinkButton =
             new ActionRowBuilder<ButtonBuilder>().addComponents(
@@ -65,16 +65,18 @@ const init = async (): Promise<ISubcommand | undefined> => {
                 .setStyle(ButtonStyle.Link)
             );
 
-          await interaction.editReply({
+          await interaction.deleteReply();
+
+          await channel.send({
             components: [LinkButton],
           });
         } catch (err) {
-          console.error("Error in gquest find subcommand callback : ", err);
+          console.error("Error in giveaway find subcommand callback : ", err);
         }
       },
     };
   } catch (err) {
-    console.error("Error in gquest find subcommand : ", err);
+    console.error("Error in giveaway find subcommand : ", err);
     return undefined;
   }
 };

@@ -9,7 +9,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
       data: {
         name: "use-role",
         description:
-          "Sets role that enables guild members to use guild quest related commands.",
+          "Sets role that enables guild members to use guild quest related commands",
         type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
@@ -27,14 +27,12 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const guild = interaction.guild;
 
           if (!role || !guild) {
-            await interaction.reply({
+            await interaction.editReply({
               content:
                 "⚠️ Invalid command. Please check your input and try again.",
             });
             return;
           }
-
-          await interaction.deferReply({flags:"Ephemeral"});
 
           const updatedConfig = await Config.findOneAndUpdate(
             {

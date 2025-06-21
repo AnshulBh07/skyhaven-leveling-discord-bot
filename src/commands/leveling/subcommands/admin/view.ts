@@ -15,8 +15,6 @@ const init = async (): Promise<ICommandObj | ISubcommand | undefined> => {
 
       callback: async (client, interaction) => {
         try {
-          await interaction.deferReply({ flags: "Ephemeral" });
-
           const guildId = interaction.guildId ?? "";
           const config = await Config.findOne({ serverID: guildId });
 

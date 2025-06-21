@@ -42,14 +42,12 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const raid_id = interaction.options.getString("raid_id");
 
           if (!raid_id || !channel || channel.type !== 0) {
-            await interaction.reply({
+            await interaction.editReply({
               content:
                 "⚠️ Invalid command. Please check your input and try again.",
             });
             return;
           }
-
-          await interaction.deferReply({ flags: "Ephemeral" });
 
           //   find raid
           const raid = await Raid.findOne({

@@ -87,7 +87,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const channel = interaction.channel;
 
           if (!guild || !channel || channel.type !== ChannelType.GuildText) {
-            await interaction.reply({
+            await interaction.editReply({
               content:
                 "⚠️ Invalid command. Please check your input and try again.",
             });
@@ -108,16 +108,13 @@ const init = async (): Promise<ISubcommand | undefined> => {
           );
 
           if (duplicates.length > 0) {
-            await interaction.reply({
+            await interaction.editReply({
               content: `Duplicate boss selection found : ${[
                 ...new Set(duplicates),
               ].join(",")}`,
-              flags: "Ephemeral",
             });
             return;
           }
-
-          await interaction.deferReply({ flags: "Ephemeral" });
 
           // send an embed at raid channel for raid
           const guildConfig = await Config.findOne({ serverID: guild.id });

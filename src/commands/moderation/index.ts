@@ -71,7 +71,7 @@ const init = async (): Promise<ICommandObj | undefined> => {
             return;
           }
 
-          await interaction.deferReply();
+          await interaction.deferReply({flags:"Ephemeral"});
 
           const guildConfig = await Config.findOne({ serverID: guild.id });
 

@@ -60,6 +60,7 @@ const init = async (): Promise<ICommandObj | undefined> => {
             await interaction.reply({
               content:
                 "⚠️ Invalid command. Please check your input and try again.",
+              flags: "Ephemeral",
             });
             return;
           }
@@ -84,6 +85,8 @@ const init = async (): Promise<ICommandObj | undefined> => {
             });
             return;
           }
+
+          await interaction.deferReply({ flags: "Ephemeral" });
 
           const guildConfig = await Config.findOne({ serverID: guild.id });
 

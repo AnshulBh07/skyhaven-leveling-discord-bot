@@ -9,7 +9,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
       data: {
         name: "reward-amount",
         description:
-          "Sets the amount of reward guild member gets for completing one guild quest.",
+          "Sets the amount of reward guild member gets for completing one guild quest",
         type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
@@ -27,14 +27,12 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const guild = interaction.guild;
 
           if (!amount || !guild) {
-            await interaction.reply({
+            await interaction.editReply({
               content:
                 "⚠️ Invalid command. Please check your input and try again.",
             });
             return;
           }
-
-          await interaction.deferReply({flags:"Ephemeral"});
 
           const updatedConfig = await Config.findOneAndUpdate(
             {

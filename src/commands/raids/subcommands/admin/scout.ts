@@ -44,14 +44,12 @@ const init = async (): Promise<ISubcommand | undefined> => {
             channel.type !== ChannelType.GuildText ||
             !raid_id
           ) {
-            await interaction.reply({
+            await interaction.editReply({
               content:
                 "⚠️ Invalid command. Please check your input and try again.",
             });
             return;
           }
-
-          await interaction.deferReply({ flags: "Ephemeral" });
 
           //   create a thread and prompt user to send image
           const buffsThread = await channel.threads.create({

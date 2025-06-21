@@ -4,6 +4,7 @@ import {
   AttachmentBuilder,
   ButtonBuilder,
   ButtonStyle,
+  ChannelType,
   EmbedBuilder,
 } from "discord.js";
 import { IGquest, ISubcommand } from "../../../../utils/interfaces";
@@ -43,15 +44,17 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const channel = interaction.channel;
           const guild = interaction.guild;
 
-          if (!gquestImage || !channel || !channel.isTextBased() || !guild) {
-            await interaction.reply({
+          if (
+            !gquestImage ||
+            !channel ||
+            channel.type !== ChannelType.GuildText ||
+            !guild
+          ) {
+            await interaction.editReply({
               content: `⚠️ Invalid command. Please check your input and try again.`,
-              flags: "Ephemeral",
             });
             return;
           }
-
-          await interaction.deferReply();
 
           // find user
           const user = await User.findOne({
@@ -119,12 +122,13 @@ const init = async (): Promise<ISubcommand | undefined> => {
             .setImage("attachment://submitted_image.png")
             .setTimestamp();
 
+          await interaction.deleteReply();
+
           // send interaction reply
-          await interaction.editReply({
+          const reply = await channel.send({
             embeds: [submissionEmbed],
             files: [submissionImage, thumbnail],
           });
-          const reply = await interaction.fetchReply();
 
           // insert a new gquest submission in db
           const gquestOptions: IGquest = {
@@ -166,7 +170,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
             value: `**🪪 Submission ID : **\`${reply.id}\``,
           });
 
-          await interaction.editReply({
+          await reply.edit({
             embeds: [submissionEmbed],
             components: [buttonsRow],
           });

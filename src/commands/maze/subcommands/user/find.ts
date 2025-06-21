@@ -32,15 +32,12 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const message_id = interaction.options.getString("maze_id");
 
           if (!message_id || !guild) {
-            await interaction.reply({
+            await interaction.editReply({
               content:
                 "⚠️ Invalid command. Please check your input and try again.",
-              flags: "Ephemeral",
             });
             return;
           }
-
-          await interaction.deferReply();
 
           //   find the gquest
           const maze = await Maze.findOne({

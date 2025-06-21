@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionType } from "discord.js";
+import { ApplicationCommandOptionType, ChannelType } from "discord.js";
 import { ISubcommand } from "../../../../utils/interfaces";
 import User from "../../../../models/userSchema";
 import { getGquestMazeLeaderboard } from "../../../../utils/gquestUtils";
@@ -17,16 +17,14 @@ const init = async (): Promise<ISubcommand | undefined> => {
       callback: async (client, interaction) => {
         try {
           const guild = interaction.guild;
+          const channel = interaction.channel;
 
-          if (!guild) {
-            await interaction.reply({
+          if (!guild || !channel || channel.type !== ChannelType.GuildText) {
+            await interaction.editReply({
               content: `⚠️ Invalid command. Please check your input and try again.`,
-              flags: "Ephemeral",
             });
             return;
           }
-
-          await interaction.deferReply();
 
           //   make leaderbaord
           const users = await User.find({ serverID: guild.id });
@@ -36,7 +34,8 @@ const init = async (): Promise<ISubcommand | undefined> => {
             users,
             guild,
             "guild_quest",
-            interaction
+            interaction,
+            channel
           );
         } catch (err) {
           console.error("Error in gquest leaderboard callback : ", err);
