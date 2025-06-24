@@ -17,6 +17,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
             description: "channel to set",
             type: ApplicationCommandOptionType.Channel,
             channel_types: [ChannelType.GuildText],
+            required: true,
           },
         ],
       },
@@ -58,7 +59,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
           await guildConfig.save();
 
           await interaction.editReply({
-            content: `Set channel <#${ans_channel.id}> as notification channel.`,
+            content: `📢 Set channel <#${ans_channel.id}> as notification channel.`,
           });
         } catch (err) {
           console.error("Error in lvl channel subcommand callback : ", err);

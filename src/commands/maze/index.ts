@@ -1,4 +1,4 @@
-// root file for giveaway commands
+// root file for guild maze commands
 import path from "path";
 import getAllFiles from "../../utils/getAllFiles";
 import { ICommandObj, ISubcommand } from "../../utils/interfaces";
@@ -42,7 +42,7 @@ const init = async (): Promise<ICommandObj | undefined> => {
     }
 
     return {
-      name: "maze",
+      name: "mz",
       description: "All commands related to guild maze",
       options: Array.from(subcommandsMap.entries()).map(
         ([_, subcommand]) => subcommand.data
@@ -57,7 +57,7 @@ const init = async (): Promise<ICommandObj | undefined> => {
           const channel = interaction.channel;
 
           if (!guild || !channel) {
-            await interaction.reply({
+            await interaction.editReply({
               content:
                 "⚠️ Invalid command. Please check your input and try again.",
             });
@@ -65,10 +65,9 @@ const init = async (): Promise<ICommandObj | undefined> => {
           }
 
           if (!subcommandName) {
-            await interaction.reply({
+            await interaction.editReply({
               content:
                 "⚠️ No subcommands detected. Make sure you're using the correct syntax.",
-              flags: "Ephemeral",
             });
             return;
           }
@@ -77,15 +76,12 @@ const init = async (): Promise<ICommandObj | undefined> => {
           const subCmd = subcommandsMap.get(subCmdKey);
 
           if (!subCmd) {
-            await interaction.reply({
+            await interaction.editReply({
               content:
                 "⚠️ No subcommands detected. Make sure you're using the correct syntax.",
-              flags: "Ephemeral",
             });
             return;
           }
-
-          await interaction.deferReply({ flags: "Ephemeral" });
 
           const guildConfig = await Config.findOne({ serverID: guild.id });
 
@@ -119,7 +115,7 @@ const init = async (): Promise<ICommandObj | undefined> => {
                 client,
                 interaction.user.id,
                 guild.id,
-                "giveaway"
+                "mz"
               ))
             ) {
               await interaction.editReply({
@@ -132,7 +128,7 @@ const init = async (): Promise<ICommandObj | undefined> => {
 
           if (userCommands.includes(subcommandName)) {
             if (
-              !(await isUser(client, interaction.user.id, guild.id, "giveaway"))
+              !(await isUser(client, interaction.user.id, guild.id, "mz"))
             ) {
               await interaction.editReply({
                 content:
@@ -156,12 +152,12 @@ const init = async (): Promise<ICommandObj | undefined> => {
           // call the function
           await subCmd.callback(client, interaction);
         } catch (err) {
-          console.error("Error in giveaway root command callback : ", err);
+          console.error("Error in guild maze root command callback : ", err);
         }
       },
     };
   } catch (err) {
-    console.error("Error in giveaway root command : ", err);
+    console.error("Error in guild maze root command : ", err);
     return undefined;
   }
 };

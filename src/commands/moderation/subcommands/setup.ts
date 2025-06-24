@@ -1,11 +1,8 @@
-import {
-  ApplicationCommandOptionType,
-  EmbedBuilder,
-  PermissionFlagsBits,
-} from "discord.js";
+import { ApplicationCommandOptionType, EmbedBuilder } from "discord.js";
 import { IConfig, ISubcommand } from "../../../utils/interfaces";
 import Config from "../../../models/configSchema";
 import { guildConfigCheck } from "../../../utils/configurationCheck";
+import { getThumbnail } from "../../../utils/commonUtils";
 
 const init = async (): Promise<ISubcommand | undefined> => {
   try {
@@ -67,28 +64,28 @@ const init = async (): Promise<ISubcommand | undefined> => {
 
           // Giveaway Config
           if (!config.giveawayConfig.giveawayChannelID)
-            missing.Giveaway.push("`/giveaway channel`");
+            missing.Giveaway.push("`/ga channel`");
           if (!config.giveawayConfig.giveawayRole)
-            missing.Giveaway.push("`/giveaway use-role`");
+            missing.Giveaway.push("`/ga use-role`");
           if (!config.giveawayConfig.managerRoles.length)
-            missing.Giveaway.push("`/giveaway add-admin`");
+            missing.Giveaway.push("`/ga add-admin`");
 
           // GQuest / Maze Config
           if (!config.gquestMazeConfig.gquestChannelID)
-            missing.Guild_Quest.push("`/gquest channel`");
+            missing.Guild_Quest.push("`/ga channel`");
           if (!config.gquestMazeConfig.gquestRole)
-            missing.Guild_Quest.push("`/gquest use-role`");
+            missing.Guild_Quest.push("`/ga use-role`");
           if (!config.gquestMazeConfig.gquestRewardAmount)
-            missing.Guild_Quest.push("`/gquest reward-amount`");
+            missing.Guild_Quest.push("`/ga reward-amount`");
           if (!config.gquestMazeConfig.managerRoles.length)
-            missing.Moderation.push("`/gquest add-admin`");
+            missing.Guild_Quest.push("`/ga add-admin`");
 
           if (!config.gquestMazeConfig.mazeChannelID)
-            missing.Guild_Maze.push("`/maze channel`");
+            missing.Guild_Maze.push("`/mz channel`");
           if (!config.gquestMazeConfig.mazeRole)
-            missing.Guild_Maze.push("`/maze use-role`");
+            missing.Guild_Maze.push("`/mz use-role`");
           if (!config.gquestMazeConfig.mazeRewardAmount)
-            missing.Guild_Maze.push("`/maze reward-amount`");
+            missing.Guild_Maze.push("`/mz reward-amount`");
 
           // Raid Config
           if (!config.raidConfig.raidChannelID)
@@ -104,6 +101,8 @@ const init = async (): Promise<ISubcommand | undefined> => {
           if (!config.raidConfig.supportEmojiID)
             missing.Raids.push("`/raid support_emoji`");
 
+          const thumbnail = getThumbnail();
+
           // --- Embed Construction ---
           const embed = new EmbedBuilder()
             .setTitle("🛠️ Server Setup Checklist")
@@ -113,6 +112,10 @@ const init = async (): Promise<ISubcommand | undefined> => {
                 ? "✅ All essential systems are configured.\nYou can still review settings if needed."
                 : "⚠️ The following required settings are missing. Run the listed commands to complete setup:"
             )
+            .setFooter({
+              text: `${guild.name} Configuration`,
+              iconURL: "attachment://thumbnail.png",
+            })
             .setTimestamp();
 
           for (const [section, commands] of Object.entries(missing)) {
@@ -125,7 +128,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
             }
           }
 
-          await interaction.editReply({ embeds: [embed] });
+          await interaction.editReply({ embeds: [embed], files: [thumbnail] });
         } catch (err) {
           console.error("Error in mod setup subcommand callback : ", err);
         }

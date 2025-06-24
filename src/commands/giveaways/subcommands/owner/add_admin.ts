@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionType, ChannelType } from "discord.js";
+import { ApplicationCommandOptionType } from "discord.js";
 import { ISubcommand } from "../../../../utils/interfaces";
 import Config from "../../../../models/configSchema";
 

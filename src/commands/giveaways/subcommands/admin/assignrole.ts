@@ -49,7 +49,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const grole = await guild.roles.fetch(giveawayRole, { force: true });
 
           if (!grole) {
-            await interaction.reply({
+            await interaction.editReply({
               content:
                 "❌ No `Giveaways` role found in this server.\nPlease create a role named `Giveaways` before using this command.",
             });

@@ -14,14 +14,25 @@ const execute = async (client: Client, interaction: Interaction) => {
   try {
     if (!interaction.isChatInputCommand()) return;
 
-    const allowedCommands = ["mod"];
+    const guild = interaction.guild;
 
-    const guildConfig = await Config.findOne({ serverID: interaction.guildId });
+    if (!guild) {
+      await interaction.reply({
+        content: "Invalid input. Please try again.",
+        flags: "Ephemeral",
+      });
+      return;
+    }
+
+    if (!interaction.deferred && !interaction.replied) {
+      await interaction.deferReply({ flags: "Ephemeral" });
+    }
+
+    const guildConfig = await Config.findOne({ serverID: guild.id });
 
     if (!guildConfig) {
-      await interaction.reply({
+      await interaction.editReply({
         content: "No guild/server found.",
-        flags: "Ephemeral",
       });
       return;
     }
@@ -29,21 +40,53 @@ const execute = async (client: Client, interaction: Interaction) => {
     const { botAdminIDs } = guildConfig.moderationConfig;
     const isAdmin = botAdminIDs.includes(interaction.user.id);
 
+    const setupCommands: Record<string, string[]> = {
+      ga: ["add-admin", "remove-admin", "channel", "use-role"],
+      gq: ["add-admin", "remove-admin", "channel", "use-role", "reward-amount"],
+      mz: ["channel", "use-role", "reward-amount"],
+      lvl: ["add-admin", "remove-admin", "channel", "resetserverxp"],
+      raid: [
+        "add-admin",
+        "remove-admin",
+        "channel",
+        "tank-emoji",
+        "dps-emoji",
+        "support-emoji",
+        "use-role",
+      ],
+      mod: [
+        "add-admin",
+        "remove-admin",
+        "setup",
+        "farewell-channel",
+        "welcome-channel",
+      ],
+    };
+
+    const cmd = interaction.commandName;
+    const sub = interaction.options.getSubcommand(false);
+
+    const isSetupCommand = setupCommands[cmd]?.includes(sub || "");
+
     // 1. bot must be configured
     // 2. only mod commands are allowed otherwise (mod commands only usable by bot admins)
-    if (
-      !guildConfigCheck(guildConfig as unknown as IConfig) &&
-      interaction.command &&
-      !allowedCommands.includes(interaction.command.name) &&
-      !isAdmin
-    ) {
-      await interaction.reply({
-        content: isAdmin
-          ? "⚠️ **Server Configuration Not Found**\nAs a bot admin, please initialize the server by running `/mod setup`. This will guide you through the required configuration steps.\n\nUntil it's set up, most features will remain disabled."
-          : "⚠️ **Server Not Yet Configured**\nThe bot hasn't been set up for this server. Please contact a server admin or bot manager.",
-        flags: "Ephemeral",
-      });
-      return;
+    if (!guildConfigCheck(guildConfig as unknown as IConfig)) {
+      if (isAdmin && isSetupCommand) {
+        console.log(
+          `Admin command used: ${
+            interaction.commandName
+          } - ${interaction.options.getSubcommand(false)} for guild ${
+            interaction.guild?.name
+          }`
+        );
+      } else {
+        await interaction.editReply({
+          content: isAdmin
+            ? "⚠️ **Server Configuration Not Found**\nAs a bot admin, please initialize the server by running `/mod setup`. This will guide you through the required configuration steps.\n\nUntil it's set up, most features will remain disabled."
+            : "⚠️ **Server Not Yet Configured**\nThe bot hasn't been set up for this server. Please contact a server admin or bot manager.",
+        });
+        return;
+      }
     }
 
     if (
@@ -51,9 +94,8 @@ const execute = async (client: Client, interaction: Interaction) => {
         interaction.channelId
       )
     ) {
-      await interaction.reply({
+      await interaction.editReply({
         content: "Commands are not allowed in this channel.",
-        flags: "Ephemeral",
       });
       return;
     }
@@ -63,11 +105,10 @@ const execute = async (client: Client, interaction: Interaction) => {
     const localCommands = await getLocalCommands();
 
     if (!localCommands) {
-      await interaction.reply({
+      await interaction.editReply({
         content: "No commands found",
-        flags: "Ephemeral",
       });
-      throw new Error("No commands found locally");
+      return;
     }
 
     // now find command object from local commands
@@ -75,16 +116,18 @@ const execute = async (client: Client, interaction: Interaction) => {
       (cmd) => cmd.name == interaction.commandName
     );
 
-    if (!commandObject) return;
+    if (!commandObject) {
+      await interaction.editReply({ content: "Command object doesn't exist" });
+      return;
+    }
 
     if (commandObject.devOnly) {
       const memberID = interaction.member?.user.id!;
 
       //   check devs only
       if (!devsID.includes(memberID)) {
-        await interaction.reply({
+        await interaction.editReply({
           content: "❌ You don't have access to this command.",
-          flags: "Ephemeral",
         });
         return;
       }
@@ -102,9 +145,8 @@ const execute = async (client: Client, interaction: Interaction) => {
             permission as PermissionResolvable
           )
         ) {
-          await interaction.reply({
+          await interaction.editReply({
             content: `You need the ${permission} to run this command.`,
-            flags: "Ephemeral",
           });
           return;
         }
@@ -114,7 +156,7 @@ const execute = async (client: Client, interaction: Interaction) => {
     // after everything done execute the command callback
     await commandObject.callback(client, interaction);
   } catch (err) {
-    console.error(err);
+    console.error("Error in chat input command interaction handler : ", err);
   }
 };
 

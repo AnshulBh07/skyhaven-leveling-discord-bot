@@ -33,7 +33,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const targetUser =
             interaction.options.getUser("user") ?? interaction.user;
 
-          if (!toggleVal || !guild) {
+          if (typeof toggleVal === "undefined" || !guild) {
             await interaction.editReply({
               content:
                 "⚠️ Invalid command. Please check your input and try again.",

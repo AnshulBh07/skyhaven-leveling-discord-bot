@@ -37,7 +37,7 @@ const grantXp = async (
     const now = Date.now();
     // convert the time spent in minutes as we will give 3 xp per minute
     const timeSpentOnVC = (now - joinedAt) / 60_000;
-    const xpGain = Math.floor(timeSpentOnVC * 3000);
+    const xpGain = Math.floor(timeSpentOnVC * 30);
     // get current date string in YYY-MM-DD format
     const dateStr = getDateString(new Date());
 
@@ -103,12 +103,19 @@ const execute = async (
 ) => {
   try {
     const userId = newState.id;
+    const guild = newState.guild;
     const wasEligible = getEligibility(oldState);
     const nowEligible = getEligibility(newState);
     const switchedChannels =
       oldState.channelId &&
       newState.channelId &&
       oldState.channelId !== newState.channelId;
+
+    const guildConfig = await Config.findOne({ serverID: guild.id });
+
+    if (!guildConfig) return;
+
+    const { xpFromVoice } = guildConfig.levelConfig;
 
     // There are several cases we may encounter
     // 1. user just joined a vc
@@ -122,7 +129,7 @@ const execute = async (
       // here we will end the prev session, add that xp and start a new session
       const joinedAt = voiceSessions.get(userId);
       if (joinedAt) {
-        await grantXp(client, oldState, userId, joinedAt);
+        if (xpFromVoice) await grantXp(client, oldState, userId, joinedAt);
         voiceSessions.delete(userId);
       }
       voiceSessions.set(userId, Date.now());
@@ -137,7 +144,7 @@ const execute = async (
     ) {
       const joinedAt = voiceSessions.get(userId);
       if (joinedAt) {
-        await grantXp(client, oldState, userId, joinedAt);
+        if (xpFromVoice) await grantXp(client, oldState, userId, joinedAt);
         voiceSessions.delete(userId);
       }
     }

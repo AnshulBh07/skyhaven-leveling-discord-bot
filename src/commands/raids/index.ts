@@ -57,7 +57,7 @@ const init = async (): Promise<ICommandObj | undefined> => {
           const channel = interaction.channel;
 
           if (!guild || !channel) {
-            await interaction.reply({
+            await interaction.editReply({
               content:
                 "⚠️ Invalid command. Please check your input and try again.",
             });
@@ -65,10 +65,9 @@ const init = async (): Promise<ICommandObj | undefined> => {
           }
 
           if (!subcommandName) {
-            await interaction.reply({
+            await interaction.editReply({
               content:
                 "⚠️ No subcommands detected. Make sure you're using the correct syntax.",
-              flags: "Ephemeral",
             });
             return;
           }
@@ -77,15 +76,12 @@ const init = async (): Promise<ICommandObj | undefined> => {
           const subCmd = subcommandsMap.get(subCmdKey);
 
           if (!subCmd) {
-            await interaction.reply({
+            await interaction.editReply({
               content:
                 "⚠️ No subcommands detected. Make sure you're using the correct syntax.",
-              flags: "Ephemeral",
             });
             return;
-          }
-
-          await interaction.deferReply({flags:"Ephemeral"})          
+          }          
 
           const guildConfig = await Config.findOne({ serverID: guild.id });
 

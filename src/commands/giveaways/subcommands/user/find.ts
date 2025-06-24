@@ -65,7 +65,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
                 .setStyle(ButtonStyle.Link)
             );
 
-          await interaction.deleteReply();
+          await interaction.editReply({ content: "Finding your giveaway..." });
 
           await channel.send({
             components: [LinkButton],

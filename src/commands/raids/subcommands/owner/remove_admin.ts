@@ -59,7 +59,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
 
           await interaction.editReply({
             content:
-              "❌ The selected role is not registered as a management role.",
+            `❌ <${role}> has been removed as a management role.`,
           });
         } catch (err) {
           console.error("Error in raid remove-admin callback : ", err);

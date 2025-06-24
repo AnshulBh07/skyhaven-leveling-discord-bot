@@ -122,7 +122,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
             .setImage("attachment://submitted_image.png")
             .setTimestamp();
 
-          await interaction.deleteReply();
+          await interaction.editReply({ content: "Please wait...." });
 
           // send interaction reply
           const reply = await channel.send({

@@ -59,23 +59,19 @@ const init = async (): Promise<ISubcommand | undefined> => {
             !guild ||
             start_floor >= end_floor
           ) {
-            await interaction.reply({
+            await interaction.editReply({
               content:
                 "⚠️ Invalid command. Please check your input and try again.",
-              flags: "Ephemeral",
             });
             return;
           }
 
           if (channel.type !== ChannelType.GuildText) {
-            await interaction.reply({
-              content: "Channel is not text-based.",
-              ephemeral: true,
+            await interaction.editReply({
+              content: "Channel is not text-based."
             });
             return;
           }
-
-          await interaction.deferReply({ flags: "Ephemeral" });
 
           // find user
           const user = await User.findOne({

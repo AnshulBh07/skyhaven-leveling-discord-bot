@@ -42,7 +42,7 @@ const init = async (): Promise<ICommandObj | undefined> => {
     }
 
     return {
-      name: "giveaway",
+      name: "ga",
       description: "All commands related to giveaways.",
       options: Array.from(subcommandsMap.entries()).map(
         ([_, subcommand]) => subcommand.data
@@ -51,8 +51,6 @@ const init = async (): Promise<ICommandObj | undefined> => {
 
       callback: async (client, interaction) => {
         try {
-          await interaction.deferReply({ flags: "Ephemeral" });
-
           // for a valid command call the clalback function using map
           const subcommandName = interaction.options.getSubcommand(false);
           const guild = interaction.guild;
@@ -96,12 +94,10 @@ const init = async (): Promise<ICommandObj | undefined> => {
 
           const { botAdminIDs } = guildConfig.moderationConfig;
           const { giveawayChannelID } = guildConfig.giveawayConfig;
+          const isAdmin = botAdminIDs.includes(interaction.user.id);
 
           // if it is an owner command and user is not owner
-          if (
-            ownerCommands.includes(subcommandName) &&
-            !botAdminIDs.includes(interaction.user.id)
-          ) {
+          if (ownerCommands.includes(subcommandName) && !isAdmin) {
             await interaction.editReply({
               content:
                 "⚠️ You lack the required permissions to use this command.",
@@ -111,14 +107,9 @@ const init = async (): Promise<ICommandObj | undefined> => {
 
           // check permissions
           // command name is gonna be unique for given root command
-          if (adminCommands.includes(subcommandName)) {
+          if (adminCommands.includes(subcommandName) && !isAdmin) {
             if (
-              !(await isManager(
-                client,
-                interaction.user.id,
-                guild.id,
-                "giveaway"
-              ))
+              !(await isManager(client, interaction.user.id, guild.id, "ga"))
             ) {
               await interaction.editReply({
                 content:
@@ -128,10 +119,8 @@ const init = async (): Promise<ICommandObj | undefined> => {
             }
           }
 
-          if (userCommands.includes(subcommandName)) {
-            if (
-              !(await isUser(client, interaction.user.id, guild.id, "giveaway"))
-            ) {
+          if (userCommands.includes(subcommandName) && !isAdmin) {
+            if (!(await isUser(client, interaction.user.id, guild.id, "ga"))) {
               await interaction.editReply({
                 content:
                   "⚠️ You lack the required permissions to use this command.",
@@ -141,10 +130,7 @@ const init = async (): Promise<ICommandObj | undefined> => {
           }
 
           // admins and users will be forced to use designated channel
-          if (
-            !botAdminIDs.includes(interaction.user.id) &&
-            channel.id !== giveawayChannelID
-          ) {
+          if (!isAdmin && channel.id !== giveawayChannelID) {
             await interaction.editReply({
               content: `⚠️ You cannot use this command in this channel. Please use it in <#${giveawayChannelID}>.`,
             });

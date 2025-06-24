@@ -33,8 +33,6 @@ const init = async (): Promise<ISubcommand | undefined> => {
             return;
           }
 
-          await interaction.deferReply({ flags: "Ephemeral" });
-
           const guildConfig = await Config.findOne({ serverID: guildID });
 
           if (!guildConfig) {
@@ -57,7 +55,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
                 .setStyle(ButtonStyle.Secondary)
             );
 
-          await interaction.reply({
+          await interaction.editReply({
             content:
               "**⚠️ This will reset XP and level data for _all users_ in this server.**\nAre you sure you want to proceed?",
             components: [buttonsRow],

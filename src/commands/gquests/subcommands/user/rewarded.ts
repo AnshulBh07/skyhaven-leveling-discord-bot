@@ -29,9 +29,8 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const channel = interaction.channel;
 
           if (!guild || !channel || channel.type !== ChannelType.GuildText) {
-            await interaction.reply({
+            await interaction.editReply({
               content: `⚠️ Invalid command. Please check your input and try again.`,
-              flags: "Ephemeral",
             });
             return;
           }

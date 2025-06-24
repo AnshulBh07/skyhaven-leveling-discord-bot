@@ -292,22 +292,31 @@ export const lightBackgroundColors = [
 ];
 
 export const rolePromotionGifs: string[][] = [
+  [""],
   [
     "https://media.tenor.com/kJS0W9pqUDQAAAAM/lurking-creeping.gif",
     "https://media.tenor.com/TbKly4oJOBgAAAAM/anthony-anderson-looking.gif",
     "https://i.gifer.com/GRDF.gif",
+    "https://media.tenor.com/ulfWwhYQGIgAAAAM/sal-lurking-sal-lurk.gif",
+    "https://media.tenor.com/Py3PtpNEJJ0AAAAM/cat-lurking.gif",
+    "https://media.tenor.com/TkagZnznpgkAAAAM/cat-lurk.gif",
+    "https://media.tenor.com/hgIQRlT2crUAAAAM/brody-wellmaker.gif",
     "https://media2.giphy.com/media/OCOYbqiXzkxMI/200w.gif?cid=6c09b952jk1a0azl53x64ns8fy6jeoht7j93jwdom4xglwq9&ep=v1_gifs_search&rid=200w.gif&ct=g",
   ],
   [
     "https://media.tenor.com/MDxs9sUkJ_AAAAAM/wizard-dance.gif",
     "https://media.tenor.com/iCFNj4B9zQUAAAAM/dwight.gif",
     "https://media.tenor.com/xXNYv9q9HZEAAAAM/stan-twitter-leobylaw.gif",
+    "https://i.imgur.com/xBZ0WMz.gif",
     "https://www.hubspot.com/hs-fs/hubfs/receiving%20redundant%20phone%20calls.gif?width=480&height=269&name=receiving%20redundant%20phone%20calls.gif",
+    "https://media.tenor.com/JJ_is357rXYAAAAM/spike-monkey-typing.gif",
   ],
   [
     "https://i.pinimg.com/originals/88/10/64/881064cfb0167713e5b726335f7ae23f.gif",
     "https://64.media.tumblr.com/af30c5f46a6554063a71f9d105cc588b/tumblr_p9j0mn85mu1rrkahjo1_540.gifv",
     "https://64.media.tumblr.com/35ebcb06d0f8779378f613abf9bc1558/b329276fd89b8684-cf/s500x750/c1dadb37f033e59e7d5d4d6e9850ff529c6d15a6.gif",
+    "https://media.tenor.com/gTqRGv4QTfgAAAAM/onimaki-dance-goblin-dance.gif",
+    "https://media1.giphy.com/media/1AISoIppa3sYmbFZY0/giphy.gif",
   ],
   [
     "https://media.tenor.com/iCqG_iT-h48AAAAM/bills-ugh.gif",
@@ -316,16 +325,21 @@ export const rolePromotionGifs: string[][] = [
     "https://i.pinimg.com/originals/4a/e5/d5/4ae5d5d0b85a157c6dac7f6a17bb3078.gif",
     "https://i.makeagif.com/media/5-26-2015/DkgsXO.gif",
     "https://media.tenor.com/dPLWf7LikXoAAAAM/typing-gif.gif",
+    "https://media.tenor.com/rSV4dN-HOboAAAAM/typing-keyboard.gif",
+    "https://i.makeagif.com/media/5-26-2015/DkgsXO.gif",
   ],
   [
     "https://cdn.mos.cms.futurecdn.net/Z7Rv4K4aVfzDzJnHPJXPF8.gif",
     "https://codaio.imgix.net/docs/4IMyNAs4pF/blobs/bl-8D8x1g0Vjh/740de5d14aba235bc82ca6fb7636782cd8cf625e59b394351437d720e4925cd27ac5b519cad104c29e813f1a7aa7324f130add2c31496a30ec63ea7fe0fec6a6cce82787b8aaf3d4ca59488d11bf2fc129feb59c6c0dd7a73cf381a78a14963673d44d6c?fit=crop&ar=1.91%3A1&fm=jpg",
     "https://media.tenor.com/CbWKthhbhEoAAAAM/insane-fast-typing-cat.gif",
+    "https://media.tenor.com/M-WzFWCPVHsAAAAM/guy-typing-typing.gif",
   ],
   [
     "https://media.tenor.com/rCsC_pOIquQAAAAM/cage-priest.gif",
     "https://media.tenor.com/j_X4pXUKVJkAAAAM/face-off-faceoff.gif",
     "https://i.gifer.com/ERqp.gif",
+    "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExZzJwN3ptYXE2d3JqcnF1cGY2ZWJnMzU5NmQ2bHd5cTR3cHM3NXoxbCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/CpcpDSci3ljCU/giphy.gif",
+    "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHlldTJoeHBsYXB3YXNqc295NDdpYzFmNGl5cHRvZDdlanA1ZXZqOCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3ohs7Rl6L4zG2rvHoc/giphy.gif",
   ],
   [
     "https://media.tenor.com/-2V6pcNfhpMAAAAM/homer-simpson-levitating.gif",

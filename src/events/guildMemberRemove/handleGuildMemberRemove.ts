@@ -16,9 +16,9 @@ const execute = async (client: Client, member: GuildMember) => {
     const { moderationConfig } = guildConfig;
     const { farewellChannelID } = moderationConfig;
 
-    const farewellChannel = guild.channels.cache.find(
-      (channel) => channel.id === farewellChannelID
-    );
+    const farewellChannel = await guild.channels.fetch(farewellChannelID, {
+      force: true,
+    });
 
     const user = await User.findOne({ userID: userID });
 

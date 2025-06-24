@@ -250,7 +250,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
 
           if (leaderboardCard) leaderboardEmbed.setImage("attachment://bg.png");
 
-          await interaction.deleteReply();
+          await interaction.editReply({ content: "Generating leaderboard..." });
 
           const reply = await channel.send({
             embeds: [leaderboardEmbed],

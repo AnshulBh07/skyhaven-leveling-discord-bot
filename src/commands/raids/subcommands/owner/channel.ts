@@ -49,7 +49,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
           }
 
           await interaction.editReply({
-            content: `Guild raid channel set to <#${channel.id}>`,
+            content: `📢 Guild raid channel set to <#${channel.id}>`,
           });
         } catch (err) {
           console.error("Error in raid channel callback : ", err);

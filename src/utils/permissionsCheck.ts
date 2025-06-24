@@ -19,11 +19,11 @@ export const isManager = async (
 
     const getManagerRoles = () => {
       switch (type) {
-        case "gquest":
+        case "gq":
           return gquestMazeConfig.managerRoles;
-        case "maze":
+        case "mz":
           return gquestMazeConfig.managerRoles;
-        case "giveaway":
+        case "ga":
           return giveawayConfig.managerRoles;
         case "lvl":
           return levelConfig.managerRoles;

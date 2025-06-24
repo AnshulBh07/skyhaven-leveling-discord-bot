@@ -58,7 +58,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
           await guildConfig.save();
 
           await interaction.editReply({
-            content: `Set ${emoji} as tank emoji for guild raids.`,
+            content: `✅ Set ${emoji} as tank emoji for guild raids.`,
           });
         } catch (err) {
           console.error("Error in raid tank emoji subcommand callback : ", err);

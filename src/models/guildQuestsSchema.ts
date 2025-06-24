@@ -7,7 +7,6 @@ enum StatusType {
   REJECTED = "rejected",
 }
 
-
 const GQuestSchema = new Schema(
   {
     serverID: { type: String, required: true, default: "" },

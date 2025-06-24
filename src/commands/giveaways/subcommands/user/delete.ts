@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionType } from "discord.js";
+import { ApplicationCommandOptionType, ChannelType } from "discord.js";
 import { ISubcommand } from "../../../../utils/interfaces";
 import Giveaway from "../../../../models/giveawaySchema";
 
@@ -56,10 +56,15 @@ const init = async (): Promise<ISubcommand | undefined> => {
             return;
           }
 
-          const guild = await client.guilds.fetch(serverID);
-          const channel = await guild.channels.fetch(channelID);
+          const guild = await client.guilds.fetch({
+            guild: serverID,
+            force: true,
+          });
+          const channel = await guild.channels.fetch(channelID, {
+            force: true,
+          });
 
-          if (!channel || !channel.isTextBased()) {
+          if (!channel || channel.type!==ChannelType.GuildText) {
             await interaction.editReply({
               content: "🚫 Invalid giveaway channel specified.",
             });

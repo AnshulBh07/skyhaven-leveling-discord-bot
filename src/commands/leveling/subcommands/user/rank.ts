@@ -19,13 +19,14 @@ const init = async (): Promise<ISubcommand | undefined> => {
       isSubCommand: true,
       data: {
         name: "rank",
-        description: "display user level, XP, and rank",
+        description: "Display user level, XP, and rank",
         type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
             name: "user",
             description: "target user",
             type: ApplicationCommandOptionType.User,
+            required: true,
           },
         ],
       },
@@ -134,18 +135,21 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const rankCard = await generateRankCard(targetUser, guild, rankData);
 
           if (!rankCard) {
+            console.log("rank card generation failed...");
             interaction.editReply("cannot generate rank card.");
             return;
           }
+
+          console.log("after failed...");
 
           const image = new AttachmentBuilder(rankCard, {
             name: "rank-card.png",
           });
 
-          await interaction.deleteReply();
+          await interaction.editReply({ content: "Generating rank card ..." });
 
           if (notifChannel && notifChannel.isTextBased()) {
-            notifChannel.send({ files: [image] });
+            await notifChannel.send({ files: [image] });
           }
         } catch (err) {
           console.error("Error in lvl rank subcommand callback : ", err);

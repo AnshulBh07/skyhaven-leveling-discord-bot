@@ -239,16 +239,7 @@ export const endGiveaway = async (client: Client, giveawayID: string) => {
       force: true,
     });
 
-    // get giveaway notification channel from config
-    const guildConfig = await Config.findOne({ serverID: guild.id });
-
-    if (!guildConfig) return;
-
-    const { giveawayChannelID } = guildConfig.giveawayConfig;
-
-    const giveawayChannel = guild.channels.cache.find(
-      (channel) => channel.id === giveawayChannelID
-    );
+    const giveawayChannel = messageChannel;
 
     if (!giveawayChannel || !giveawayChannel.isTextBased()) return;
 
@@ -268,10 +259,6 @@ export const endGiveaway = async (client: Client, giveawayID: string) => {
     const thumbnailLogo = new AttachmentBuilder(leaderboardThumbnail).setName(
       "thumbnail.png"
     );
-
-    const thumbnailSad = new AttachmentBuilder(
-      "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExY2E1bWJnbzB2dDNyZThtMjRxNDFmaThmdXI3OGswZGk5eG9zNWl0ZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3OhXBaoR1tVPW/giphy.gif"
-    ).setName("thumbnail.png");
 
     const giveawayEmbed = new EmbedBuilder()
       .setTitle(
@@ -334,12 +321,14 @@ export const endGiveaway = async (client: Client, giveawayID: string) => {
           : [])
       )
       .setColor(giveaway.role_color as ColorResolvable)
-      .setThumbnail(`attachment://thumbnail.png`)
       .setFooter({
         text:
           participants.length === 0
             ? `Next time, maybe bribe them with cookies 🍪.\n`
-            : `Congratulations to the winner${winners.size > 1 ? "s" : ""}\n`,
+            : `Congratulations to the winner${winners.size > 1 ? "s" : ""}\n${
+                guild.name
+              } Giveaways\n`,
+        iconURL: "attachment://thumbnail.png",
       })
       .setTimestamp();
 
@@ -350,7 +339,7 @@ export const endGiveaway = async (client: Client, giveawayID: string) => {
     const giveawayEndMessage = await giveawayChannel.send({
       ...(roleMention && { content: roleMention }),
       embeds: [giveawayEmbed],
-      files: [participants.length === 0 ? thumbnailSad : thumbnailLogo],
+      files: [thumbnailLogo],
       allowedMentions: {
         roles: giveaway.role_req ? [giveaway.role_req] : [],
       },
@@ -367,7 +356,6 @@ export const endGiveaway = async (client: Client, giveawayID: string) => {
     const afterEndEmbed = new EmbedBuilder()
       .setTitle(`Giveaway Ended - ${giveaway.prize}`)
       .setColor(giveaway.role_color as ColorResolvable)
-      .setThumbnail("attachment://thumbnail.png")
       .addFields(
         {
           name: "\u200b",
@@ -391,7 +379,10 @@ export const endGiveaway = async (client: Client, giveawayID: string) => {
           inline: false,
         }
       )
-      .setFooter({ text: `${guild.name} Giveaways` });
+      .setFooter({
+        text: `${guild.name} Giveaways`,
+        iconURL: "attachment://thumbnail.png",
+      });
 
     const messageLink = `https://discord.com/channels/${giveaway.serverID}/${giveaway.channelID}/${giveawayEndMessage.id}`;
 
@@ -405,6 +396,7 @@ export const endGiveaway = async (client: Client, giveawayID: string) => {
     await giveawayMessage.edit({
       embeds: [afterEndEmbed],
       components: [linkButton],
+      files: [thumbnailLogo],
     });
 
     // update users won in db

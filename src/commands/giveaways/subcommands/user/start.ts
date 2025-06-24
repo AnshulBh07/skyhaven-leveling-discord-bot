@@ -16,6 +16,7 @@ import {
 import ms, { StringValue } from "ms";
 import Giveaway from "../../../../models/giveawaySchema";
 import { attachCollector, endGiveaway } from "../../../../utils/giveawayUtils";
+import Config from "../../../../models/configSchema";
 
 const init = async (): Promise<ISubcommand | undefined> => {
   try {
@@ -73,9 +74,10 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const count_winners = interaction.options.getNumber("winners");
           const role_req = interaction.options.getRole("role");
           const itemImage = interaction.options.getAttachment("image");
-          const hosted_by = interaction.options.getUser("host");
+          const hosted_by =
+            interaction.options.getUser("host") ?? interaction.user;
           const guildID = interaction.guildId;
-          const channel = interaction.channel;
+          const guild = interaction.guild;
 
           // validation
           if (
@@ -83,10 +85,9 @@ const init = async (): Promise<ISubcommand | undefined> => {
             !duration ||
             !count_winners ||
             !guildID ||
-            !channel ||
-            channel.type !== ChannelType.GuildText ||
             !hosted_by ||
-            hosted_by.bot
+            hosted_by.bot ||
+            !guild
           ) {
             await interaction.editReply({
               content: `⚠️ Invalid command. Please check your input and try again.`,
@@ -95,9 +96,8 @@ const init = async (): Promise<ISubcommand | undefined> => {
           }
 
           if (giveawayItem.length <= 0) {
-            await interaction.reply({
+            await interaction.editReply({
               content: "🎁 Prize cannot be an empty string.",
-              flags: "Ephemeral",
             });
             return;
           }
@@ -105,10 +105,9 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const durationMs = ms(duration as StringValue);
 
           if (!durationMs || typeof durationMs !== "number") {
-            await interaction.reply({
+            await interaction.editReply({
               content:
                 "Invalid duration format. Use formats like `1h`, `30m`, `2d`, etc.",
-              flags: "Ephemeral",
             });
             return;
           }
@@ -124,27 +123,43 @@ const init = async (): Promise<ISubcommand | undefined> => {
             return;
           }
 
+          const guildConfig = await Config.findOne({ serverID: guildID });
+
+          if (!guildConfig) {
+            await interaction.editReply(
+              "🔍 This server could not be identified. Check if the bot has access."
+            );
+            return;
+          }
+
+          const { giveawayChannelID } = guildConfig.giveawayConfig;
+
+          // find channel
+          const channel = await guild.channels.fetch(giveawayChannelID, {
+            force: true,
+          });
+
+          if (!channel || channel.type !== ChannelType.GuildText) {
+            await interaction.editReply({
+              content: "⚠️ Invalid giveaway channel please set up a valid one.",
+            });
+            return;
+          }
+
           const startMessage =
             giveawayStartMessages[
               Math.floor(Math.random() * giveawayStartMessages.length)
             ];
           const endTime = Date.now() + durationMs;
 
-          const thumbnail = new AttachmentBuilder(leaderboardThumbnail).setName(
-            "thumbnail.png"
-          );
-
           const giveawayEmbed = new EmbedBuilder()
-            .setTitle(`🎁 SKYHAVEN GIVEAWAY - ${giveawayItem}\n\n`)
-            .setThumbnail("attachment://thumbnail.png")
+            .setTitle(`🎁 GIVEAWAY - ${giveawayItem}\n\n`)
             .setColor(role_req ? role_req.color : "Aqua")
             .setDescription(startMessage)
             .addFields(
               {
                 name: "\u200b",
-                value: `**👤 Hosted by : ** <@${
-                  hosted_by ? hosted_by.id : interaction.user.id
-                }>`,
+                value: `**👤 Hosted by : ** <@${hosted_by.id}>`,
                 inline: true,
               },
               {
@@ -175,9 +190,9 @@ const init = async (): Promise<ISubcommand | undefined> => {
                 : [])
             )
             .setFooter({
-              text: "Press 🎉 to participate.\nPress 🏃‍♂️ to leave.\n",
+              text: `Press 🎉 to participate.\nPress 🏃‍♂️ to leave.\n${guild.name} Giveaways`,
             })
-            .setTimestamp(new Date());
+            .setTimestamp();
 
           if (itemImage) giveawayEmbed.setImage(itemImage.url);
 
@@ -193,12 +208,14 @@ const init = async (): Promise<ISubcommand | undefined> => {
               .setStyle(ButtonStyle.Danger)
           );
 
-          await interaction.deleteReply();
+          await interaction.editReply({
+            content: "Creating your giveaway. Please wait...",
+          });
 
           const giveawayMessage = await channel.send({
             content: role_req ? `${role_req}` : "",
             embeds: [giveawayEmbed],
-            files: [thumbnail],
+            files: [],
             allowedMentions: { roles: role_req ? [role_req.id] : [] },
             components: [buttonRow],
           });
@@ -206,7 +223,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
           // now save giveaway data in mongodb
           const giveawayData: IGiveaway = {
             serverID: guildID,
-            hostID: hosted_by ? hosted_by.id : interaction.user.id,
+            hostID: hosted_by.id,
             messageID: giveawayMessage.id,
             channelID: channel.id,
             endMessageID: "dummy id",

@@ -43,7 +43,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
             return;
           }
 
-          const { managerRoles } = config.giveawayConfig;
+          const { managerRoles } = config.gquestMazeConfig;
 
           if (managerRoles.includes(role.id)) {
             await interaction.editReply(

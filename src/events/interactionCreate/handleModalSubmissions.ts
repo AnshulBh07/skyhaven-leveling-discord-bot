@@ -20,6 +20,8 @@ const execute = async (client: Client, interaction: ModalSubmitInteraction) => {
 
     if (!channel || !channel.isTextBased() || !guild) return;
 
+    await interaction.deferReply({ flags: "Ephemeral" });
+
     const guildConfig = await Config.findOne({ serverID: guild.id });
 
     if (!guildConfig) return;
@@ -36,7 +38,6 @@ const execute = async (client: Client, interaction: ModalSubmitInteraction) => {
       interaction.customId.startsWith("gquest_rejection_modal") ||
       interaction.customId.startsWith("maze_rejection_modal")
     ) {
-      await interaction.deferReply({ flags: "Ephemeral" });
       const messageID = interaction.customId.split("_").at(-1);
       const reason = interaction.fields.getTextInputValue("reason");
       const type = interaction.customId.split("_")[0];
@@ -97,7 +98,7 @@ const execute = async (client: Client, interaction: ModalSubmitInteraction) => {
       if (!updatedUser) return;
 
       const guild = await client.guilds.fetch(serverID);
-      const channel = await guild.channels.fetch(channelID,{force:true});
+      const channel = await guild.channels.fetch(channelID, { force: true });
       const user = await client.users.fetch(userID);
 
       if (!channel || channel.type !== 0) return;

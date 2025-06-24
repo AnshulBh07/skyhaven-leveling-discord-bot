@@ -45,17 +45,15 @@ const init = async (): Promise<ICommandObj | undefined> => {
           const guild = interaction.guild;
 
           if (!subcommandName) {
-            await interaction.reply({
+            await interaction.editReply({
               content: "Subcommands not found.",
-              flags: "Ephemeral",
             });
             return;
           }
 
           if (!guild) {
-            await interaction.reply({
+            await interaction.editReply({
               content: "Guild not found",
-              flags: "Ephemeral",
             });
             return;
           }
@@ -64,14 +62,11 @@ const init = async (): Promise<ICommandObj | undefined> => {
           const subCmd = subcommandsMap.get(subCmdKey);
 
           if (!subCmd) {
-            await interaction.reply({
+            await interaction.editReply({
               content: "Subcommand not found",
-              flags: "Ephemeral",
             });
             return;
           }
-
-          await interaction.deferReply({flags:"Ephemeral"});
 
           const guildConfig = await Config.findOne({ serverID: guild.id });
 

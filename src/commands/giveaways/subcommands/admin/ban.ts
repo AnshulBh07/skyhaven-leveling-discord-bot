@@ -74,7 +74,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
           await guildConfig.save();
 
           await interaction.editReply({
-            content: `🚫 <@${targetUser.id}> has been banned from participating in any further giveaways.\nUse \`/gunban\` to remove them from the ban list at any time.`,
+            content: `🚫 <@${targetUser.id}> has been banned from participating in any further giveaways.\nUse \`/ga unban\` to remove them from the ban list at any time.`,
           });
         } catch (err) {
           console.error("Error in giveaway ban command callback : ", err);

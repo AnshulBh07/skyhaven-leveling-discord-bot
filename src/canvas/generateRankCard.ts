@@ -10,6 +10,7 @@ export const generateRankCard = async (
 ) => {
   try {
     // get official badges from discord
+    console.log("inside generation canvas...");
     const userBadges = user.flags?.toArray();
 
     if (!userBadges) return undefined;
@@ -35,6 +36,8 @@ export const generateRankCard = async (
       allBadges.push(discordBadges.get("ServerBooster")!);
 
     const presenceStatus = guild_member.presence?.status;
+
+    console.log(allBadges);
 
     const rankCard = await Profile(user.id, {
       overwriteBadges: true,

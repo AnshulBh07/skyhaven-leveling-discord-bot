@@ -44,14 +44,6 @@ const init = async (): Promise<ISubcommand | undefined> => {
           }
 
           const { managerRoles } = config.levelConfig;
-          const { botAdminIDs } = config.moderationConfig;
-
-          if (!botAdminIDs.includes(interaction.user.id)) {
-            await interaction.reply({
-              content: "You do not have permission to use this command.",
-            });
-            return;
-          }
 
           if (!managerRoles.includes(role.id)) {
             await interaction.editReply(

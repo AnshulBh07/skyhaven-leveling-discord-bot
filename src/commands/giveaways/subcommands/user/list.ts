@@ -79,7 +79,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
             return buttonsRow;
           };
 
-          await interaction.deleteReply();
+          await interaction.editReply({ content: "Generating your list..." });
 
           const initialButtons = generateButtons();
 

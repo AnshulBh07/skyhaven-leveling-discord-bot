@@ -1,21 +1,22 @@
 import { ApplicationCommandOptionType, ChannelType } from "discord.js";
-import { ISubcommand } from "../../../../utils/interfaces";
-import Config from "../../../../models/configSchema";
+import { ISubcommand } from "../../../utils/interfaces";
+import Config from "../../../models/configSchema";
 
 const init = async (): Promise<ISubcommand | undefined> => {
   try {
     return {
       isSubCommand: true,
       data: {
-        name: "use-role",
+        name: "welcome-channel",
         description:
-          "Sets role that enables guild members to participate in raids.",
+          "Channel where welcome messages are sent",
         type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
-            name: "role",
-            description: "role to set",
-            type: ApplicationCommandOptionType.Role,
+            name: "channel",
+            description: "channel to set",
+            type: ApplicationCommandOptionType.Channel,
+            channelTypes: [ChannelType.GuildText],
             required: true,
           },
         ],
@@ -23,10 +24,10 @@ const init = async (): Promise<ISubcommand | undefined> => {
 
       callback: async (client, interaction) => {
         try {
-          const role = interaction.options.getRole("role");
+          const channel = interaction.options.getChannel("channel");
           const guild = interaction.guild;
 
-          if (!role || !guild) {
+          if (!channel || !guild) {
             await interaction.editReply({
               content:
                 "⚠️ Invalid command. Please check your input and try again.",
@@ -38,7 +39,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
             {
               serverID: guild.id,
             },
-            { $set: { "raidConfig.raidRole": role.id } }
+            { $set: { "moderationConfig.welcomeChannelID": channel.id } }
           );
 
           if (!updatedConfig) {
@@ -49,15 +50,15 @@ const init = async (): Promise<ISubcommand | undefined> => {
           }
 
           await interaction.editReply({
-            content: `✅ Guild raid user role set to <@&${role.id}>`,
+            content: `✅ The welcome has been successfully set to <#${channel.id}>.`,
           });
         } catch (err) {
-          console.error("Error in raid role callback : ", err);
+          console.error("Error in welcome channel callback : ", err);
         }
       },
     };
   } catch (err) {
-    console.error("Error in raid role subcommand : ", err);
+    console.error("Error in welcome channel subcommand : ", err);
     return undefined;
   }
 };
