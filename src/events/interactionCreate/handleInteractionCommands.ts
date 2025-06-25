@@ -39,6 +39,7 @@ const execute = async (client: Client, interaction: Interaction) => {
 
     const { botAdminIDs } = guildConfig.moderationConfig;
     const isAdmin = botAdminIDs.includes(interaction.user.id);
+    const { seraphinaMood } = guildConfig.moodConfig;
 
     const setupCommands: Record<string, string[]> = {
       ga: ["add-admin", "remove-admin", "channel", "use-role"],
@@ -154,7 +155,7 @@ const execute = async (client: Client, interaction: Interaction) => {
     }
 
     // after everything done execute the command callback
-    await commandObject.callback(client, interaction);
+    await commandObject.callback(client, interaction, seraphinaMood);
   } catch (err) {
     console.error("Error in chat input command interaction handler : ", err);
   }

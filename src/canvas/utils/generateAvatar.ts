@@ -1,5 +1,4 @@
 import { User } from "discord.js";
-import fetch from "node-fetch";
 import path from "path";
 import getAllFiles from "../../utils/getAllFiles";
 
@@ -16,10 +15,6 @@ export const generateAvatar = async (
 
   try {
     const avatarURL = user.displayAvatarURL({ extension: "png", size: 256 });
-    const res = await fetch(avatarURL);
-
-    let arrayBuffer: ArrayBuffer;
-    let buffer: Buffer<ArrayBuffer>;
     let avatar: InstanceType<typeof Image>;
 
     // get random default pfps
@@ -28,14 +23,16 @@ export const generateAvatar = async (
       false
     );
 
-    if (!res.ok) {
+    try {
+      const response = await axios.get(avatarURL, {
+        responseType: "arraybuffer",
+      });
+      const buffer = Buffer.from(response.data as ArrayBuffer);
+      avatar = await loadImage(buffer);
+    } catch {
       avatar = await loadImage(
         defaultPfp[Math.floor(Math.random() * defaultPfp.length)]
       );
-    } else {
-      arrayBuffer = await res.arrayBuffer();
-      buffer = Buffer.from(arrayBuffer);
-      avatar = await loadImage(buffer);
     }
 
     const borderWidth = 5;

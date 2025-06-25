@@ -100,6 +100,38 @@ const RaidConfig = new Schema(
   { timestamps: false, _id: false, _v: false }
 );
 
+const MoodSchema = new Schema(
+  {
+    seraphinaMood: {
+      type: String,
+      enum: [
+        "serene",
+        "tsundere",
+        "tired",
+        "divinePride",
+        "cheerful",
+        "cold",
+        "dreamy",
+        "gentle",
+        "gloomy",
+        "manic",
+        "melancholy",
+        "mischievous",
+        "playful",
+        "righteous",
+        "flirtatious",
+        "watchful",
+        "merciful",
+        "divine",
+        "prophetic",
+      ],
+      required: true,
+      default: "serene",
+    },
+  },
+  { timestamps: true, _id: false, _v: false }
+);
+
 const ConfigSchema = new Schema(
   {
     serverID: { type: String, required: true, unique: true, default: "" },
@@ -114,6 +146,7 @@ const ConfigSchema = new Schema(
     giveawayConfig: { type: GiveawayConfig, required: true },
     gquestMazeConfig: { type: GquestMazeConfig, required: true },
     raidConfig: { type: RaidConfig, required: true },
+    moodConfig: { type: MoodSchema, required: true },
     users: [
       {
         type: mongoose.Schema.Types.ObjectId,

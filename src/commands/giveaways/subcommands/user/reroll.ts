@@ -7,6 +7,7 @@ import {
 import { ISubcommand } from "../../../../utils/interfaces";
 import Giveaway from "../../../../models/giveawaySchema";
 import { leaderboardThumbnail } from "../../../../data/helperArrays";
+import Config from "../../../../models/configSchema";
 
 const init = async (): Promise<ISubcommand | undefined> => {
   try {
@@ -47,6 +48,27 @@ const init = async (): Promise<ISubcommand | undefined> => {
             await interaction.editReply({
               content:
                 "🚫 Giveaway not found. Please ensure the provided ID is correct.",
+            });
+            return;
+          }
+
+          const guildConfig = await Config.findOne({ serverID: guildID });
+
+          if (!guildConfig) {
+            await interaction.editReply(
+              "🔍 This server could not be identified. Check if the bot has access."
+            );
+            return;
+          }
+
+          const { managerRoles } = guildConfig.giveawayConfig;
+
+          // not everyone can delete the giveaway they should be either an admin or the person who creted giveaway himself
+          const allowedIDs = [...managerRoles, giveaway.hostID];
+
+          if (!allowedIDs.includes(interaction.user.id)) {
+            await interaction.editReply({
+              content: "🚫 You do not have permission to perform this action.",
             });
             return;
           }

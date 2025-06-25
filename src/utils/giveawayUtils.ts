@@ -167,7 +167,7 @@ export const attachCollector = async (
         }
 
         if (btnInt.customId === "leave") {
-          await btnInt.deferReply();
+          await btnInt.deferReply({ flags: "Ephemeral" });
           const freshData = await Giveaway.findOne({
             messageID: giveawayData.messageID,
           });
@@ -426,23 +426,27 @@ export const generateGiveawayListEmbed = (
   const embed = new EmbedBuilder()
     .setTitle(description)
     .setColor("Gold")
-    .setThumbnail("attachment://thumbnail.png")
     .setDescription(
       giveaways.length > 0
         ? giveaways
             .map(
               (g, i) =>
-                `**${startIndex + i + 1}. [${g.prize}]**\n- 🪪 Giveaway ID : ${
-                  g.messageID
-                }\n- 👤 Hosted by : <@${g.hostID}>\n- 🎉 Winners : **${
+                `**${startIndex + i + 1}. ${
+                  g.prize
+                }**\n- 🪪 Giveaway ID : ${`\`${g.messageID}\``}\n- 👤 Hosted by : <@${
+                  g.hostID
+                }>\n- 🎉 Winners : **${
                   g.winnersCount
-                }**\n- ⏳ Ends : <t:${Math.floor(g.endsAt / 1000)}:R>`
+                }**\n- 📢 Created : <t:${Math.floor(
+                  g.createdAt / 100
+                )}:f>\n- ⏳ Ends : <t:${Math.floor(g.endsAt / 1000)}:f>`
             )
             .join("\n\n")
         : "*No active giveaways right now. Check back later!*"
     )
     .setFooter({
       text: `${guildName} Giveaways`,
+      iconURL: "attachment://thumbnail.png",
     })
     .setTimestamp();
 

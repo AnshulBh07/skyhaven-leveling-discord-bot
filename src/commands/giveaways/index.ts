@@ -49,7 +49,7 @@ const init = async (): Promise<ICommandObj | undefined> => {
       ),
       permissionsRequired: [],
 
-      callback: async (client, interaction) => {
+      callback: async (client, interaction, mood) => {
         try {
           // for a valid command call the clalback function using map
           const subcommandName = interaction.options.getSubcommand(false);

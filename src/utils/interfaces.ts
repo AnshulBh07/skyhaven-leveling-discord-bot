@@ -30,7 +30,8 @@ export interface ICommandObj extends ChatInputApplicationCommandData {
 
   callback: (
     client: Client,
-    interaction: ChatInputCommandInteraction
+    interaction: ChatInputCommandInteraction,
+    mood?: moodType
   ) => Promise<void> | void;
 }
 
@@ -250,6 +251,31 @@ interface IGiveawayConfig {
   banList: UserBan[];
 }
 
+export type moodType =
+  | "serene"
+  | "tsundere"
+  | "tired"
+  | "divinePride"
+  | "cheerful"
+  | "cold"
+  | "dreamy"
+  | "gentle"
+  | "gloomy"
+  | "manic"
+  | "melancholy"
+  | "mischievous"
+  | "playful"
+  | "righteous"
+  | "flirtatious"
+  | "watchful"
+  | "merciful"
+  | "divine"
+  | "prophetic";
+
+interface IMoodConfig {
+  seraphinaMood: moodType;
+}
+
 export interface IConfig {
   serverID: string;
   botID: string;
@@ -259,6 +285,7 @@ export interface IConfig {
   giveawayConfig: IGiveawayConfig;
   gquestMazeConfig: IGquestConfig;
   raidConfig: IRaidConfig;
+  moodConfig: IMoodConfig;
   users: Types.ObjectId[] | IUser[];
   createdAt?: Date;
   updatedAt?: Date;
@@ -270,7 +297,8 @@ export interface ISubcommand {
 
   callback: (
     client: Client,
-    interaction: ChatInputCommandInteraction
+    interaction: ChatInputCommandInteraction,
+    mood?: moodType
   ) => Promise<void> | void;
 }
 

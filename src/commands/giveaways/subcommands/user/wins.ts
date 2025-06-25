@@ -92,7 +92,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
 
           const initialButtons = generateButtons();
 
-          await interaction.editReply({ content: "Processing your data..." });
+          await interaction.editReply({ content: "Generating your list..." });
 
           const winsMsg = await channel.send({
             embeds: [embed],

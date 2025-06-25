@@ -145,6 +145,7 @@ const execute = async (client: Client, guild: Guild) => {
         supportEmojiID: "",
         banList: [],
       },
+      moodConfig: { seraphinaMood: "serene" },
       users: [],
     };
 
