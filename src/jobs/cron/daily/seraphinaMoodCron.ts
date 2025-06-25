@@ -1,4 +1,4 @@
-import {  Client } from "discord.js";
+import { Client } from "discord.js";
 import cron from "node-cron";
 import Config from "../../../models/configSchema";
 import { moods, seraphinaMoodDisplays } from "../../../data/moodTemplates";
@@ -39,7 +39,7 @@ const runSeraphinaMoodCronJob = async (client: Client) => {
 
 export const scheduleSeraphinaMoodCron = async (client: Client) => {
   try {
-    cron.schedule("* * * * *", async () => {
+    cron.schedule("0 */6 * * *", async () => {
       await runSeraphinaMoodCronJob(client);
     });
   } catch (err) {
