@@ -6,6 +6,7 @@ import {
   Client,
   ColorResolvable,
   EmbedBuilder,
+  Message,
 } from "discord.js";
 import Giveaway from "../models/giveawaySchema";
 import { IGiveaway } from "./interfaces";
@@ -13,56 +14,49 @@ import Config from "../models/configSchema";
 import { leaderboardThumbnail } from "../data/helperArrays";
 import User from "../models/userSchema";
 
-const getUpdatedEmbed = (giveawayData: IGiveaway) => {
-  const giveawayEmbed = new EmbedBuilder()
-    .setTitle(`🎁 SKYHAVEN GIVEAWAY - ${giveawayData.prize}\n\n`)
-    .setThumbnail("attachment://thumbnail.png")
-    .setColor(giveawayData.role_color as ColorResolvable)
-    .setDescription(`${giveawayData.starterMessage}`)
-    .addFields(
-      {
-        name: "\u200b",
-        value: `**👤 Hosted by : ** <@${giveawayData.hostID}>`,
-        inline: true,
-      },
-      {
-        name: "\u200b",
-        value: `**🎊 Winners : ** ${giveawayData.winnersCount}`,
-        inline: true,
-      },
-      {
-        name: "\u200b",
-        value: `**⏱️ Ends : ** <t:${Math.floor(
-          giveawayData.endsAt / 1000
-        )}:R>  *(<t:${Math.floor(giveawayData.endsAt / 1000)}:f>)*`,
-        inline: false,
-      },
-      {
-        name: "\u200b",
-        value: `**Entries : ** ${giveawayData.participants.length} `,
-        inline: false,
-      },
-      {
-        name: "\u200b",
-        value: `**Giveaway ID : ** \`${giveawayData.messageID}\``,
-        inline: false,
-      },
-      ...(giveawayData.role_req
-        ? [
-            {
-              name: "\u200b",
-              value: `**🎯 Required Role : ** <@&${giveawayData.role_req}>`,
-              inline: true,
-            },
-          ]
-        : [])
-    )
-    .setFooter({ text: "Press 🎉 to participate.\nPress 🏃‍♂️ to leave.\n" })
-    .setTimestamp(new Date());
+const getUpdatedEmbed = (giveawayData: IGiveaway, message: Message) => {
+  const updatedEmbed = EmbedBuilder.from(message.embeds[0]);
 
-  if (giveawayData.imageUrl) giveawayEmbed.setImage(giveawayData.imageUrl);
+  updatedEmbed.setFields([
+    {
+      name: "\u200b",
+      value: `**👤 Hosted by : ** <@${giveawayData.hostID}>`,
+      inline: true,
+    },
+    {
+      name: "\u200b",
+      value: `**🎊 Winners : ** ${giveawayData.winnersCount}`,
+      inline: true,
+    },
+    {
+      name: "\u200b",
+      value: `**⏱️ Ends : ** <t:${Math.floor(
+        giveawayData.endsAt / 1000
+      )}:R>  *(<t:${Math.floor(giveawayData.endsAt / 1000)}:f>)*`,
+      inline: false,
+    },
+    {
+      name: "\u200b",
+      value: `**Entries : ** ${giveawayData.participants.length} `,
+      inline: false,
+    },
+    {
+      name: "\u200b",
+      value: `**Giveaway ID : ** \`${giveawayData.messageID}\``,
+      inline: false,
+    },
+    ...(giveawayData.role_req
+      ? [
+          {
+            name: "\u200b",
+            value: `**🎯 Required Role : ** <@&${giveawayData.role_req}>`,
+            inline: true,
+          },
+        ]
+      : []),
+  ]);
 
-  return giveawayEmbed;
+  return updatedEmbed;
 };
 
 export const attachCollector = async (
@@ -163,7 +157,7 @@ export const attachCollector = async (
 
           if (updatedGA) {
             await giveawayMessage.edit({
-              embeds: [getUpdatedEmbed(updatedGA)],
+              embeds: [getUpdatedEmbed(updatedGA, giveawayMessage)],
             });
           }
 
@@ -203,7 +197,7 @@ export const attachCollector = async (
 
           if (updatedGA) {
             await giveawayMessage.edit({
-              embeds: [getUpdatedEmbed(updatedGA)],
+              embeds: [getUpdatedEmbed(updatedGA, giveawayMessage)],
             });
           }
 
