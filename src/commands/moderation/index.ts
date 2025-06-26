@@ -22,7 +22,7 @@ const init = async (): Promise<ICommandObj | undefined> => {
     const commandObj: ISubcommand = await module.default();
 
     // get key string
-    const cmdName = file.split("\\").at(-1)!.split(".")[0];
+    const cmdName = path.basename(file).split(".")[0];
     const cmdKey = cmdName.includes("_") ? cmdName.replace("_", "-") : cmdName;
     const subcommand = commandObj;
     subcommandsMap.set(cmdKey, subcommand);

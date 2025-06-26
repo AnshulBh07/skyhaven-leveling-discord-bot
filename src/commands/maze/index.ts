@@ -26,7 +26,7 @@ const init = async (): Promise<ICommandObj | undefined> => {
       const commandObj: ISubcommand = await module.default();
 
       // get key string
-      const cmdName = file.split("\\").at(-1)!.split(".")[0];
+      const cmdName = path.basename(file).split(".")[0];
       const cmdKey = cmdName.includes("_")
         ? cmdName.replace("_", "-")
         : cmdName;
@@ -111,12 +111,7 @@ const init = async (): Promise<ICommandObj | undefined> => {
           // command name is gonna be unique for given root command
           if (adminCommands.includes(subcommandName)) {
             if (
-              !(await isManager(
-                client,
-                interaction.user.id,
-                guild.id,
-                "mz"
-              ))
+              !(await isManager(client, interaction.user.id, guild.id, "mz"))
             ) {
               await interaction.editReply({
                 content:
@@ -127,9 +122,7 @@ const init = async (): Promise<ICommandObj | undefined> => {
           }
 
           if (userCommands.includes(subcommandName)) {
-            if (
-              !(await isUser(client, interaction.user.id, guild.id, "mz"))
-            ) {
+            if (!(await isUser(client, interaction.user.id, guild.id, "mz"))) {
               await interaction.editReply({
                 content:
                   "⚠️ You lack the required permissions to use this command.",
