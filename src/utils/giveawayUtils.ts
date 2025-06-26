@@ -73,12 +73,7 @@ export const attachCollector = async (
     const guild = await client.guilds.fetch(giveawayData.serverID);
     const giveawayChannel = await guild.channels.fetch(giveawayData.channelID);
 
-    const guildConfig = await Config.findOne({ serverID: guild.id });
-
-    if (!giveawayChannel || !giveawayChannel.isTextBased() || !guildConfig)
-      return undefined;
-
-    const { banList } = guildConfig.giveawayConfig;
+    if (!giveawayChannel || !giveawayChannel.isTextBased()) return undefined;
 
     const giveawayMessage = await giveawayChannel.messages.fetch(
       giveawayData.messageID
@@ -100,7 +95,23 @@ export const attachCollector = async (
             messageID: giveawayData.messageID,
           });
 
-          if (!freshData) return;
+          if (!freshData) {
+            await btnInt.editReply({
+              content: "Giveaway info not found. Corrupted giveaway.",
+            });
+            return;
+          }
+
+          const guildConfig = await Config.findOne({
+            serverID: giveawayData.serverID,
+          });
+
+          if (!guildConfig) {
+            await btnInt.editReply({ content: "No guild config found" });
+            return;
+          }
+
+          const { banList } = guildConfig.giveawayConfig;
 
           const allParticipants = freshData.participants;
           // check if the user is banned
