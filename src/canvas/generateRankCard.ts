@@ -10,14 +10,13 @@ export const generateRankCard = async (
 ) => {
   try {
     // get official badges from discord
-    console.log("inside generation canvas...");
     const userBadges = user.flags?.toArray();
 
     if (!userBadges) return undefined;
 
     const allBadges: string[] = [];
     for (const badge of userBadges) {
-      allBadges.push(discordBadges.get(badge)!);
+      if (discordBadges.has(badge)) allBadges.push(discordBadges.get(badge)!);
     }
 
     // check if user has nitro by checking if they have a banner or not
@@ -36,8 +35,6 @@ export const generateRankCard = async (
       allBadges.push(discordBadges.get("ServerBooster")!);
 
     const presenceStatus = guild_member.presence?.status;
-
-    console.log(allBadges);
 
     const rankCard = await Profile(user.id, {
       overwriteBadges: true,

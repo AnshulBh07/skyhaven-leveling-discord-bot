@@ -48,7 +48,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
           );
 
           await interaction.editReply({
-            content: `Notifications setting updated for user <@${targetUser.id}>`,
+            content: `📢 Notifications setting updated for user <@${targetUser.id}>`,
           });
         } catch (err) {
           console.error("Error in dm-notif callback : ", err);

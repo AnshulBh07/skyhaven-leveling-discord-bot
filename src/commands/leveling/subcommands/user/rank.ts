@@ -19,21 +19,22 @@ const init = async (): Promise<ISubcommand | undefined> => {
       isSubCommand: true,
       data: {
         name: "rank",
-        description: "Display user level, XP, and rank",
+        description: "Display user level, XP, and rank.",
         type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
             name: "user",
             description: "target user",
             type: ApplicationCommandOptionType.User,
-            required: true,
+            required: false,
           },
         ],
       },
 
       callback: async (client, interaction) => {
         try {
-          const targetUser = interaction.options.getUser("user");
+          const targetUser =
+            interaction.options.getUser("user") ?? interaction.user;
           const guildID = interaction.guildId;
           const channel = interaction.channel;
 
@@ -135,12 +136,10 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const rankCard = await generateRankCard(targetUser, guild, rankData);
 
           if (!rankCard) {
-            console.log("rank card generation failed...");
+            console.log("⚠️ rank card generation failed...");
             interaction.editReply("cannot generate rank card.");
             return;
           }
-
-          console.log("after failed...");
 
           const image = new AttachmentBuilder(rankCard, {
             name: "rank-card.png",

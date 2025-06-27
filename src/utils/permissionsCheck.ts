@@ -12,7 +12,7 @@ export const isManager = async (
   try {
     const guildConfig = await Config.findOne({ serverID: guildID });
 
-    if (!guildConfig) return;
+    if (!guildConfig) return false;
 
     const { raidConfig, gquestMazeConfig, giveawayConfig, levelConfig } =
       guildConfig;
@@ -49,6 +49,7 @@ export const isManager = async (
     return false;
   } catch (err) {
     console.error("Error in isManager function");
+    return false;
   }
 };
 
@@ -62,7 +63,7 @@ export const isUser = async (
   try {
     const guildConfig = await Config.findOne({ serverID: guildID });
 
-    if (!guildConfig) return;
+    if (!guildConfig) return false;
 
     const { raidConfig, gquestMazeConfig, giveawayConfig } = guildConfig;
 
@@ -83,6 +84,8 @@ export const isUser = async (
 
     const requiredRole = getRequiredRole();
 
+    if (!requiredRole.length) return true;
+
     const guild = await client.guilds.fetch({ guild: guildID, force: true });
     const member = await guild.members.fetch({ user: userID, force: true });
     const member_roles = Array.from(member.roles.cache.entries()).map(
@@ -91,6 +94,7 @@ export const isUser = async (
 
     return member_roles.includes(requiredRole);
   } catch (err) {
-    console.error("Error in isManager function");
+    console.error("Error in isUser function");
+    return false;
   }
 };

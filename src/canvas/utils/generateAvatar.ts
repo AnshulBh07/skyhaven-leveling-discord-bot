@@ -1,6 +1,7 @@
 import { User } from "discord.js";
 import path from "path";
 import getAllFiles from "../../utils/getAllFiles";
+import axios from "axios";
 
 // function generates avatar and name
 export const generateAvatar = async (
