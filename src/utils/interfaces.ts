@@ -238,6 +238,7 @@ interface IModerationConfig {
   welcomeChannelID: string;
   farewellMessage: string;
   farewellChannelID: string;
+  serverBoostChannelID: string;
   botAdminIDs: string[];
 }
 

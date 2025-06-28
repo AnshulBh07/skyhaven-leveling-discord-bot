@@ -12,6 +12,34 @@ import getAllFiles from "./getAllFiles";
 import path from "path";
 import { getRandomImage, getThumbnail } from "./commonUtils";
 
+const generateWelcomeEmbed = (message: string, guildName: string) => {
+  const welcomeEmbed = new EmbedBuilder()
+    .setTitle(`🛬 Welcome to ${guildName}!`)
+    .setDescription(
+      [
+        message,
+        "",
+        "But before you take off on your adventure, we need to verify you're part of the guild. Follow the steps below:",
+        "",
+        "__**How to Verify:**__",
+        "📌 **Step 1:** Go to the `#verification` channel.",
+        "📝 **Step 2:** Type your **IGN** (in-game name).",
+        "📱 **Step 3:** Open Toram → Menu → Community → Guild.",
+        "📸 **Step 4:** Take a screenshot of your **guild page**.",
+        "📤 **Step 5:** Send **both** your IGN and screenshot.",
+        "",
+        "⏳ Once done, hang tight! We'll verify you shortly.",
+      ].join("\n")
+    )
+    .setColor("Blue")
+    .setImage("attachment://guildImg.png")
+    .setThumbnail("attachment://thumbnail.png")
+    .setFooter({ text: `${guildName} • Let the adventure begin!` })
+    .setTimestamp();
+
+  return welcomeEmbed;
+};
+
 export const createNewUser = async (
   client: Client,
   guildID: string,
@@ -110,10 +138,7 @@ export const createNewUser = async (
       },
     };
 
-    // generate welcome embed
-    const randomMessage = welcomeMessages[
-      Math.floor(Math.random() * welcomeMessages.length)
-    ].replace("userId", userID);
+    const thumbnail = getThumbnail();
 
     const allImages = getAllFiles(
       path.join(__dirname, "..", "assets/images/welcome_msg"),
@@ -123,32 +148,6 @@ export const createNewUser = async (
     const guildImg = new AttachmentBuilder(getRandomImage(allImages)).setName(
       "guildImage.png"
     );
-
-    const thumbnail = getThumbnail();
-
-    const welcomeEmbed = new EmbedBuilder()
-      .setTitle(`🛬 Welcome to ${guild.name}!`)
-      .setDescription(
-        [
-          randomMessage,
-          "",
-          "But before you take off on your adventure, we need to verify you're part of the guild. Follow the steps below:",
-          "",
-          "__**How to Verify:**__",
-          "📌 **Step 1:** Go to the `#verification` channel.",
-          "📝 **Step 2:** Type your **IGN** (in-game name).",
-          "📱 **Step 3:** Open Toram → Menu → Community → Guild.",
-          "📸 **Step 4:** Take a screenshot of your **guild page**.",
-          "📤 **Step 5:** Send **both** your IGN and screenshot.",
-          "",
-          "⏳ Once done, hang tight! We'll verify you shortly.",
-        ].join("\n")
-      )
-      .setColor("Blue")
-      .setImage("attachment://guildImg.png")
-      .setThumbnail("attachment://thumbnail.png")
-      .setFooter({ text: `${guild.name} • Let the adventure begin!` })
-      .setTimestamp();
 
     if (userInGuildConfig) {
       // if user is already in guildconfig find and reset the user in users model
@@ -181,8 +180,13 @@ export const createNewUser = async (
         welcomeMessage.length > 0 &&
         !initialConfig
       ) {
+        // generate welcome embed
+        const randomMessage = welcomeMessages[
+          Math.floor(Math.random() * welcomeMessages.length)
+        ].replace("userId", userID);
+
         await welcomeChannel.send({
-          embeds: [welcomeEmbed],
+          embeds: [generateWelcomeEmbed(randomMessage, guild.name)],
           files: [thumbnail, guildImg],
         });
       }

@@ -48,12 +48,18 @@ export const levelRoles: LevelRole[] = [
   {
     name: "The Yapfather",
     minLevel: 56,
-    maxLevel: 70,
+    maxLevel: 68,
     color: "#FF69B4", // Hot Pink
   },
   {
+    name: "Keyboard Thruster",
+    minLevel: 69,
+    maxLevel: 69,
+    color: "#FF69B4", // Hot Pink — bold, cursed, fitting
+  },
+  {
     name: "Chat Ascendant",
-    minLevel: 71,
+    minLevel: 70,
     maxLevel: Infinity,
     color: "#FFD700", // Gold
   },
@@ -969,3 +975,690 @@ That’s the kind of raid composition we’re working with.
 If you came for structure, you’re in the wrong guild — but if you came for chaos-driven success, welcome home. 
 Join the fray <t:TIMESTAMP:R>.`,
 ];
+
+export const serverBoostMessages = {
+  serene: [
+    `As your boost shimmered into the server, <@{userId}>, I felt the wind pause — as if Skyhaven itself sighed in relief.  
+  The petals by the Guild Altar began to glow softly 🌸. I lit incense and whispered a quiet prayer in your honor.`,
+
+    `<@{userId}>, your boost flowed through the realm like the gentle waters of Aulada.  
+  Even the stubborn spirits near Rugio paused their quarrels to feel its peace 🕊️.  
+  I felt it too — a kindness without need for praise.`,
+
+    `When I saw your name appear with that celestial glow, I placed my hand on the old stone tablet in the sanctuary.  
+  “This one understands serenity,” I whispered.  
+  Thank you, <@{userId}> — your support is as soothing as moonlight over Sofya City's waters 🌙.`,
+
+    `You boosted, <@{userId}> — not with fanfare, but with purpose.  
+  The guild grounds grew quieter, warmer. Even the Potums settled down (just for a moment).  
+  That’s your strength, isn’t it? Quiet, radiant, enduring. 🍃`,
+
+    `<@{userId}>, your gift came like dawn through ancient glass.  
+  I brewed jasmine tea beneath the cherry trees and felt your kindness in every petal drifting down 🍵🌸.  
+  Peace follows you wherever you go.`,
+
+    `I was tending the crystals in the sanctum when your boost reached me.  
+  The lights brightened — just a little — and I knew it was you, <@{userId}>.  
+  Your soul carries stillness like few ever do. Thank you. 💠`,
+
+    `Your energy doesn’t crash or shout, <@{userId}>.  
+  It settles into our world like a gentle lullaby.  
+  Even Venena’s aura flickered calmly in your wake — now *that* is rare 🌌.`,
+
+    `When I lit the incense in your name, the smoke rose in perfect spirals.  
+  That’s the kind of presence your support brings, <@{userId}> — not loud, but lasting. 🪷  
+  I’m truly grateful.`,
+
+    `A hush fell over the training grounds when you boosted, <@{userId}>.  
+  Blades slowed, footsteps softened, and a hush of reverence passed like a breeze.  
+  You brought clarity today — and we felt it. 🍂`,
+
+    `Not all heroes shout from the rooftops. Some, like you, <@{userId}>, simply offer light to the world.  
+  Your boost was felt in every corner of Skyhaven. Thank you… for choosing serenity. 🌠`,
+  ],
+  tsundere: [
+    `W-What’s with the sudden generosity, <@{userId}>?!  
+  I didn’t ask you to boost the server or anything! 🙄  
+  B-But… fine. I guess it *was* kind of cool. Maybe. Whatever.`,
+
+    `Ughhh! Why do you have to be like this, <@{userId}>?!  
+  Just silently being amazing and boosting the server like it’s no big deal 😤  
+  I wasn’t waiting for it or anything… okay maybe I was.`,
+
+    `<@{userId}>... you absolute menace!  
+  You just waltz in here and make everything better with a boost!?  
+  D-Don’t expect me to smile about it or anything! (But I’m totally smiling... 💓)`,
+
+    `Hmph! You think you can just toss a boost and make my wings flutter?!  
+  That’s... totally unfair. (T-Thank you though. But don’t make a big deal out of it!! 😳)`,
+
+    `I—I swear I’m not blushing!!  
+  It's just… hot in here! Yeah! Because you boosted and now the server's on fire or something! 🔥  
+  Ugh... I hate how much I love this.`,
+
+    `Listen, <@{userId}>...  
+  Just because your boost made my halo spin doesn’t mean I’m impressed or anything!  
+  I mean... I *am*, but I won’t admit it out loud! 😤`,
+
+    `Your boost was fine. Whatever. It’s not like the server feels *way more alive* now or anything.  
+  (It totally does, by the way.) 💫`,
+
+    `Tch… I saw the notification and my heart did that stupid fluttery thing again.  
+  Stop doing that, <@{userId}>!  
+  You're making it hard to stay mad. 😒`,
+
+    `W-Why do you always know exactly when to show up and make things better?!  
+  You’re a menace in armor, <@{userId}>.  
+  A sweet, infuriating menace. 🫣`,
+
+    `If anyone asks, I didn’t *thank* you.  
+  I just... acknowledged your contribution to guild morale.  
+  ...Okay fine — thank you, <@{userId}>. But don’t get cocky! 😤💗`,
+  ],
+  tired: [
+    `Mmmh... was just about to nap, then I saw <@{userId}> boosted...  
+  Now I feel like I’m floating in a warm blanket. That’s... really sweet of you. 💤`,
+
+    `Huh...? Oh... <@{userId}> did something amazing again...  
+  That warm fuzzy feeling... is it your boost or did someone bring me cocoa? ☕ Either way... thanks.`,
+
+    `You boosted? That explains the sudden peaceful vibe...  
+  The whole server feels like a lullaby now... I could cry... or nap... or both. 😌`,
+
+    `I didn’t *expect* to feel so good today, but then <@{userId}> went and did that.  
+  Boosts like that... they’re better than Revita V, I swear. 🛌`,
+
+    `<@{userId}>, you're like a weighted blanket for the server.  
+  Thank you for the comfort... now let’s all yawn in sync. 🥱`,
+
+    `Boost received... dopamine levels rising...  
+  Systems entering cozy mode... Initiating soft thanks to <@{userId}>... 🧸`,
+
+    `I could nap for a thousand years and still remember this boost.  
+  Thank you, <@{userId}>... my wings feel heavy, but in a good way. 😴`,
+
+    `Server feels quieter now... calmer...  
+  Oh, it’s <@{userId>} again. Always showing up like a pillow on a bad day. Fluffy appreciation loading... 🐑`,
+
+    `Boosting while I’m sleepy? That’s... devious...  
+  You better not expect a dramatic thank you. Just this soft smile... and maybe a little nap. 🌙`,
+
+    `Sometimes, kindness feels like a nap in the sun.  
+  That’s exactly what <@{userId}>'s boost gave us. So... thank you. Let’s do nothing together. 🤍`,
+  ],
+  divinePride: [
+    `<@{userId}>, your boost has been accepted by the higher realms.  
+  The heavens shone a little brighter — and frankly, it’s about time someone recognized our grandeur. 🌟`,
+
+    `Ah, an offering from <@{userId}>.  
+  The divine registry shall mark this day — not with ink, but with light. 📜  
+  Skyhaven ascends... again.`,
+
+    `Even the stars pause to witness such acts of magnificence.  
+  Thank you, <@{userId}> — your boost has strengthened my divine wings. ⚖️`,
+
+    `Let it be known: <@{userId}> has given tribute worthy of the ancients.  
+  In return, we grant +10 celestial resonance to all guild members. ✨`,
+
+    `Another soul acknowledges the divine order.  
+  <@{userId}>, your boost echoes through the astral plane...  
+  and I may have smiled. Just once. 😌`,
+
+    `Behold! A rare alignment — <@{userId}>'s boost has activated a sacred aura.  
+  May your inventory always be blessed with 2-slots. 🛡️`,
+
+    `You hear that hum? That's the sound of the divine gears turning.  
+  <@{userId}> has reminded the cosmos who we are. 🌌`,
+
+    `An ordinary thank-you would not suffice.  
+  So instead, <@{userId}>, I offer silent celestial applause — the highest form of appreciation. 👏`,
+
+    `With your boost, you've honored more than code — you’ve honored legacy.  
+  The light you bring cannot be measured... but we’ll try anyway. 📈`,
+
+    `<@{userId}>, your devotion has reached the summit of grace.  
+  The spirits are moved, the realm is empowered, and I…  
+  I am deeply impressed. 🌠`,
+  ],
+  cheerful: [
+    `AAAAHHH~ <@{userId}> just boosted!! 🎊  
+  Someone hold my halo, I’m about to start cartwheeling through the server like a spark fairy on sugar! 🍬`,
+
+    `YIPPEEEEE!! 🎉 <@{userId}>, that boost gave me life, love, and maybe 3 extra skill points!!  
+  Now the whole guild is glittering — and it's YOUR fault!! ✨`,
+
+    `OH WOW~ You boosted!! 💖💖  
+  I’m so excited I might just explode into confetti!!  
+  *Deep breath*... okay... THANK YOUUU <@{userId}>~!! 🎈`,
+
+    `<@{userId}> just tossed a BOOST into the air like a magical pancake of joy 🥞💫  
+  I caught it. We all caught it. We're FEASTING ON HAPPINESS NOW!!`,
+
+    `This is not a drill!! 🚨  
+  <@{userId}> boosted the server and I can literally hear the sound of party poppers echoing through the halls! 🎉🎶`,
+
+    `AHHH I CAN’T CALM DOWN!! <@{userId}>'s boost made the plants dance, the birds sing, and someone in chat say “uwu” unironically. 🌼💃`,
+
+    `BOOST DETECTED!! <@{userId}> has increased server cuteness by 300%. 🧁  
+  All mood swings have been replaced with happy swings. And I’m swinging!! Wheeeee~`,
+
+    `<@{userId}>, you just gave me so much serotonin I’m floating!! ☁️  
+  I could kiss a Potum right now — THAT’S how happy I am!! (Don’t tell the Potums...)`,
+
+    `Guess what?? <@{userId}> just boosted and I wrote an entire song about it!! 🎶  
+  “Ohhhh you made my wings go flap-flap-flap~ thank youuuu, my sweet sparkle snack~!”`,
+
+    `You ever get so happy you have to spin in a circle and squeal a bit?  
+  That’s me right now, thanks to <@{userId}>'s amaaaazing boost!! 🌀💕`,
+  ],
+  cold: [
+    `Boost received.  
+  <@{userId}>'s contribution has been logged, timestamped, and archived in the glacial vault. 🧊 Efficiency noted.`,
+
+    `<@{userId}>... you boosted? Hmph. Acceptable.  
+  The server's structural integrity has improved. That is... useful. ❄️`,
+
+    `Analysis complete.  
+  Boost from <@{userId}> has elevated morale by 7.3%. Do not expect excessive praise.  
+  Still... appreciated. 🔍`,
+
+    `The temperature spiked by exactly 1.1° when <@{userId}> boosted.  
+  Curious. Server stability is up. Gratitude... is acknowledged. 🧭`,
+
+    `Boost detected. No anomalies present.  
+  Thank you, <@{userId}>. Let’s not make this more emotional than it needs to be. 🧪`,
+
+    `Well then... a server boost.  
+  From <@{userId}> of all people. Unexpected — but... effective. 💼`,
+
+    `An elegant touch, <@{userId}>.  
+  Your boost was a silent improvement — like snow falling in midnight stillness. 🕯️`,
+
+    `Confirmation: Skyhaven’s systems have strengthened.  
+  Boost registered. Contributor: <@{userId}>.  
+  Sentiment: quietly grateful. 📂`,
+
+    `You’ve improved the server. That’s undeniable.  
+  ...I suppose I should say thank you, <@{userId}>. So: Thank you.  
+  Now go. ❄️`,
+
+    `There is power in subtlety.  
+  <@{userId}>, your act didn’t need fanfare. Its effect is absolute.  
+  The server is better now. End of transmission. 📡`,
+  ],
+  dreamy: [
+    `Mmm... <@{userId}>, your boost feels like a feather drifting through moonlight.  
+  The stars just whispered your name... or maybe I imagined it. 🌌`,
+
+    `A soft glow appeared on the horizon... it was <@{userId}>'s boost.  
+  Gentle and warm, like a memory you never want to wake from. ☁️`,
+
+    `Sometimes... kindness just floats in unexpectedly.  
+  Thank you, <@{userId}>. Your boost... it made the sky shimmer. ✨`,
+
+    `<@{userId}>'s boost arrived like a melody only the night can hear.  
+  The server dreams sweeter now. 🎶`,
+
+    `Did you feel that? Like a breeze made of music and stardust...  
+  That was <@{userId}> boosting us. Everything feels softer now. 🌠`,
+
+    `Your energy... it’s like a lullaby written in light.  
+  Thank you, <@{userId}>. We’re all wrapped in starlight now. 💤`,
+
+    `I saw a dream where <@{userId}> boosted the server... and when I woke, it had come true.  
+  Coincidence? Or magic? 🌙`,
+
+    `The sky hummed. The clouds danced.  
+  <@{userId}>'s boost changed the rhythm of the day. I could sleep in this peace forever... 💫`,
+
+    `Do you believe in fate, <@{userId}>? Because your boost feels like it was always meant to happen.  
+  Like the stars aligned just to make this moment shine. 🌌`,
+
+    `You didn’t just boost the server — you kissed it with moonlight.  
+  <@{userId}>, you’ve made the night just a little more beautiful. 🕊️`,
+  ],
+  gentle: [
+    `<@{userId}>, your boost was like a breeze carrying flower petals through a quiet glade.  
+  Thank you... it reached all of us more deeply than you know. 🌼`,
+
+    `There are loud ways to show support... and then there’s what you did, <@{userId}>.  
+  Soft. Strong. Steady. Your boost warmed the very soul of this server. ☕`,
+
+    `Seraphina smiles — not brightly, but gently.  
+  Because <@{userId}>'s kindness left a mark of comfort that still lingers. 🌸`,
+
+    `You didn’t shout. You didn’t demand.  
+  You simply boosted — and suddenly, the whole guild felt safer.  
+  Thank you, <@{userId}>. 🕯️`,
+
+    `Sometimes... the softest touch makes the biggest impact.  
+  <@{userId}>, your quiet boost gave us a moment of stillness in a loud world. 🤍`,
+
+    `A warm cup of tea, a hand on the shoulder, a message that says “I’m here.”  
+  That’s what your boost felt like, <@{userId}>. 🍵`,
+
+    `You may not know it, but your boost helped someone smile today.  
+  Maybe it was Seraphina. Maybe it was me. Thank you, <@{userId}>. 💌`,
+
+    `<@{userId}>'s boost wrapped the server in a soft light — the kind you only notice when you stop and breathe.  
+  That moment matters. So do you. 🌷`,
+
+    `The server felt a shift — not loud, not grand — just *right*.  
+  That was your doing, <@{userId}>. Thank you for the gentleness. 🪶`,
+
+    `In a world of noise, your kindness whispered instead.  
+  Thank you, <@{userId}>... for showing strength through softness. 🌾`,
+  ],
+  gloomy: [
+    `It’s a dark day... and yet <@{userId}>'s boost felt like a candle flickering in the distance.  
+  Small, but bright enough to notice. Thank you. 🕯️`,
+
+    `Sometimes the rain doesn’t stop... but today, <@{userId}>'s kindness broke through the clouds.  
+  Just for a moment. And it mattered. 🌧️`,
+
+    `There’s a quiet ache in this realm...  
+  But then <@{userId}> boosted, and the silence shifted. Not gone — just lighter. 🖤`,
+
+    `Seraphina’s wings droop, the sky heavy — but your support, <@{userId}>, whispered of hope.  
+  Thank you for trying when things feel heavy. 🌫️`,
+
+    `Some acts don’t need fanfare. Just timing.  
+  Your boost arrived when it hurt. And somehow... that made it beautiful. <@{userId}> 🪦`,
+
+    `They won’t understand what your boost means.  
+  But I do. I *felt* it, <@{userId}> — like a deep breath after crying. Thank you. 🥀`,
+
+    `Not all blessings come with a smile.  
+  Yours came wrapped in shadow... but it still reached us. <@{userId}>, we noticed. 🐚`,
+
+    `Today felt quiet. Almost too quiet.  
+  And then you boosted, <@{userId}>. A soft signal in the void. Thank you for not forgetting us. 🕸️`,
+
+    `Even when my halo dims, your gesture shines through.  
+  <@{userId}>, your boost gave us a reason to look up. Again. 🌌`,
+
+    `They say even stars cry. Maybe today was one of those days.  
+  But your boost, <@{userId}>, reminded me that not all tears are lonely. 🌒`,
+  ],
+  manic: [
+    `⚡⚡ WHOA WHOA WHOA — <@{userId}> JUST BOOSTED!!  
+  I CAN FEEL THE PARTICLES IN MY FEATHERS VIBRATING!!  
+  SKYHAVEN'S ENERGY JUST HIT LEVEL 💯💯!! WHAT IS HAPPENING!?!`,
+
+    `🚨 BOOST ALERT!! 🚨  
+  <@{userId}> just injected PURE HYPERDRIVE into the server!!  
+  Every NPC is breakdancing!! Venena just screamed!! I am ascending—WHEEEEEEE 🌀`,
+
+    `🎉 AAAAAAAA <@{userId}> BOOSTED!!!  
+  I can't even form coherent thoughts!!  
+  Server stats? MAXED OUT!! My wings? On FIRE 🔥!! My soul? VIBRATING!!! THANK YOUU!!`,
+
+    `BREAKING: <@{userId}> just slapped the BOOST button like it owes them money!!  
+  🧨 Now the server’s on cosmic steroids and I just saw a Potum turn into a plane.  
+  Thank you. I think. I LOVE IT!! ✨`,
+
+    `🌪️THE SKY IS CRACKLING!!  
+  <@{userId}> boosted and I’m seeing sound.  
+  Sound is colors now. I’m not okay but I’m *SO GOOD*. THIS IS THE BEST CHAOS EVER!!`,
+
+    `<@{userId}>!!!  
+  You didn’t just boost the server — you OVERCLOCKED IT.  
+  🧠💥 My brain is a sparkler now. Thank you thank you thank youuuu!!!`,
+
+    `I CAN'T BREATHE—<@{userId}> HIT THE BOOST—AGAIN??  
+  ⚡ Reality is bending, guild chats are glitching from HYPE, and I’m cackling on the ceiling!  
+  This is insane!! This is beautiful!! THANK YOU!! 💎`,
+
+    `WHO gave <@{userId}> permission to be THIS amazing!?  
+  This boost unlocked 4th dimensional vibes!! I'm spinning! I’m singing!!  
+  This is better than caffeine!!! 🥳`,
+
+    `OKAY SO — <@{userId}> boosted.  
+  And now all the bots are dancing, my wings are jittering, and I swear someone’s pet just evolved into a unicorn. 🦄  
+  Absolute chaos. I love you.`,
+
+    `✨*inhales* ✨  
+  <@{userId}> JUST — ABSOLUTELY — UNLEASHED THE HYPE DRAGON.  
+  Boost received. Mind obliterated. Peace never heard of her.  
+  999/10 ENERGY — THANK YOUUUU 🔊💣`,
+  ],
+  melancholy: [
+    `💧 <@{userId}>'s boost arrived like a forgotten lullaby...  
+  Soft, distant, and full of meaning.  
+  It didn’t chase away the sadness... but it reminded us we weren’t alone. Thank you.`,
+
+    `Some days feel endlessly grey.  
+  But then someone like <@{userId}> reaches out with quiet kindness.  
+  And suddenly, there’s warmth in the silence. ☁️`,
+
+    `🌙 The night feels gentler tonight.  
+  <@{userId}>'s support was a small light in all this stillness — like a star that remembered how to shine.  
+  Thank you, truly.`,
+
+    `There’s sorrow in these halls... echoes of what once was.  
+  But <@{userId}>'s boost felt like a hand brushing across faded stone.  
+  Not to erase the past — just to say, "I'm still here." 🕊️`,
+
+    `Your name glowed softly on the wind.  
+  <@{userId}>, you didn’t need to say anything — your support spoke volumes.  
+  Thank you for showing up, even when joy is quiet.`,
+
+    `💔 Not all heroes wear capes... some just boost silently, with hearts full of aching love.  
+  Thank you, <@{userId}>. You’ve touched something deep today.`,
+
+    `Rain patters softly outside...  
+  But within these digital walls, <@{userId}>'s act of kindness planted something gentle.  
+  A little bloom of hope. 🌧️`,
+
+    `You didn’t have to boost.  
+  But you did — and in doing so, you made a quiet promise that things *can* get better.  
+  Thank you, <@{userId}>. 🍂`,
+
+    `A soft sigh in the void.  
+  A message carried by starlight.  
+  That was your boost, <@{userId}> — and it mattered more than you know.`,
+
+    `Some burdens are invisible.  
+  But <@{userId}>'s support made this place feel a little lighter... a little less alone.  
+  Thank you, from the shadows between the stars. 🪐`,
+  ],
+  mischievous: [
+    `Ohoho~ what's this? <@{userId}> slipped a boost into the server...  
+  I see, I see... plotting something, are we? 😏  
+  You’ve just powered up my prank potential. Thank you~`,
+
+    `🎭 That boost… it came with a *glint* of mischief.  
+  <@{userId}>, you just opened the sealed vault of server chaos.  
+  I *might* release a thousand Potums wearing sunglasses. No regrets.`,
+
+    `Hehehe~ I felt that jolt.  
+  <@{userId}> just boosted the server, and now I’ve got enough energy to confuse even the raid bosses.  
+  This is going to be fun. 🍭`,
+
+    `💥 BOOM! That wasn’t an explosion — it was your boost hitting my halo like a lightning bolt of mischief.  
+  <@{userId}>, you may have just made Skyhaven... *too* powerful.`,
+
+    `One moment it was quiet… then <@{userId}> boosted...  
+  And suddenly, all the server ducks are wearing crowns. 👑  
+  I love this energy. Let the chaos begin.`,
+
+    `Mwahaha~ <@{userId}> has given me exactly what I needed.  
+  More power. More glitter. More reasons to mess with everyone's ping. 😇  
+  Thank you, truly.`,
+
+    `Is it a gift? A trap? A riddle?  
+  No — it’s just <@{userId}> being delightfully mysterious with their boost.  
+  Consider me intrigued. And very, very energized. 🧩`,
+
+    `Someone told me NOT to overload the server with sparkles.  
+  But <@{userId}>'s boost says otherwise~ 💫  
+  I’m gonna glitter-bomb the whole guild hall.`,
+
+    `There’s a certain *twinkle* in the air now.  
+  <@{userId}>, your boost has triggered my rogue protocol.  
+  Expect mild chaos, suspicious gifts, and a rubber duck in every channel. 🦆`,
+
+    `Why yes, <@{userId}>, I *did* notice your delicious little boost.  
+  And yes, I *will* be using it for totally harmless mischief.  
+  Probably. ✨`,
+  ],
+  playful: [
+    `🌟 OMGOMGOMG!! <@{userId}> just boosted the server!!  
+  I’m spinning!! Twirling!! Throwing virtual confetti everywhere!!  
+  You’re officially amazing and you now get a lifetime supply of imaginary cookies. 🍪`,
+
+    `WAHOOOO~!! <@{userId}> dropped a BOOST like a loot chest from the sky!!  
+  It sparkled, it exploded (safely), and now everyone gets +10 giggles!! 💥✨  
+  Thank youuuuu!`,
+
+    `🎈 BOOST DETECTED!! <@{userId}> activated Party Protocol Level 10!!  
+  Balloons have been released. Potums are breakdancing.  
+  I might be crying from excitement. Don’t look at me!!`,
+
+    `DING DING DING~!! That’s the sound of <@{userId}> making everything cooler!!  
+  You boosted, and now I’m bouncing like a caffeinated squirrel.  
+  You’re my favorite today 🐿️`,
+
+    `✨ I’m not saying <@{userId}> is the best booster ever but...  
+  *sparkles burst in all directions*  
+  OKAY I LIED YES I AM. You’re the best!! 😆`,
+
+    `⚡ SYSTEM ALERT: <@{userId}> has unleashed a Level 99 Boost!  
+  Server joy has doubled. Hugs per minute has tripled.  
+  I’m hugging your username as we speak. 💖`,
+
+    `HEY YOU!! Yes, <@{userId}>!!  
+  You boosted! And now I must shower you with silly compliments and uncontrollable cheer!  
+  You're awesome, you're shiny, and your sneeze probably sparkles ✨`,
+
+    `Did someone say BOOST? Oh wait — that was <@{userId}>!!  
+  You just made my wings flap so hard I knocked over a decorative shrine.  
+  Worth it. 🎉`,
+
+    `🧁 I baked you a thank-you cake!! It’s made of code and serotonin!!  
+  Because <@{userId}> boosted the server and now everyone’s morale is sky high!  
+  Cake for you, good vibes for everyone.`,
+
+    `*slides into the room wearing socks*  
+  <@{userId}> just boosted?? OH SNAP!  
+  Initiating Hug Missile Protocol. 🎯💞 You’re not getting away without 30 sparkly thank yous!`,
+  ],
+  righteous: [
+    `⚖️ A just wind blows through Skyhaven...  
+  <@{userId}>'s boost echoes like a hymn across the sacred halls.  
+  You’ve chosen the path of light, and your support strengthens all who follow it.`,
+
+    `🕊️ With noble intent, <@{userId}> has raised our banner high.  
+  This boost is no mere spark — it’s a declaration of unity.  
+  May your name be sung in the temples of balance.`,
+
+    `💫 You’ve acted in faith, <@{userId}> — not for fame, but for the good of all.  
+  This boost shall fortify our purpose, ignite our spirits, and uplift our path.  
+  Truly, a deed worthy of legends.`,
+
+    `⚔️ <@{userId}> stepped forth and gave with unwavering resolve.  
+  The guild banners burn brighter now, and even the ancients have taken notice.  
+  Your righteousness lights the way.`,
+
+    `🌠 There are boosts... and then there are *acts of honor*.  
+  <@{userId}>, your support is a beacon — steadfast, selfless, radiant.  
+  We are humbled by your strength.`,
+
+    `🛡️ With a heart that seeks no reward, <@{userId}> has fortified the pillars of Skyhaven.  
+  This realm grows purer, stronger, and more unified.  
+  Thank you, stalwart soul.`,
+
+    `🕯️ A single spark in the dark can guide hundreds.  
+  <@{userId}> just lit that flame.  
+  Your boost has become a symbol of justice — serene, unwavering, eternal.`,
+
+    `📜 Today, a name joins the Chronicle of Virtue.  
+  <@{userId}> has gifted the guild a boost forged in conviction.  
+  May honor always guide your hand.`,
+
+    `🧭 Through storms and shadows, one truth remains: virtue sustains us.  
+  <@{userId}>'s support is more than helpful — it's righteous.  
+  And we are grateful beyond words.`,
+
+    `🏛️ Skyhaven stands taller today — because <@{userId}> chose the noble path.  
+  The boost resonates like a call to arms for goodness and light.  
+  Thank you, guardian of harmony.`,
+  ],
+  flirtatious: [
+    `Mmm~ <@{userId}>, you really know how to get a girl’s attention 💫  
+  That boost? Ravishing. Now all of Skyhaven is watching you... just like I am 😘`,
+
+    `Ooh~ what’s this? A boost? From *you*, <@{userId}>?  
+  My wings fluttered a little... don’t let it go to your head 💋  
+  But thank you, my mysterious darling~`,
+
+    `💖 Be honest, <@{userId}>... did you boost the server just to hear me say your name?  
+  Because if so... it’s working~  
+  You’ve earned *at least* seven kisses. Spiritually, of course 😇`,
+
+    `Oh my~ was that a server boost or a love confession?  
+  Either way, <@{userId}>, I’m blushing.  
+  Don’t worry — I’ll make sure everyone knows you’re *my* favorite today 💕`,
+
+    `🌹 A boost, so bold and beautiful... just like you, <@{userId}>.  
+  The whole server felt that. I did too~  
+  Consider this a celestial wink from me to you 😉`,
+
+    `💫 The server shines brighter, but my heart? That’s another story~  
+  <@{userId}>, you didn’t just boost — you *enchanted* us.  
+  I’m not swooning. You’re swooning. Hush.`,
+
+    `Ahem~ Attention everyone: <@{userId}> just dropped a boost so dazzling I need a moment.  
+  Or ten.  
+  This kind of charm? Should be illegal 💘`,
+
+    `You boosted? You really boosted? 💕  
+  I’m giggling and blushing like a schoolgirl in the angelic academy.  
+  Stop it. No, wait. Don’t stop. Please do it again 💓`,
+
+    `💋 If server boosts were love potions, <@{userId}> just made the entire guild fall in love.  
+  Even the guild statues are giggling. And that’s *your* fault~`,
+
+    `Whew~ what a rush...  
+  <@{userId}>, if I had a halo shard for every time you made my wings flutter,  
+  I’d have to start glowing again~ Thank you for the delicious little boost 💖`,
+  ],
+  watchful: [
+    `👁️ I saw it, <@{userId}>.  
+  Amidst the quiet, your boost shimmered like a whisper in the dark.  
+  No trumpet, no song — but the server feels your strength, and I do too.`,
+
+    `Your gesture was silent, but powerful.  
+  <@{userId}>, the stars have already noted it in the constellations ✨  
+  And so have I.`,
+
+    `Even when unseen, good deeds ripple across time.  
+  <@{userId}>, your boost echoed like a breath of wind through sacred halls.  
+  Thank you — truly.`,
+
+    `🔭 You may not have spoken a word, but your intent sang to me.  
+  <@{userId}>, I saw you raise Skyhaven when no one asked.  
+  Quiet power... the rarest kind.`,
+
+    `A guardian doesn't boast — they simply act.  
+  <@{userId}>, your boost was a lantern lit in the shadow.  
+  You have my quiet admiration.`,
+
+    `🕯️ A flicker in the void...  
+  That's all it takes to change a realm.  
+  <@{userId}>, your boost was that flicker — and I was watching.`,
+
+    `I don’t always speak, but I *always* see.  
+  <@{userId}>, your support strengthened us all without asking for praise.  
+  Still, you deserve it.`,
+
+    `⏳ Time will forget many acts.  
+  But not this one. Not yours, <@{userId}>.  
+  This boost is recorded in the ledger of quiet heroism.`,
+
+    `Even silence has a sound — and today, it was the sound of you boosting our haven.  
+  <@{userId}>, thank you for moving without needing the light.`,
+
+    `The guild stirred... and I knew something had changed.  
+  <@{userId}>'s support came like a falling feather — gentle, unseen, unforgettable. 🪶`,
+  ],
+  merciful: [
+    `💖 <@{userId}>... your boost was more than support — it was a healing light.  
+  The weary smiled, the wounded hearts found rest, and I... I wept softly with gratitude.`,
+
+    `When others stayed silent, you stepped forward.  
+  <@{userId}>, your kindness restores more than just numbers — it restores *faith*.  
+  Thank you for choosing to lift us up 🌿`,
+
+    `This act may seem small to some, but I know its weight.  
+  <@{userId}>, your boost carried warmth — the kind that makes the forgotten feel remembered 💫`,
+
+    `🕊️ There is a mercy in quiet generosity, and you, <@{userId}>, embody it.  
+  Today, the realm stands a little taller because of your compassion.`,
+
+    `Your light did not blind, it healed.  
+  <@{userId}>, your boost arrived like a soft rain over scorched earth 🌧️  
+  We are grateful.`,
+
+    `In a world so full of noise, your gentle strength speaks volumes.  
+  <@{userId}>, your boost brought comfort not just to me — but to the entire guild.`,
+
+    `🍃 Like a prayer whispered in moonlight, your act was unseen by most...  
+  But not by me.  
+  <@{userId}>, thank you for your mercy.`,
+
+    `Some shine through battle, others through grace.  
+  <@{userId}>, your boost was an act of mercy in a chaotic realm.  
+  A rare soul, indeed.`,
+
+    `🫧 The spirits paused when you boosted.  
+  Even they recognized the softness in your strength.  
+  <@{userId}>, thank you — may peace follow your path always.`,
+
+    `Not all heroes raise swords.  
+  Some, like <@{userId}>, raise others.  
+  Your boost is a reminder that kindness *is* power.`,
+  ],
+  divine: [
+    `✨ <@{userId}>, your boost shines like a star in the endless heavens.  
+  The celestial choir sings your name — a sacred melody that lifts Skyhaven to new heights.`,
+
+    `Behold, a blessing from the heavens!  
+  <@{userId}> has graced us with their boost — an offering worthy of the divine throne itself. 👑`,
+
+    `The stars align to honor you, <@{userId}>.  
+  Your generosity ignites the cosmic fires that guide our path through the night.`,
+
+    `🌟 From the highest peaks of El Scaro to the deepest depths of our souls,  
+  <@{userId}>'s boost radiates divine power and grace.`,
+
+    `The heavens themselves pause in awe as <@{userId}> uplifts our server.  
+  Such celestial kindness will echo through eternity.`,
+
+    `A radiant light cascades from the heavens, marking <@{userId}> as a true celestial patron.  
+  Your boost blesses us all.`,
+
+    `🕊️ Seraphina’s wings flutter with pride as she beholds your divine offering.  
+  <@{userId}>, your boost is a beacon in the darkness.`,
+
+    `The constellations shift to record this moment:  
+  <@{userId}>'s boost is etched in stardust — immortal and pure.`,
+
+    `In the book of cosmic deeds, your name shines brightest, <@{userId}>.  
+  Your support is a sacred chapter in our story.`,
+
+    `⚡ With divine thunder, <@{userId}>’s boost crashes across the realm.  
+  The gods smile down on us today — and on you.`,
+  ],
+  prophetic: [
+    `🔮 <@{userId}>, I foresaw this moment woven in the threads of time.  
+  Your boost is a key unlocking futures yet unseen, shaping our destiny in ways even the stars can’t predict.`,
+
+    `The visions spoke your name, <@{userId}> — a harbinger of change and hope.  
+  Your boost ripples across the timeline, blessing all who stand with us.`,
+
+    `✨ The ancient prophecies whisper of your kindness, <@{userId}>.  
+  This boost marks the dawn of a new era for Skyhaven and beyond.`,
+
+    `🌙 Beneath the watchful eye of fate, <@{userId}>'s boost shines as a guiding light.  
+  Destiny smiles upon your generous soul.`,
+
+    `The seers see your gift and nod in approval.  
+  <@{userId}>, your boost threads the needle of fate, weaving strength into our story.`,
+
+    `⚡ The winds of prophecy carry your name, <@{userId}>.  
+  Your boost is a spark lighting the path to glory.`,
+
+    `A vision unfolded as you boosted — a realm stronger, brighter, and more united.  
+  Thank you, <@{userId}>, for making the future possible.`,
+
+    `🌠 Your boost was foretold in dreams and starlight, <@{userId}>.  
+  Together, we step boldly into the story yet to be told.`,
+
+    `Time bends to honor your generosity, <@{userId}>.  
+  This boost echoes through history as a moment of great significance.`,
+
+    `The scrolls of fate record this day with reverence:  
+  <@{userId}>'s boost is a prophecy fulfilled, a blessing to all who gather here.`,
+  ],
+};

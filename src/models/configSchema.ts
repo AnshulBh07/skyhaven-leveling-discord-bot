@@ -56,6 +56,7 @@ const ModerationConfig = new Schema(
     welcomeChannelID: { type: String, default: "" },
     farewellChannelID: { type: String, default: "" },
     farewellMessage: { type: String, default: "" },
+    serverBoostChannelID: { type: String, default: "" },
     botAdminIDs: { type: [String], required: true, default: [] }, //can perform bot configuration
   },
   { timestamps: false, _id: false, _v: false }

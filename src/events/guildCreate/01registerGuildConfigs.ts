@@ -113,6 +113,7 @@ const execute = async (client: Client, guild: Guild) => {
       },
       moderationConfig: {
         botAdminIDs: [adminId],
+        serverBoostChannelID: "",
         welcomeChannelID: "",
         welcomeMessage: "",
         farewellMessage: "",

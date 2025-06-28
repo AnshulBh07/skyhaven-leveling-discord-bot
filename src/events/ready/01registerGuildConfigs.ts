@@ -113,6 +113,7 @@ const execute = async (client: Client) => {
         welcomeMessage: "",
         farewellMessage: "",
         farewellChannelID: "",
+        serverBoostChannelID:""
       },
       giveawayConfig: {
         giveawayRole: "",
