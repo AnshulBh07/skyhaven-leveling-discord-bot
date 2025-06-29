@@ -622,7 +622,7 @@ export const getGquestMazeLeaderboard = async (
           )
       );
 
-    await interaction.deleteReply();
+    await interaction.editReply({ content: "generating leaderboard." });
 
     const reply = await channel.send({
       embeds: [embed],

@@ -209,3 +209,10 @@ raid flow is something like announce date time (ask for participation in same) -
 - after 3 hours of raid completion send a review message to all the admins on raid channel. This will contain a checklist of who participated and who didn't.
 admin will also be able to add people who joined raids but didn't participated
 - raid is completely finished
+
+GOOGLE GEMINI INTEGRATION FOR SERAPHINA PERSONALITY
+To make the best out of free tier do this
+- use templates for command replies
+- cache responses to avoid duplicate prompts
+- maintain chat history in mongodb and keep size of prompt small
+- throttle long convos - if user gets a lot chatty tell them to chat next day

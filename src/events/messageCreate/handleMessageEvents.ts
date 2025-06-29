@@ -35,6 +35,7 @@ const execute = async (client: Client, message: Message) => {
     if (
       message.author.bot ||
       message.content.startsWith("/") ||
+      message.content.startsWith("s!") ||
       ignoredChannels.includes(message.channel.id) ||
       !message.channel.isTextBased() ||
       message.channel.isThread()
