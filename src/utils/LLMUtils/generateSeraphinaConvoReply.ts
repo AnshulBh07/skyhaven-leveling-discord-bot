@@ -58,7 +58,16 @@ export const generateSeraphinaConvoReply = async (
       `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
       {
         contents: [
-          { role: "user", parts: [{ text: systemPrompt }] },
+          {
+            role: "user",
+            parts: [
+              {
+                text: systemPrompt
+                  .replace("${mood}", mood)
+                  .replace("${talkStyle}", moodStyles[mood] ?? "Now speak"),
+              },
+            ],
+          },
           ...memory.messages.map((msg) => ({
             role: msg.role,
             parts: [{ text: msg.content }],

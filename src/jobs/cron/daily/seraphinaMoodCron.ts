@@ -11,7 +11,7 @@ const runSeraphinaMoodCronJob = async (client: Client) => {
     for (const guild of guilds) {
       const newMood = moods[Math.floor(Math.random() * moods.length)];
 
-      // console.log(`Changing Seraphina's mood to - ${newMood}`);
+      console.log(`Changing Seraphina's mood to - ${newMood}`);
 
       guild.moodConfig.seraphinaMood = newMood;
       await guild.save();

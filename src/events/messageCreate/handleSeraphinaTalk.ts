@@ -23,7 +23,7 @@ const execute = async (client: Client, message: Message) => {
 
     const { seraphinaMood } = guildConfig.moodConfig;
 
-    console.log("Seraphina mood is : ", seraphinaMood);
+    // console.log("Seraphina mood is : ", seraphinaMood);
 
     const seraphinaReply = await generateSeraphinaConvoReply(
       seraphinaMood,
