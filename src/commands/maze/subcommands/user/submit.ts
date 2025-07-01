@@ -117,7 +117,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
           const newMaze = new Maze(mazeOptions);
           await newMaze.save();
 
-          const subNeeded = (end_floor - start_floor) / 100;
+          const subNeeded = Math.round((end_floor - start_floor) / 100);
 
           await submissionThread.send({
             content: `⚠️ Please submit exactly ${subNeeded} image(s) as proof — one for every 100 floors completed.`,

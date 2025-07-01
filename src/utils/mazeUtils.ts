@@ -51,7 +51,9 @@ export const attachMazeThreadCollector = async (
 
     if (!submissionThread) return;
 
-    let submissionsRequired = (maze.endFloor - maze.startFloor) / 100;
+    let submissionsRequired = Math.round(
+      (maze.endFloor - maze.startFloor) / 100
+    );
 
     // we will use a message collector not a component interaction collector
     // as user will send images as message attachments
@@ -67,6 +69,8 @@ export const attachMazeThreadCollector = async (
           await submissionThread.send({
             content: "❌ You do not have permission to chat in this thread.",
           });
+
+          await msg.delete();
           return;
         }
 
