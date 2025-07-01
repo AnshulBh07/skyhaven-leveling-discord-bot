@@ -24,7 +24,8 @@ const init = async (): Promise<ISubcommand | undefined> => {
 
       callback: async (client, interaction) => {
         try {
-          const targetUser = interaction.options.getUser("user");
+          const targetUser =
+            interaction.options.getUser("user") ?? interaction.user;
           const guild = interaction.guild;
           const channel = interaction.channel;
 
@@ -40,14 +41,12 @@ const init = async (): Promise<ISubcommand | undefined> => {
             serverID: guild.id,
             status: "rewarded",
           });
-          let title = "📃 List of all Rewarded Guild Quests";
 
-          if (targetUser) {
-            gquests = (gquests as IGquest[]).filter(
-              (gquest) => gquest.userID === targetUser.id
-            );
-            title = `📃 List of Rewarded Guild Quests for ${targetUser.username}`;
-          }
+          gquests = (gquests as IGquest[]).filter(
+            (gquest) => gquest.userID === targetUser.id
+          );
+
+          const title = `📃 List of Rewarded Guild Quests for ${targetUser.username}`;
 
           //   create embed with buttons
           await generateGquestsListEmbed(
@@ -55,7 +54,8 @@ const init = async (): Promise<ISubcommand | undefined> => {
             interaction,
             gquests,
             title,
-            "rewarded",
+            targetUser.id,
+            "rewarded"
           );
         } catch (err) {
           console.error("Error in gquest rewarded subcommand callback : ", err);

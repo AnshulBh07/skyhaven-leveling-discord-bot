@@ -88,7 +88,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
               },
               {
                 name: "\u200b",
-                value: `**💰 Total Rewards : **${user.mazes.totalRewarded}`,
+                value: `**💰 Total Rewards : **${user.mazes.totalRewarded.toLocaleString("en-US")} spina`,
                 inline: false,
               },
               {

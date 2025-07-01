@@ -94,7 +94,9 @@ const init = async (): Promise<ISubcommand | undefined> => {
               },
               {
                 name: "\u200b",
-                value: `**💰 Total Rewards : **${user.gquests.totalRewarded}`,
+                value: `**💰 Total Rewards : **${user.gquests.totalRewarded.toLocaleString(
+                  "en-US"
+                )} spina`,
                 inline: false,
               },
               {

@@ -25,7 +25,8 @@ const init = async (): Promise<ISubcommand | undefined> => {
 
       callback: async (client, interaction) => {
         try {
-          const targetUser = interaction.options.getUser("user");
+          const targetUser =
+            interaction.options.getUser("user") ?? interaction.user;
           const guild = interaction.guild;
 
           if (!guild) {
@@ -51,7 +52,14 @@ const init = async (): Promise<ISubcommand | undefined> => {
           }
 
           //   create embed with buttons
-          await generateGquestsListEmbed(client,interaction, mazes, title, "rejected");
+          await generateGquestsListEmbed(
+            client,
+            interaction,
+            mazes,
+            title,
+            targetUser.id,
+            "rejected"
+          );
         } catch (err) {
           console.error("Error in maze rejected subcommand callback : ", err);
         }

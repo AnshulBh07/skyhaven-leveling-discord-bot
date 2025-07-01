@@ -9,7 +9,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
       data: {
         name: "reward-amount",
         description:
-          "Sets the amount of reward guild member gets for completing guild maze (per 100 levels)",
+          "Sets the amount of reward guild member gets for completing guild maze (per 100 floors)",
         type: ApplicationCommandOptionType.Subcommand,
         options: [
           {
@@ -49,7 +49,9 @@ const init = async (): Promise<ISubcommand | undefined> => {
           }
 
           await interaction.editReply({
-            content: `💰 Set guild maze reward amount to ${amount}.`,
+            content: `💰 Set guild maze reward amount to ${amount.toLocaleString(
+              "en-US"
+            )} spina per 100 floors.`,
           });
         } catch (err) {
           console.error("Error in maze reward-amount callback : ", err);

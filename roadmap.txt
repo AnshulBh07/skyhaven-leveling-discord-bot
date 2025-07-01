@@ -176,15 +176,16 @@ All of the following are subcommands under: /xpconfig
                                        Guild Quests System
 ----------------------------------------------------------------------------------------------
 1. user commands
-- /gquest submit <image> [user] : submit gquest for yourself or some other user
-- /gquest dm-notif <boolean> [user] : toggle dm notifications for gquests
-- /gquest stats [user] : give complete stats for user
+- /gq submit <image> [user] : submit gquest for yourself or some other user
+- /gq dm-notif <boolean> [user] : toggle dm notifications for gquests
+- /gq stats [user] : give complete stats for user
    stats dusplayed are 
-- /gquest pending [user] : gives a list of all pending gquests for user
-- /gquest completed [user] : gives a list of all completed gquests
-- /gquest rejected [user] : gives a list of all rejected gquests
-- /gquest find <gquest_id> : find previously sent gquest message, done by sending a link button to that message in reply
-- /gquest leaderboard : gives a leaderboard for gquests completed.
+- /gq pending [user] : gives a list of all pending gquests for user
+- /gq rewarded [user] : gives a list of all rewarded gquests
+- /gq rejected [user] : gives a list of all rejected gquests
+- /gq find <gquest_id> : find previously sent gquest message, done by sending a link button to that message in reply
+- /gq leaderboard : gives a leaderboard for gquests completed.
+- /gq delete <gquest_id>: deletes a gquest, rewarded ones cannot be deleted
 
 2. admin commands
 - /gquest reward-amount <amount> : sets gquest reward amount

@@ -72,13 +72,13 @@ const init = async (): Promise<ISubcommand | undefined> => {
 
           // GQuest / Maze Config
           if (!config.gquestMazeConfig.gquestChannelID)
-            missing.Guild_Quest.push("`/ga channel`");
+            missing.Guild_Quest.push("`/gq channel`");
           if (!config.gquestMazeConfig.gquestRole)
-            missing.Guild_Quest.push("`/ga use-role`");
+            missing.Guild_Quest.push("`/gq use-role`");
           if (!config.gquestMazeConfig.gquestRewardAmount)
-            missing.Guild_Quest.push("`/ga reward-amount`");
+            missing.Guild_Quest.push("`/gq reward-amount`");
           if (!config.gquestMazeConfig.managerRoles.length)
-            missing.Guild_Quest.push("`/ga add-admin`");
+            missing.Guild_Quest.push("`/gq add-admin`");
 
           if (!config.gquestMazeConfig.mazeChannelID)
             missing.Guild_Maze.push("`/mz channel`");

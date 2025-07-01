@@ -3,7 +3,6 @@ import { IMaze, ISubcommand } from "../../../../utils/interfaces";
 import { generateGquestsListEmbed } from "../../../../utils/gquestUtils";
 import Maze from "../../../../models/mazeSchema";
 
-
 const init = async (): Promise<ISubcommand | undefined> => {
   try {
     return {
@@ -25,7 +24,8 @@ const init = async (): Promise<ISubcommand | undefined> => {
 
       callback: async (client, interaction) => {
         try {
-          const targetUser = interaction.options.getUser("user");
+          const targetUser =
+            interaction.options.getUser("user") ?? interaction.user;
           const guild = interaction.guild;
 
           if (!guild) {
@@ -51,7 +51,14 @@ const init = async (): Promise<ISubcommand | undefined> => {
           }
 
           //   create embed with buttons
-          await generateGquestsListEmbed(client,interaction, mazes, title, "pending");
+          await generateGquestsListEmbed(
+            client,
+            interaction,
+            mazes,
+            title,
+            targetUser.id,
+            "pending"
+          );
         } catch (err) {
           console.error("Error in maze pending subcommand callback : ", err);
         }

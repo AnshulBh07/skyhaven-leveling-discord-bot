@@ -8,8 +8,10 @@ const execute = async (client: Client) => {
     const gquests = await GQuest.find({ status: "pending" });
 
     // attach a collector on each one
-    for (const gquest of gquests)
-      await attachQuestMazeReviewCollector(client, gquest as IGquest, "gquest");
+    for (const gquest of gquests) {
+      console.log(`resuming gquest : `, gquest.messageID);
+      await attachQuestMazeReviewCollector(client, gquest as IGquest, "gq");
+    }
   } catch (err) {
     console.error("Error in gquest resume function : ", err);
   }

@@ -5,7 +5,9 @@ import {
   ButtonStyle,
   ChannelType,
   Client,
+  DiscordAPIError,
   EmbedBuilder,
+  TextThreadChannel,
 } from "discord.js";
 import Maze from "../models/mazeSchema";
 import User from "../models/userSchema";
@@ -32,9 +34,20 @@ export const attachMazeThreadCollector = async (
 
     if (!channel || channel.type !== ChannelType.GuildText) return;
 
-    const submissionThread = await channel.threads.fetch(
-      maze.submissionThreadID
-    );
+    let submissionThread: TextThreadChannel | null = null;
+
+    try {
+      submissionThread = await channel.threads.fetch(maze.submissionThreadID);
+    } catch (err) {
+      if ((err as DiscordAPIError).code === 10003) {
+        console.warn(
+          `Thread ${maze.submissionThreadID} was deleted or not found. Skipping collector attachment.`
+        );
+        return;
+      } else {
+        throw err;
+      }
+    }
 
     if (!submissionThread) return;
 
@@ -188,7 +201,7 @@ export const attachMazeThreadCollector = async (
         await maze.save();
 
         // attach collectors to it
-        await attachQuestMazeReviewCollector(client, maze as IMaze, "maze");
+        await attachQuestMazeReviewCollector(client, maze as IMaze, "mz");
 
         // delete thread
         await submissionThread.delete();

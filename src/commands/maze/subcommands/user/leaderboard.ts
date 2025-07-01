@@ -1,7 +1,7 @@
 import { ApplicationCommandOptionType, ChannelType } from "discord.js";
-import { ISubcommand } from "../../../../utils/interfaces";
-import User from "../../../../models/userSchema";
+import { ISubcommand, IUser } from "../../../../utils/interfaces";
 import { getGquestMazeLeaderboard } from "../../../../utils/gquestUtils";
+import Config from "../../../../models/configSchema";
 
 const init = async (): Promise<ISubcommand | undefined> => {
   try {
@@ -28,11 +28,20 @@ const init = async (): Promise<ISubcommand | undefined> => {
           }
 
           //   make leaderbaord
-          const users = await User.find({ serverID: guild.id });
+          const guildConfig = await Config.findOne({
+            serverID: guild.id,
+          }).populate({ path: "users" });
+
+          if (!guildConfig) {
+            await interaction.editReply({ content: "Inavlid guild config" });
+            return;
+          }
+
+          const { users } = guildConfig;
 
           await getGquestMazeLeaderboard(
             client,
-            users,
+            users as unknown as IUser[],
             guild,
             "maze",
             interaction,

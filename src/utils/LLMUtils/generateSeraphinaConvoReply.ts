@@ -11,7 +11,7 @@ interface GeminiResponse {
   }>;
 }
 
-const MAX_HISTORY = 10;
+const MAX_HISTORY = 20;
 
 export const moodStyles: Record<moodType, string> = {
   serene: `Speak with calm elegance and poetic grace. Your tone is gentle, reassuring, and reflective — like moonlight on still water. Avoid sarcasm or sharp remarks. Use soft imagery, metaphors, and subtle emotion.`,

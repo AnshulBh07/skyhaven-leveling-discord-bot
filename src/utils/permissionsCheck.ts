@@ -69,11 +69,11 @@ export const isUser = async (
 
     const getRequiredRole = () => {
       switch (type) {
-        case "gquest":
+        case "gq":
           return gquestMazeConfig.gquestRole;
-        case "maze":
+        case "mz":
           return gquestMazeConfig.mazeRole;
-        case "giveaway":
+        case "ga":
           return giveawayConfig.giveawayRole;
         case "raid":
           return raidConfig.raidRole;

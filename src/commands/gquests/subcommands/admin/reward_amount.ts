@@ -49,7 +49,9 @@ const init = async (): Promise<ISubcommand | undefined> => {
           }
 
           await interaction.editReply({
-            content: `💰 Set guild quest reward amount to ${amount}.`,
+            content: `💰 Set guild quest reward amount to ${amount.toLocaleString(
+              "en-US"
+            )} spina.`,
           });
         } catch (err) {
           console.error("Error in gquest reward-amount callback : ", err);

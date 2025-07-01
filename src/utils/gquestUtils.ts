@@ -31,7 +31,7 @@ const thumbnail = new AttachmentBuilder(leaderboardThumbnail).setName(
 export const attachQuestMazeReviewCollector = async (
   client: Client,
   gquestMazeData: IGquest | IMaze,
-  type = "gquest"
+  type = "gq"
 ) => {
   try {
     const guild = await client.guilds.fetch(gquestMazeData.serverID);
@@ -46,6 +46,20 @@ export const attachQuestMazeReviewCollector = async (
       force: true,
     });
 
+    // create buttons and edit reply again, we didn't create them before to avoid interaction failure
+    const buttonsRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
+      new ButtonBuilder()
+        .setCustomId("reward")
+        .setEmoji("💵")
+        .setStyle(ButtonStyle.Secondary),
+      new ButtonBuilder()
+        .setCustomId("reject")
+        .setEmoji("❌")
+        .setStyle(ButtonStyle.Secondary)
+    );
+
+    await message.edit({ components: [buttonsRow] });
+
     // attach collector
     const collector = message.createMessageComponentCollector({
       filter: (i) => ["reward", "reject"].includes(i.customId),
@@ -54,42 +68,74 @@ export const attachQuestMazeReviewCollector = async (
 
     collector.on("collect", async (btnInt) => {
       try {
-        const guildConfig = await Config.findOne({ serverID: guild.id });
-        if (!guildConfig) return;
+        const customId = btnInt.customId;
+        const isReward = customId === "reward";
+        const isReject = customId === "reject";
 
-        const { gquestMazeConfig } = guildConfig;
+        if (isReject) {
+          const modal = new ModalBuilder()
+            .setCustomId(`${type}_rejection_modal_${gquestMazeData.messageID}`)
+            .setTitle(`Guild ${type === "gq" ? "Quest" : "Maze"} Rejection`);
 
-        if (!gquestMazeConfig) return;
+          const reasonInput =
+            new ActionRowBuilder<TextInputBuilder>().addComponents(
+              new TextInputBuilder()
+                .setCustomId("reason")
+                .setLabel("Reason : ")
+                .setStyle(TextInputStyle.Paragraph)
+                .setRequired(true)
+            );
 
-        if (
-          !(await isManager(
-            client,
-            gquestMazeData.userID,
-            guildConfig.serverID,
-            type
-          ))
-        ) {
-          await btnInt.reply({
-            content:
-              "❌ You do not have the permission to perform this action.",
-            flags: "Ephemeral",
-          });
-          return;
+          modal.addComponents(reasonInput);
+
+          await btnInt.showModal(modal);
         }
 
         // manage button click now
         // rejection opens a modal whereas rewarding asks for a screenshot from user
         // rewarding will be handled in message create event
-        if (btnInt.customId === "reward") {
+        if (isReward) {
           await btnInt.deferReply({ flags: "Ephemeral" });
 
-          if (type === "gquest")
+          const guildConfig = await Config.findOne({ serverID: guild.id });
+
+          if (!guildConfig) {
+            await btnInt.editReply({
+              content: "Config not found.",
+            });
+            return;
+          }
+
+          const { gquestMazeConfig } = guildConfig;
+
+          if (!gquestMazeConfig) {
+            await btnInt.editReply({
+              content: "GQuest/Maze config missing.",
+            });
+            return;
+          }
+
+          const isAuthorized = await isManager(
+            client,
+            btnInt.user.id,
+            guildConfig.serverID,
+            type
+          );
+          if (!isAuthorized) {
+            await btnInt.editReply({
+              content:
+                "❌ You do not have the permission to perform this action.",
+            });
+            return;
+          }
+
+          if (type === "gq")
             await GQuest.findOneAndUpdate(
               { messageID: gquestMazeData.messageID },
               { $set: { lastRewardBtnClickAt: Date.now() } }
             );
 
-          if (type === "maze")
+          if (type === "mz")
             await Maze.findOneAndUpdate(
               {
                 messageID: gquestMazeData.messageID,
@@ -105,6 +151,10 @@ export const attachQuestMazeReviewCollector = async (
           const proofSubThread = await channel.threads.create({
             name: `${user.displayName} Reward Proof Submission by Admin`,
             autoArchiveDuration: 60,
+          });
+
+          await btnInt.editReply({
+            content: "Please continue the process in thread.",
           });
 
           await proofSubThread.send({
@@ -170,7 +220,7 @@ export const attachQuestMazeReviewCollector = async (
 
               let updatedDoc;
               // update the maze or gquest
-              if (type === "gquest")
+              if (type === "gq")
                 updatedDoc = await GQuest.findOneAndUpdate(
                   { messageID: message.id },
                   updateOpt
@@ -185,7 +235,7 @@ export const attachQuestMazeReviewCollector = async (
 
               // update user
               const userUpdateOpt =
-                type === "gquest"
+                type === "gq"
                   ? {
                       $pull: { "gquests.pending": updatedDoc._id },
                       $push: { "gquests.rewarded": updatedDoc._id },
@@ -219,9 +269,7 @@ export const attachQuestMazeReviewCollector = async (
               // send a reward message to the associated channel
               const rewardEmbed = new EmbedBuilder()
                 .setTitle(
-                  `💵 ${
-                    type.split("")[0].toUpperCase() + type.slice(1)
-                  } Rewarded`
+                  `💵 ${type === "gq" ? "Guild Quest" : "Guild Maze"} Rewarded`
                 )
                 .setColor("Aqua")
                 .setThumbnail("attachment://thumbnail.png")
@@ -245,11 +293,11 @@ export const attachQuestMazeReviewCollector = async (
                   {
                     name: "👤 User Status",
                     value: `**Total Pending : **${
-                      type === "gquest"
+                      type === "gq"
                         ? updatedUser.gquests.pending.length
                         : updatedUser.mazes.pending.length
                     }\n**Total Rewarded : **${
-                      type === "gquest"
+                      type === "gq"
                         ? updatedUser.gquests.rewarded.length
                         : updatedUser.mazes.rewarded.length
                     }`,
@@ -295,7 +343,7 @@ export const attachQuestMazeReviewCollector = async (
 
               // send notif to user and delete thread at last
               const sendNotif =
-                type === "gquest"
+                type === "gq"
                   ? updatedUser.gquests.dmNotif
                   : updatedUser.mazes.dmNotif;
 
@@ -314,8 +362,6 @@ export const attachQuestMazeReviewCollector = async (
                   console.warn("Cannot send DM to user");
                 }
               }
-
-              await proofSubThread.delete();
             } catch (err) {
               console.error("Error in reward collector inside thread : ", err);
             }
@@ -346,26 +392,6 @@ export const attachQuestMazeReviewCollector = async (
             }
           });
         }
-
-        if (btnInt.customId === "reject") {
-          // display a modal to user
-          const modal = new ModalBuilder()
-            .setCustomId(`${type}_rejection_modal_${gquestMazeData.messageID}`)
-            .setTitle(`Guild ${type == "gquest" ? "Quest" : "Maze"} Rejection`);
-
-          const reasonInput =
-            new ActionRowBuilder<TextInputBuilder>().addComponents(
-              new TextInputBuilder()
-                .setCustomId("reason")
-                .setLabel("Reason : ")
-                .setStyle(TextInputStyle.Paragraph)
-                .setRequired(true)
-            );
-
-          modal.addComponents(reasonInput);
-
-          await btnInt.showModal(modal);
-        }
       } catch (err) {
         console.error("Error in gquest/maze collector collect event : ", err);
       }
@@ -389,10 +415,12 @@ export const generateGquestsListEmbed = async (
   interaction: ChatInputCommandInteraction,
   gquestMazeArr: IGquest[] | IMaze[],
   title: string,
+  userID: string,
   type: string
 ) => {
   try {
     const guild = await client.guilds.fetch(interaction.guild!.id);
+    const user = await client.users.fetch(userID, { force: true });
 
     let page = 0;
     const pageSize = 5;
@@ -404,12 +432,9 @@ export const generateGquestsListEmbed = async (
 
       const slicedArr = gquestMazeArr.slice(startIndex, endIndex);
 
-      const embed = new EmbedBuilder()
-        .setTitle(`${title}`)
-        .setThumbnail("attachment://thumbnail.png")
-        .setColor("Gold")
-        .setDescription(
-          slicedArr
+      const description = !slicedArr.length
+        ? `${user.displayName} has no pending guild quests`
+        : slicedArr
             .map((ele, idx) => {
               const submittedLine = `\n\n**${startIndex + idx + 1}. [${
                 type === "guild_quest" ? "Gquest" : "Maze"
@@ -434,8 +459,13 @@ export const generateGquestsListEmbed = async (
                 .filter(Boolean)
                 .join("\n");
             })
-            .join("\n\n────────────\n\n")
-        )
+            .join("\n\n────────────\n\n");
+
+      const embed = new EmbedBuilder()
+        .setTitle(`${title}`)
+        .setThumbnail("attachment://thumbnail.png")
+        .setColor("Gold")
+        .setDescription(description)
         .setFooter({
           text: `${guild.name} • Guild ${
             type === "guild_quest" ? "Quests" : "Mazes"

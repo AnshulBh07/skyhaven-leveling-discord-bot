@@ -129,8 +129,8 @@ const runGiveawayRankJob = async (client: Client) => {
         // add gold role
         if (
           m.leveling.level > 20 &&
-          completed_gquests.length > 2 &&
-          completed_raids.length > 2
+          completed_gquests.length > 3 &&
+          completed_raids.length > 3
         ) {
           await member.roles.add(gold_role.id);
         }

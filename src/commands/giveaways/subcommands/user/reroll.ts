@@ -24,6 +24,11 @@ const init = async (): Promise<ISubcommand | undefined> => {
             type: ApplicationCommandOptionType.String,
             required: true,
           },
+          {
+            name: "user",
+            description: "User to reroll",
+            type: ApplicationCommandOptionType.User,
+          },
         ],
       },
 
@@ -31,6 +36,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
         try {
           const giveaway_id = interaction.options.getString("giveaway_id");
           const guildID = interaction.guildId;
+          const targetUser = interaction.options.getUser("user");
 
           if (!giveaway_id || !guildID) {
             await interaction.editReply({
@@ -63,7 +69,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
 
           const { managerRoles } = guildConfig.giveawayConfig;
 
-          // not everyone can delete the giveaway they should be either an admin or the person who creted giveaway himself
+          // not everyone can reroll the giveaway they should be either an admin or the person who creted giveaway himself
           const allowedIDs = [...managerRoles, giveaway.hostID];
 
           if (!allowedIDs.includes(interaction.user.id)) {
@@ -73,6 +79,10 @@ const init = async (): Promise<ISubcommand | undefined> => {
             return;
           }
 
+          // ALGORITHM -
+          // 1. If winner count is 1 just reroll that user, update db
+          // 2. if it is greather than 1 use the user specififed in interaction options
+          // reroll that particular user only
           const {
             participants,
             serverID,
@@ -80,6 +90,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
             prize,
             winnersCount,
             endMessageID,
+            winners,
           } = giveaway;
 
           const guild = await client.guilds.fetch({
@@ -98,46 +109,73 @@ const init = async (): Promise<ISubcommand | undefined> => {
             return;
           }
 
-          if (
-            participants.length === 0 ||
-            participants.length <= winnersCount
-          ) {
-            await interaction.editReply({
-              content:
-                "⚠️ Cannot reroll the giveaway.\nPossible reasons:\n1️⃣ No participants\n2️⃣ 🏆 Winners ≥ 👥 Participants",
-            });
-            return;
-          }
-
           const thumbnail = new AttachmentBuilder(leaderboardThumbnail).setName(
             "thumbnail.png"
           );
 
-          const winners = new Set<string>();
+          let new_winners: string[] = [];
+          const old_winners = winners;
+          let newWinner;
 
-          while (winners.size !== winnersCount) {
-            const winner =
-              participants[Math.floor(Math.random() * participants.length)];
+          if (winnersCount > 1) {
+            if (!targetUser) {
+              await interaction.editReply({
+                content: "Please specify the user you want to reroll.",
+              });
+              return;
+            }
 
-            if (!winners.has(winner)) winners.add(winner);
+            const filtered_participants = participants.filter(
+              (user) => !old_winners.includes(user)
+            );
+
+            newWinner =
+              filtered_participants[
+                Math.floor(Math.random() * filtered_participants.length)
+              ];
+
+            new_winners = old_winners.filter(
+              (winner) => winner !== targetUser.id
+            );
+            new_winners.push(newWinner);
+
+            giveaway.participants = filtered_participants;
+            giveaway.winners = new_winners;
+            await giveaway.save();
+          } else {
+            // winner count is 1 choose a random winner
+            const filtered_participants = participants.filter(
+              (user) => user !== winners[0]
+            );
+
+            newWinner =
+              filtered_participants[
+                Math.floor(Math.random() * filtered_participants.length)
+              ];
+
+            new_winners = [newWinner];
+
+            giveaway.winners = new_winners;
+            giveaway.participants = filtered_participants;
+            await giveaway.save();
           }
-
-          giveaway.winners = Array.from(winners);
 
           const rerollEmbed = new EmbedBuilder()
             .setTitle(`🎉 Giveaway Rerolled!`)
             .setThumbnail("attachment://thumbnail.png")
             .setDescription(`A new winner has been selected for **${prize}**!`)
             .addFields({
-              name: `🆕 **New Winner${winners.size > 1 && "s"}**`,
-              value: `${Array.from(winners).map((winner) => `<@${winner}>`)}`,
+              name: `📢 **New Winner${new_winners.length > 1 ? "s" : ""} : **`,
+              value: `${Array.from(new_winners).map(
+                (winner) => `${winner === newWinner ? "🆕" : "🎊"} <@${winner}>`
+              )}`,
               inline: false,
             })
             .setColor(giveaway.role_color as ColorResolvable)
             .setTimestamp()
             .setFooter({
               text: `Congratulations to the new winner${
-                winners.size > 1 && "s"
+                new_winners.length > 1 ? "s" : ""
               }!`,
             });
 
@@ -154,9 +192,6 @@ const init = async (): Promise<ISubcommand | undefined> => {
             embeds: [rerollEmbed],
             files: [thumbnail],
           });
-
-          //   save winners
-          await giveaway.save();
         } catch (err) {
           console.error("Error in giveaway reroll callback", err);
         }

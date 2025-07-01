@@ -10,6 +10,7 @@ import Config from "../../models/configSchema";
 import GQuest from "../../models/guildQuestsSchema";
 import Maze from "../../models/mazeSchema";
 import { IGquest, IMaze } from "../../utils/interfaces";
+import { isManager } from "../../utils/permissionsCheck";
 
 const execute = async (client: Client, interaction: ModalSubmitInteraction) => {
   try {
@@ -22,9 +23,14 @@ const execute = async (client: Client, interaction: ModalSubmitInteraction) => {
 
     await interaction.deferReply({ flags: "Ephemeral" });
 
+    // handle config checks here after user clicks submit button
+
     const guildConfig = await Config.findOne({ serverID: guild.id });
 
-    if (!guildConfig) return;
+    if (!guildConfig) {
+      await interaction.editReply("Guild config not found.");
+      return;
+    }
 
     const { gquestMazeConfig } = guildConfig;
     const { gquestChannelID, mazeChannelID } = gquestMazeConfig;
@@ -35,18 +41,34 @@ const execute = async (client: Client, interaction: ModalSubmitInteraction) => {
 
     // handle gquest rejection modal
     if (
-      interaction.customId.startsWith("gquest_rejection_modal") ||
-      interaction.customId.startsWith("maze_rejection_modal")
+      interaction.customId.startsWith("gq_rejection_modal") ||
+      interaction.customId.startsWith("mz_rejection_modal")
     ) {
       const messageID = interaction.customId.split("_").at(-1);
       const reason = interaction.fields.getTextInputValue("reason");
       const type = interaction.customId.split("_")[0];
 
-      if (!messageID) return;
+      const isAuthorized = await isManager(
+        client,
+        interaction.user.id,
+        guildConfig.serverID,
+        type
+      );
+      if (!isAuthorized) {
+        await interaction.editReply({
+          content: "❌ You do not have the permission to perform this action.",
+        });
+        return;
+      }
+
+      if (!messageID) {
+        await interaction.editReply({ content: "Something went wrong." });
+        return;
+      }
 
       //   fetch and update related gquest or maze
       const gquestMaze =
-        type === "gquest"
+        type === "gq"
           ? await GQuest.findOneAndUpdate(
               { messageID: messageID },
               {
@@ -72,12 +94,17 @@ const execute = async (client: Client, interaction: ModalSubmitInteraction) => {
               { new: true }
             );
 
-      if (!gquestMaze) return;
+      if (!gquestMaze) {
+        await interaction.editReply({
+          content: "Guild Quest/Maze not found in records.",
+        });
+        return;
+      }
 
       const { userID, channelID, serverID } = gquestMaze;
 
       const updateOptions =
-        type === "gquest"
+        type === "gq"
           ? {
               $pull: { "gquests.pending": gquestMaze._id },
               $push: { "gquests.rejected": gquestMaze._id },
@@ -95,19 +122,25 @@ const execute = async (client: Client, interaction: ModalSubmitInteraction) => {
         { new: true }
       );
 
-      if (!updatedUser) return;
+      if (!updatedUser) {
+        await interaction.editReply({ content: "No user found" });
+        return;
+      }
 
       const guild = await client.guilds.fetch(serverID);
       const channel = await guild.channels.fetch(channelID, { force: true });
       const user = await client.users.fetch(userID);
 
-      if (!channel || channel.type !== 0) return;
+      if (!channel || channel.type !== 0) {
+        await interaction.editReply({ content: "Invalid channel." });
+        return;
+      }
 
       const msg = await channel.messages.fetch(messageID);
 
       let gquestImage;
 
-      if (type === "gquest")
+      if (type === "gq")
         gquestImage = new AttachmentBuilder(
           (gquestMaze as IGquest).imageUrl
         ).setName("submitted_image.png");
@@ -158,13 +191,13 @@ const execute = async (client: Client, interaction: ModalSubmitInteraction) => {
         })
         .setTimestamp();
 
-      if (type === "gquest")
+      if (type === "gq")
         rejectEmbed.setImage("attachment://submitted_image.png");
 
       // maze message
       const imageUrls = (gquestMaze as IMaze).imageUrls;
 
-      if (type === "gquest" && gquestImage) {
+      if (type === "gq" && gquestImage) {
         await msg.edit({
           embeds: [rejectEmbed],
           components: [],
@@ -189,16 +222,14 @@ const execute = async (client: Client, interaction: ModalSubmitInteraction) => {
       });
 
       const sendNotif =
-        type === "gquest"
-          ? updatedUser.gquests.dmNotif
-          : updatedUser.mazes.dmNotif;
+        type === "gq" ? updatedUser.gquests.dmNotif : updatedUser.mazes.dmNotif;
 
       if (sendNotif) {
         try {
           await user.send({
             embeds: [rejectEmbed],
             files:
-              type === "gquest"
+              type === "gq"
                 ? [thumbnail, gquestImage!]
                 : [thumbnail, ...imageUrls],
           });

@@ -68,7 +68,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
 
           if (channel.type !== ChannelType.GuildText) {
             await interaction.editReply({
-              content: "Channel is not text-based."
+              content: "Channel is not text-based.",
             });
             return;
           }

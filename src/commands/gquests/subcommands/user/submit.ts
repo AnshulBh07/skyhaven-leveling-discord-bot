@@ -77,7 +77,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
           ).setName("submitted_image.png");
 
           const submissionEmbed = new EmbedBuilder()
-            .setTitle("🧾 Gquest Submission")
+            .setTitle("🧾 Guild Quest Submission")
             .setDescription(
               `Thank you for your submission! 🔍\n` +
                 `Our team will review it shortly. If everything checks out, you’ll be rewarded soon. 🎉`
@@ -151,19 +151,6 @@ const init = async (): Promise<ISubcommand | undefined> => {
           user.gquests.pending.push(newGquest._id);
           await user.save();
 
-          // create buttons and edit reply again, we didn't create them before to avoid interaction failure
-          const buttonsRow =
-            new ActionRowBuilder<ButtonBuilder>().addComponents(
-              new ButtonBuilder()
-                .setCustomId("reward")
-                .setEmoji("💵")
-                .setStyle(ButtonStyle.Secondary),
-              new ButtonBuilder()
-                .setCustomId("reject")
-                .setEmoji("❌")
-                .setStyle(ButtonStyle.Secondary)
-            );
-
           // edit embed
           submissionEmbed.addFields({
             name: "\u200b",
@@ -172,14 +159,14 @@ const init = async (): Promise<ISubcommand | undefined> => {
 
           await reply.edit({
             embeds: [submissionEmbed],
-            components: [buttonsRow],
+            components: [],
           });
 
           // attach collectors to this gquest message
           await attachQuestMazeReviewCollector(
             client,
             newGquest as IGquest,
-            "gquest"
+            "gq"
           );
         } catch (err) {
           console.error("Error in gquest submit subcommand callback : ", err);
