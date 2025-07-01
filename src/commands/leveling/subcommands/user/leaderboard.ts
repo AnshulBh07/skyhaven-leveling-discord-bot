@@ -221,7 +221,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
 
           // first we will get a random image out of all the images meant for bg
           const allImages = getAllFiles(
-            path.join(__dirname, "../../..", "assets/images/leaderboard_bg"),
+            path.join(__dirname, "../../../..", "assets/images/leaderboard_bg"),
             false
           );
 

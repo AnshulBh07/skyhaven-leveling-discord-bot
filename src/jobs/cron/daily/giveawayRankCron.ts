@@ -1,7 +1,7 @@
 // this cron job runs every single day and checks if user for a guild has met criteria
 // for a rank up for giveaways
 // this runs every single day at 7 AM in the morning
-import { Client, GuildMember } from "discord.js";
+import { Client, DiscordAPIError, Guild, GuildMember } from "discord.js";
 import Config from "../../../models/configSchema";
 import { IRaid, IUser } from "../../../utils/interfaces";
 import { giveawayRoles } from "../../../data/helperArrays";
@@ -32,15 +32,23 @@ const runGiveawayRankJob = async (client: Client) => {
     for (const g of guilds) {
       const members = g.users as unknown as IUser[];
       // fetch fresh guild object
-      const guild = await client.guilds.fetch({
-        guild: g.serverID,
-        force: true,
-      });
+      let guild: Guild | null = null;
 
-      if (!guild) {
-        console.log("Guild not found.");
-        continue;
+      try {
+        guild = await client.guilds.fetch({
+          guild: g.serverID,
+          force: true,
+        });
+      } catch (err) {
+        if ((err as DiscordAPIError).code === 10004) {
+          console.warn(`Uknown guild. Skipping this guild.`);
+          continue;
+        } else {
+          throw err;
+        }
       }
+
+      if (!guild) continue;
 
       const filterCheckArr = giveawayRoles.map((role) => role.name);
       // fetch roles from guild
