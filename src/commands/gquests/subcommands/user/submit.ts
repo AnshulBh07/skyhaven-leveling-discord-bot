@@ -19,9 +19,16 @@ const init = async (): Promise<ISubcommand | undefined> => {
       isSubCommand: true,
       data: {
         name: "submit",
-        description: "Submit a gquest for yourself or some other user.",
+        description: "Submit a guild quest for yourself or some other user",
         type: ApplicationCommandOptionType.Subcommand,
         options: [
+          {
+            name: "count",
+            description: "Number of guild quests completed.",
+            type: ApplicationCommandOptionType.Number,
+            min_value: 5,
+            required: true,
+          },
           {
             name: "image",
             description:
@@ -41,6 +48,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
         try {
           const targetUser = interaction.options.getUser("user");
           const gquestImage = interaction.options.getAttachment("image");
+          const count = interaction.options.getNumber("count");
           const channel = interaction.channel;
           const guild = interaction.guild;
 
@@ -48,7 +56,8 @@ const init = async (): Promise<ISubcommand | undefined> => {
             !gquestImage ||
             !channel ||
             channel.type !== ChannelType.GuildText ||
-            !guild
+            !guild ||
+            !count
           ) {
             await interaction.editReply({
               content: `⚠️ Invalid command. Please check your input and try again.`,
@@ -107,6 +116,11 @@ const init = async (): Promise<ISubcommand | undefined> => {
               },
               {
                 name: "\u200b",
+                value: `**Number of Quests : **${count}`,
+                inline: false,
+              },
+              {
+                name: "\u200b",
                 value: `**📌 Status : **${"Pending"}`,
                 inline: false,
               },
@@ -136,6 +150,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
             userID: targetUser ? targetUser.id : interaction.user.id,
             messageID: reply.id,
             channelID: channel.id,
+            gquestCount: count,
             imageUrl: gquestImage.url,
             imageHash: "dummy hash",
             status: "pending",

@@ -242,6 +242,7 @@ export const attachQuestMazeReviewCollector = async (
                       $set: { "gquests.lastRewardedAt": new Date() },
                       $inc: {
                         "gquests.totalRewarded":
+                          (updatedDoc as IGquest).gquestCount *
                           gquestMazeConfig.gquestRewardAmount,
                       },
                     }
@@ -362,6 +363,8 @@ export const attachQuestMazeReviewCollector = async (
                   console.warn("Cannot send DM to user");
                 }
               }
+
+              await proofSubThread.delete();
             } catch (err) {
               console.error("Error in reward collector inside thread : ", err);
             }

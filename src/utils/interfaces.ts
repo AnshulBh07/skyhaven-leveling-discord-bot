@@ -91,6 +91,7 @@ export interface IGquest {
   userID: string;
   messageID: string; //serves as gquest id
   channelID: string;
+  gquestCount: number;
   imageUrl: string;
   imageHash: string;
   status: GquestStatus;

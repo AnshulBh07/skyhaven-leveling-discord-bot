@@ -200,6 +200,13 @@ export const attachMazeThreadCollector = async (
         maze.embedMessageID = embedMessage.id;
         await maze.save();
 
+        submissionEmbed.addFields({
+          name: "\u200b",
+          value: `**Maze ID : ** \`${embedMessage.id}\``,
+        });
+
+        await embedMessage.edit({ embeds: [submissionEmbed] });
+
         // attach collectors to it
         await attachQuestMazeReviewCollector(client, maze as IMaze, "mz");
 

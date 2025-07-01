@@ -13,6 +13,7 @@ const GQuestSchema = new Schema(
     userID: { type: String, required: true, default: "" },
     messageID: { type: String, required: true, default: "" }, //serves as gquest id
     channelID: { type: String, required: true, default: "" },
+    gquestCount: { type: Number, required: true, default: 0 },
     imageUrl: { type: String, required: true, default: "" },
     imageHash: { type: String, required: true, default: "" },
     status: { type: String, enum: Object.values(StatusType), required: true },
