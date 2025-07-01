@@ -69,6 +69,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
             userID: targetUser.id,
             reason: reason,
             banDate: new Date(),
+            banBy: interaction.user.id,
           });
 
           await guildConfig.save();

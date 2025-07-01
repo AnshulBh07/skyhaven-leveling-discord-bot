@@ -1,6 +1,7 @@
 import { Client, User } from "discord.js";
 import { ILevelRoles, IUser } from "./interfaces";
-import { rolePromotionMessages } from "../data/helperArrays";
+import { generateSeraphinaRankUpMessage } from "./LLMUtils/generateSeraphinaRankUpMessage";
+import Config from "../models/configSchema";
 
 export const promoteUser = async (
   client: Client,
@@ -26,6 +27,13 @@ export const promoteUser = async (
   let isPromoted = false;
   let promotionMessage = "";
 
+  const guildConfig = await Config.findOne({ serverID: guildID });
+
+  if (!guildConfig)
+    return { isPromoted: isPromoted, promotionMessage: promotionMessage };
+
+  const { seraphinaMood } = guildConfig.moodConfig;
+
   if (prevRoleID !== newRoleID) {
     // new role acquired
     isPromoted = true;
@@ -47,11 +55,15 @@ export const promoteUser = async (
     await guild_member.roles.add(newRoleID);
     user.leveling.currentRole = newRoleID;
 
-    promotionMessage = rolePromotionMessages[
-      Math.floor(Math.random() * rolePromotionMessages.length)
-    ]
-      .replace("{user}", `<@${targetUser.id}>`)
-      .replace("{role}", role.name);
+    promotionMessage = await generateSeraphinaRankUpMessage(
+      seraphinaMood,
+      role.name,
+      user.userID
+    );
+
+    promotionMessage = promotionMessage
+      .replace("{roleID}", role.id)
+      .replace("{userID}", user.userID);
   }
 
   user.leveling.xp = 0;

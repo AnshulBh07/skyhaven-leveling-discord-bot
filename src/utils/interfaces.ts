@@ -243,7 +243,12 @@ interface IModerationConfig {
   botAdminIDs: string[];
 }
 
-type UserBan = { userID: string; reason?: string; banDate: Date };
+type UserBan = {
+  userID: string;
+  reason?: string;
+  banDate: Date;
+  banBy: string;
+};
 
 interface IGiveawayConfig {
   giveawayChannelID: "";

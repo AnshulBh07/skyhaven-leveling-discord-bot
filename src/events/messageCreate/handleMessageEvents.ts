@@ -78,7 +78,7 @@ const execute = async (client: Client, message: Message) => {
     const xpGain = Math.min(
       Math.max(
         5,
-        Math.floor(message.content.length - countEmojis(message.content) / 12)
+        Math.floor(message.content.length - countEmojis(message.content) / 15)
       ),
       200
     );

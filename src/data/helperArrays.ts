@@ -347,6 +347,7 @@ export const rolePromotionGifs: string[][] = [
     "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExZzJwN3ptYXE2d3JqcnF1cGY2ZWJnMzU5NmQ2bHd5cTR3cHM3NXoxbCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/CpcpDSci3ljCU/giphy.gif",
     "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHlldTJoeHBsYXB3YXNqc295NDdpYzFmNGl5cHRvZDdlanA1ZXZqOCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3ohs7Rl6L4zG2rvHoc/giphy.gif",
   ],
+  ["https://media.tenor.com/jSakpprrHBEAAAAM/shrek-smirk.gif"],
   [
     "https://media.tenor.com/-2V6pcNfhpMAAAAM/homer-simpson-levitating.gif",
     "https://media.tenor.com/2q7RCZAr-4gAAAAM/ascending-energy.gif",

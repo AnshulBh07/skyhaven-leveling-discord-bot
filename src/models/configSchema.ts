@@ -27,6 +27,7 @@ const BanSchema = new Schema(
     userID: { type: String, required: true, default: "" },
     reason: { type: String, default: "" },
     banDate: { type: Date, required: true, default: new Date() },
+    banBy: { type: String, required: true, default: "" }, //user who banned, stores user id
   },
   { timestamps: false, _id: false, _v: false }
 );
@@ -148,6 +149,7 @@ const ConfigSchema = new Schema(
     gquestMazeConfig: { type: GquestMazeConfig, required: true },
     raidConfig: { type: RaidConfig, required: true },
     moodConfig: { type: MoodSchema, required: true },
+    bannedUsers: { type: [BanSchema], default: [] },
     users: [
       {
         type: mongoose.Schema.Types.ObjectId,
