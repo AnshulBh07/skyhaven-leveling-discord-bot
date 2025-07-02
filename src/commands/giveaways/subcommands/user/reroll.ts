@@ -8,6 +8,7 @@ import { ISubcommand } from "../../../../utils/interfaces";
 import Giveaway from "../../../../models/giveawaySchema";
 import { leaderboardThumbnail } from "../../../../data/helperArrays";
 import Config from "../../../../models/configSchema";
+import { isManager } from "../../../../utils/permissionsCheck";
 
 const init = async (): Promise<ISubcommand | undefined> => {
   try {
@@ -67,12 +68,14 @@ const init = async (): Promise<ISubcommand | undefined> => {
             return;
           }
 
-          const { managerRoles } = guildConfig.giveawayConfig;
+          const isAdmin = await isManager(
+            client,
+            interaction.user.id,
+            guildID,
+            "ga"
+          );
 
-          // not everyone can reroll the giveaway they should be either an admin or the person who creted giveaway himself
-          const allowedIDs = [...managerRoles, giveaway.hostID];
-
-          if (!allowedIDs.includes(interaction.user.id)) {
+          if (interaction.user.id !== giveaway.hostID && !isAdmin) {
             await interaction.editReply({
               content: "🚫 You do not have permission to perform this action.",
             });

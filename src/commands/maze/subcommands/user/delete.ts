@@ -2,6 +2,7 @@ import { ApplicationCommandOptionType, ChannelType } from "discord.js";
 import { ISubcommand } from "../../../../utils/interfaces";
 import Config from "../../../../models/configSchema";
 import Maze from "../../../../models/mazeSchema";
+import { isManager } from "../../../../utils/permissionsCheck";
 
 const init = async (): Promise<ISubcommand | undefined> => {
   try {
@@ -66,12 +67,14 @@ const init = async (): Promise<ISubcommand | undefined> => {
             return;
           }
 
-          const { managerRoles } = guildConfig.gquestMazeConfig;
+          const isAdmin = await isManager(
+            client,
+            interaction.user.id,
+            guild.id,
+            "mz"
+          );
 
-          // not everyone can delete the giveaway they should be either an admin or the person who creted giveaway himself
-          const allowedIDs = [...managerRoles, maze.userID];
-
-          if (!allowedIDs.includes(interaction.user.id)) {
+          if (interaction.user.id !== maze.userID && !isAdmin) {
             await interaction.editReply({
               content: "🚫 You do not have permission to perform this action.",
             });
