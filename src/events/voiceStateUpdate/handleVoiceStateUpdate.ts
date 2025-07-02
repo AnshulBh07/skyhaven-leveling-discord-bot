@@ -37,11 +37,14 @@ const grantXp = async (
     const now = Date.now();
     // convert the time spent in minutes as we will give 3 xp per minute
     const timeSpentOnVC = (now - joinedAt) / 60_000;
-    const xpGain = Math.floor(timeSpentOnVC * 30);
+    const xpGain = Math.floor(timeSpentOnVC * 3);
     // get current date string in YYY-MM-DD format
     const dateStr = getDateString(new Date());
 
-    const user = await User.findOne({ userID: userID });
+    const user = await User.findOne({
+      userID: userID,
+      serverID: voiceState.guild.id,
+    });
 
     if (!user) return;
 
@@ -51,8 +54,6 @@ const grantXp = async (
       dateStr,
       (user.leveling.xpPerDay.get(dateStr) || 0) + xpGain
     );
-
-    await user.save();
 
     //check for level up after granting xp
     const prevLevel = user.leveling.level;
@@ -90,6 +91,9 @@ const grantXp = async (
         guildID
       );
     }
+
+    // update user finally
+    await user.save();
   } catch (err) {
     console.error(err);
   }

@@ -76,7 +76,7 @@ const execute = async (client: Client, message: Message) => {
 
     // generate xp for user and check level upgrade
     const msgLength = message.content.length - countEmojis(message.content);
-    const xpGain = Math.min(Math.max(5, Math.floor(msgLength / 15)), 200);
+    const xpGain = Math.min(Math.max(5, Math.floor(msgLength / 10)), 200);
 
     const totalXpGainFromMessage =
       (hasText && xpFromText ? xpGain : 0) +

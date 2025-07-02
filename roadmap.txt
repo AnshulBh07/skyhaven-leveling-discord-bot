@@ -173,29 +173,104 @@ All of the following are subcommands under: /xpconfig
 
 
 ----------------------------------------------------------------------------------------------
-                                       Guild Quests System
+                                       Guild Quest System
 ----------------------------------------------------------------------------------------------
-1. user commands
-- /gq submit <image> [user] : submit gquest for yourself or some other user
-- /gq dm-notif <boolean> [user] : toggle dm notifications for gquests
-- /gq stats [user] : give complete stats for user
-   stats dusplayed are 
-- /gq pending [user] : gives a list of all pending gquests for user
-- /gq rewarded [user] : gives a list of all rewarded gquests
-- /gq rejected [user] : gives a list of all rejected gquests
-- /gq find <gquest_id> : find previously sent gquest message, done by sending a link button to that message in reply
-- /gq leaderboard : gives a leaderboard for gquests completed.
-- /gq delete <gquest_id>: deletes a gquest, rewarded ones cannot be deleted
 
-2. admin commands
-- /gquest reward-amount <amount> : sets gquest reward amount
-- /gquest channel : sets gquest channel
-- /gquest role
-- /gquest add-admin
-- /gquest remove-admin
+1. 🧑‍🎓 USER COMMANDS
 
-Notes: Fixes needed
- - leaderboard embed and interaction 
+- /gq submit <image> [user]
+  • Submit a Guild Quest screenshot for yourself or on behalf of another user.
+
+- /gq dm-notif <boolean> [user]
+  • Toggle DM notifications for Guild Quest updates (approved/rejected).
+  • If [user] is provided, only accessible by GQ admins.
+
+- /gq stats [user]
+  • Displays full Guild Quest statistics for the user.
+    › Total submitted
+    › Rewarded count
+    › Rejected count
+    › Pending count
+
+- /gq pending [user]
+  • Lists all currently pending (unreviewed) submissions for the user.
+
+- /gq rewarded [user]
+  • Lists all approved and rewarded submissions for the user.
+
+- /gq rejected [user]
+  • Lists all rejected submissions for the user.
+
+- /gq find <gquest_id>
+  • Locates a specific Guild Quest submission by ID.
+  • Responds with a link button to jump to the original message.
+
+- /gq leaderboard
+  • Displays the Guild Quest leaderboard based on rewarded submissions.
+
+- /gq delete <gquest_id>
+  • Deletes a submission.
+  • Only allowed if the submission is pending.
+
+2. 🛡️ ADMIN COMMANDS
+
+- /gq reward-amount <amount>
+  • Sets the base reward value (e.g., points/spina) per approved Guild Quest.
+
+- /gq channel
+  • Sets the channel where Guild Quest submissions are logged or reviewed.
+
+- /gq role <role>
+  • Assigns a role that determines access to Guild Quest participation or admin commands.
+
+- /gq add-admin <user>
+  • Grants Guild Quest admin permissions to the specified user.
+
+- /gq remove-admin <user>
+  • Revokes Guild Quest admin permissions from the specified user.
+
+----------------------------------------------------------------------------------------------
+                                       Guild Maze System
+----------------------------------------------------------------------------------------------
+
+1. 🧑‍🎓 USER COMMANDS
+
+- /mz submit <start_floor> <end_floor> [user]
+  • Begin a maze submission for the given floor range.
+  • A thread will be created where the user can manually upload proof images.
+
+- /mz dm-notif <boolean> [user]
+  • Toggle DM notifications for maze reward updates.
+  • If [user] is provided, only accessible by maze admins.
+
+- /mz stats [user]
+  • Displays full maze statistics for the user.
+    › Total mazes submitted
+    › Total rewarded floors
+    › Last rewarded date
+    › Rejected count
+
+- /mz pending [user]
+  • Lists all currently pending (unreviewed) maze submissions for the user.
+
+- /mz rewarded [user]
+  • Lists all approved/rewarded maze submissions.
+  • Includes floor ranges and reward timestamps.
+
+- /mz rejected [user]
+  • Lists all rejected maze submissions.
+  • Displays rejection reasons and relevant details.
+
+- /mz find <maze_id>
+  • Locates a specific maze submission by ID.
+  • Returns a jump link to the original message.
+
+- /mz leaderboard
+  • Displays the maze leaderboard based on total rewarded floors.
+
+- /mz delete <maze_id>
+  • Deletes a maze submission.
+  • Only allowed if the maze is pending.
 
  
 ----------------------------------------------------------------------------------------------
@@ -210,6 +285,8 @@ raid flow is something like announce date time (ask for participation in same) -
 - after 3 hours of raid completion send a review message to all the admins on raid channel. This will contain a checklist of who participated and who didn't.
 admin will also be able to add people who joined raids but didn't participated
 - raid is completely finished
+
+
 
 GOOGLE GEMINI INTEGRATION FOR SERAPHINA PERSONALITY
 To make the best out of free tier do this
