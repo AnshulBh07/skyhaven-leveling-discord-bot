@@ -14,6 +14,7 @@ import User from "../models/userSchema";
 import { leaderboardThumbnail } from "../data/helperArrays";
 import { attachQuestMazeReviewCollector } from "./gquestUtils";
 import { IMaze } from "./interfaces";
+import { isManager } from "./permissionsCheck";
 
 const thumbnail = new AttachmentBuilder(leaderboardThumbnail).setName(
   "thumbnail.png"
@@ -64,8 +65,10 @@ export const attachMazeThreadCollector = async (
 
     collector.on("collect", async (msg) => {
       try {
+        const isAdmin = await isManager(client, msg.author.id, guild.id, "mz");
+
         // check if the message is from same user or not
-        if (msg.author.id !== maze.userID) {
+        if (msg.author.id !== maze.userID && !isAdmin) {
           await submissionThread.send({
             content: "❌ You do not have permission to chat in this thread.",
           });
