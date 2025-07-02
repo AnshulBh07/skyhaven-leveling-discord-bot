@@ -62,7 +62,7 @@ export const promoteUser = async (
     );
 
     promotionMessage = promotionMessage
-      .replace("{roleID}", role.id)
+      .replace("<@&{roleID}>", `**${role.name}**`)
       .replace("{userID}", user.userID);
   }
 
