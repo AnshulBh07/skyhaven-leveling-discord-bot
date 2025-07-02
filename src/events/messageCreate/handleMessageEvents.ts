@@ -75,13 +75,8 @@ const execute = async (client: Client, message: Message) => {
     if (currTime < cooldownExpTime) return;
 
     // generate xp for user and check level upgrade
-    const xpGain = Math.min(
-      Math.max(
-        5,
-        Math.floor(message.content.length - countEmojis(message.content) / 15)
-      ),
-      200
-    );
+    const msgLength = message.content.length - countEmojis(message.content);
+    const xpGain = Math.min(Math.max(5, Math.floor(msgLength / 15)), 200);
 
     const totalXpGainFromMessage =
       (hasText && xpFromText ? xpGain : 0) +

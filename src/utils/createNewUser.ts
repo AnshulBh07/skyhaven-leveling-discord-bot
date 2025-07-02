@@ -152,11 +152,14 @@ export const createNewUser = async (
     if (userInGuildConfig) {
       // if user is already in guildconfig find and reset the user in users model
       if (!initialConfig)
-        await User.findOneAndUpdate({ userID: userID }, { $set: options });
+        await User.findOneAndUpdate(
+          { userID: userID, serverID: guild.id },
+          { $set: options }
+        );
     } else {
       // if the user is in user schema but not in guild
       const user = await User.findOneAndUpdate(
-        { userID: userID },
+        { userID: userID, serverID: guild.id },
         { $set: options }
       );
 
