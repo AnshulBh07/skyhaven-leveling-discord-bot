@@ -39,7 +39,8 @@ const runSeraphinaMoodCronJob = async (client: Client) => {
 
 export const scheduleSeraphinaMoodCron = async (client: Client) => {
   try {
-    cron.schedule("0 */6 * * *", async () => {
+    // runs at 5 am everyday
+    cron.schedule("0 5 * * *", async () => {
       await runSeraphinaMoodCronJob(client);
     });
   } catch (err) {
