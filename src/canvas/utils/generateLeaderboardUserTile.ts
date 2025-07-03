@@ -175,7 +175,7 @@ export const generateLeaderboardUserTile = async (
     ctx.font = "bold 70px 'Segoe UI', sans-serif";
     ctx.textAlign = "left";
     ctx.textBaseline = "bottom";
-    ctx.fillText(user.username, 240, 160);
+    ctx.fillText(user.displayName, 240, 160);
 
     // Level Label
     ctx.font = "40px 'Segoe UI', sans-serif";

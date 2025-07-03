@@ -65,10 +65,13 @@ export const attachMazeThreadCollector = async (
 
     collector.on("collect", async (msg) => {
       try {
+        const isSubmitter = String(msg.author.id) === String(maze.userID);
         const isAdmin = await isManager(client, msg.author.id, guild.id, "mz");
 
-        // check if the message is from same user or not
-        if (msg.author.id !== maze.userID && !isAdmin) {
+        console.log("is submitter : ", isSubmitter);
+        console.log("is Admin : ", isAdmin);
+
+        if (!isSubmitter && !isAdmin) {
           await submissionThread.send({
             content: "❌ You do not have permission to chat in this thread.",
           });

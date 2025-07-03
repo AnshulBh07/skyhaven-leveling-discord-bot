@@ -158,10 +158,7 @@ export const createNewUser = async (
         );
     } else {
       // if the user is in user schema but not in guild
-      const user = await User.findOneAndUpdate(
-        { userID: userID, serverID: guild.id },
-        { $set: options }
-      );
+      const user = await User.findOne({ userID: userID, serverID: guild.id });
 
       if (user) {
         await Config.findOneAndUpdate(

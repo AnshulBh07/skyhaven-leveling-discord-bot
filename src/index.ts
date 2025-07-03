@@ -2,6 +2,8 @@ import { Client, IntentsBitField } from "discord.js";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import eventHandler from "./handlers/eventHandler";
+import Config from "./models/configSchema";
+import User from "./models/userSchema";
 
 const myIntents = new IntentsBitField();
 myIntents.add(
@@ -37,6 +39,8 @@ const main = async () => {
   try {
     await mongoose.connect(process.env.ATLAS_URI || "");
     bot.login(process.env.DISCORD_BOT_TOKEN);
+    // await insertUsers();
+    // console.log("users added");
   } catch (err) {
     console.error(err);
     process.exit(0);
@@ -44,3 +48,26 @@ const main = async () => {
 };
 
 main();
+
+// fixer function to insert user IDs missing in config for a guild, only to be used manually
+// const insertUsers = async () => {
+//   try {
+//     const guildID = "940123225831120947";
+
+//     const guildConfig = await Config.findOne({ serverID: guildID });
+
+//     if (!guildConfig) return;
+
+//     const { users } = guildConfig;
+
+//     const all_users = await User.find({ serverID: guildID });
+
+//     for (const user of all_users) {
+//       if (!users.includes(user._id)) users.push(user._id);
+//     }
+
+//     await guildConfig.save();
+//   } catch (err) {
+//     console.error("Error in insert users function : ", err);
+//   }
+// };

@@ -37,7 +37,7 @@ const grantXp = async (
     const now = Date.now();
     // convert the time spent in minutes as we will give 3 xp per minute
     const timeSpentOnVC = (now - joinedAt) / 60_000;
-    const xpGain = Math.floor(timeSpentOnVC * 3);
+    const xpGain = Math.floor(timeSpentOnVC * 15);
     // get current date string in YYY-MM-DD format
     const dateStr = getDateString(new Date());
 
