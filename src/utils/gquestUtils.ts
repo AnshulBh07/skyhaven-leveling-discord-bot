@@ -440,7 +440,7 @@ export const generateGquestsListEmbed = async (
         : slicedArr
             .map((ele, idx) => {
               const submittedLine = `\n\n**${startIndex + idx + 1}. [${
-                type === "guild_quest" ? "Gquest" : "Maze"
+                type === "guild_quest" ? "Guild Quest" : "Guild Maze"
               } ID: \`${ele.messageID}\`]\n**
 **👤 Submitted by: **<@${ele.userID}>
 ** Submitted on: **<t:${Math.ceil(ele.submittedAt! / 1000)}:F>`;

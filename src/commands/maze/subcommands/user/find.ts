@@ -41,7 +41,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
 
           //   find the gquest
           const maze = await Maze.findOne({
-            messageID: message_id,
+            embedMessageID: message_id,
             type: "maze",
           });
 

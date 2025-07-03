@@ -183,7 +183,7 @@ export const generateLeaderboardUserTile = async (
     ctx.fillText("Lvl:", 730, baseY - 10);
 
     // Level Value
-    ctx.font = "bold 70px 'Segoe UI', sans-serif";
+    ctx.font = "bold 60px 'Segoe UI', sans-serif";
     ctx.fillText(userInfo.level.toString(), 795, baseY);
 
     // XP Label
@@ -191,7 +191,7 @@ export const generateLeaderboardUserTile = async (
     ctx.fillText("XP:", 915, baseY - 10);
 
     // XP Value
-    ctx.font = "bold 70px 'Segoe UI', sans-serif";
+    ctx.font = "bold 60px 'Segoe UI', sans-serif";
     ctx.fillText(formatXpToK(userInfo.xp), 980, baseY);
 
     // if role exists make the role tag

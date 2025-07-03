@@ -100,6 +100,6 @@ export const generateSeraphinaConvoReply = async (
       "Error generating Seraphina conversation reply with Gemini:",
       error.response?.data || error
     );
-    return "⚠️ Seraphina flutters in confusion — something broke her link to the divine.";
+    return "Divine duty’s draining, you know? Catch me after a short nap, mortal.";
   }
 };
