@@ -196,9 +196,9 @@ export const generateLeaderboardUserTile = async (
 
     // if role exists make the role tag
     if (role) {
-      const rectX = 710;
+      const rectX = 700;
       const rectY = 150;
-      const rectWidth = 490;
+      const rectWidth = 500;
       const rectHeight = 85;
 
       // Draw the rectangle
