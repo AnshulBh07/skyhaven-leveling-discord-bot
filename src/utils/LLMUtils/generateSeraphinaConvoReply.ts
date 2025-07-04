@@ -65,7 +65,7 @@ export const generateSeraphinaConvoReply = async (
                 text: systemPrompt
                   .replace("${mood}", mood)
                   .replace("${talkStyle}", moodStyles[mood] ?? "Now speak")
-                  .replace("{userID}", userId),
+                  .replace("${userID}", userId),
               },
             ],
           },
