@@ -11,6 +11,7 @@ import {
   ChannelType,
   Client,
   ComponentType,
+  DiscordAPIError,
   EmbedBuilder,
   MessageActionRowComponentBuilder,
 } from "discord.js";
@@ -396,7 +397,16 @@ export const sendScoutReminder = async (client: Client, raid: IRaid) => {
 
     // send this message as DM to all users
     for (const admin of admins) {
-      await admin.send({ embeds: [reminderEmbed], files: [thumbnail] });
+      try {
+        await admin.send({ embeds: [reminderEmbed], files: [thumbnail] });
+      } catch (err) {
+        if ((err as DiscordAPIError).code === 50007) {
+          console.warn(
+            `cannot send scout reminder DM to ${admin}, skipping admin`
+          );
+          continue;
+        } else throw err;
+      }
     }
   } catch (err) {
     console.error("Error in scout reminder function : ", err);
