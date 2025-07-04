@@ -27,7 +27,7 @@ dotenv.config({ path: envFile });
 
 eventHandler(bot);
 
-console.log("fresh bot booting up...");
+console.log("fresh boot up...");
 
 // setInterval(() => {
 //   const used = process.memoryUsage().heapUsed / 1024 / 1024;

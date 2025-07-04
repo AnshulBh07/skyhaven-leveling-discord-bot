@@ -365,6 +365,10 @@ export const sendScoutReminder = async (client: Client, raid: IRaid) => {
       })
       .map(([_, member]) => member.user);
 
+    const uniqueAdmins = [
+      ...new Map(admins.map((admin) => [admin.id, admin])).values(),
+    ];
+
     const reminderEmbed = new EmbedBuilder()
       .setTitle("📣 Raid Scout Reminder")
       .setThumbnail("attachment://thumbnail.png")
@@ -396,7 +400,7 @@ export const sendScoutReminder = async (client: Client, raid: IRaid) => {
       .setTimestamp();
 
     // send this message as DM to all users
-    for (const admin of admins) {
+    for (const admin of uniqueAdmins) {
       try {
         await admin.send({ embeds: [reminderEmbed], files: [thumbnail] });
       } catch (err) {
@@ -459,7 +463,15 @@ export const raidRemindParticipants = async (client: Client, raid: IRaid) => {
       const userDb = await User.findOne({ userID: participant });
 
       if (userDb && userDb.raids.dmNotif)
-        await user.send({ embeds: [embed], files: [thumbnail, banner] });
+        try {
+          await user.send({ embeds: [embed], files: [thumbnail, banner] });
+        } catch (err) {
+          if ((err as DiscordAPIError).code === 50007) {
+            console.warn(
+              `Cannot send raid reminder DM to ${user.id}, skipping user...`
+            );
+          } else throw err;
+        }
     }
   } catch (err) {
     console.error("Error in raid reminder function : ", err);
@@ -702,6 +714,10 @@ export const raidReviewReminder = async (client: Client, raid: IRaid) => {
       })
       .map((member) => member.user);
 
+    const uniqueAdmins = [
+      ...new Map(admins.map((admin) => [admin.id, admin])).values(),
+    ];
+
     const reviewEmbed = new EmbedBuilder()
       .setTitle("📋 Raid Participation Review")
       .setColor("Blue")
@@ -723,8 +739,16 @@ export const raidReviewReminder = async (client: Client, raid: IRaid) => {
       .setFooter({ text: "Thank you for your support and cooperation." })
       .setTimestamp();
 
-    for (const admin of admins) {
-      await admin.send({ embeds: [reviewEmbed] });
+    for (const admin of uniqueAdmins) {
+      try {
+        await admin.send({ embeds: [reviewEmbed] });
+      } catch (err) {
+        if ((err as DiscordAPIError).code === 50007) {
+          console.warn(
+            `Cannot send review reminder DM to ${admin.id}, skipping admin...`
+          );
+        } else throw err;
+      }
     }
   } catch (err) {
     console.error("Error in raid review reminder function : ", err);

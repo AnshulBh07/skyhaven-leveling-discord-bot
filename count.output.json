@@ -2,25 +2,25 @@
     "name": "ROOT",
     "type": "dir",
     "fullPath": "",
-    "fileNumber": 161,
-    "lines": 15725,
-    "characters": 524572,
+    "fileNumber": 178,
+    "lines": 20579,
+    "characters": 693912,
     "childrens": [
         {
             "name": "src",
             "type": "dir",
             "fullPath": "/src",
-            "fileNumber": 153,
-            "lines": 15290,
-            "characters": 498977,
+            "fileNumber": 170,
+            "lines": 20056,
+            "characters": 665638,
             "childrens": [
                 {
                     "name": "assets",
                     "type": "dir",
                     "fullPath": "/src/assets",
-                    "fileNumber": 9,
-                    "lines": 2,
-                    "characters": 6734,
+                    "fileNumber": 8,
+                    "lines": 0,
+                    "characters": 0,
                     "childrens": [
                         {
                             "name": "images",
@@ -99,25 +99,10 @@
                             "name": "logos",
                             "type": "dir",
                             "fullPath": "/src/assets/logos",
-                            "fileNumber": 2,
-                            "lines": 2,
-                            "characters": 6734,
-                            "childrens": [
-                                {
-                                    "name": "gold_crown.webp",
-                                    "type": "file",
-                                    "fullPath": "/src/assets/logos/gold_crown.webp",
-                                    "lines": 1,
-                                    "characters": 3901
-                                },
-                                {
-                                    "name": "silver_crown.webp",
-                                    "type": "file",
-                                    "fullPath": "/src/assets/logos/silver_crown.webp",
-                                    "lines": 1,
-                                    "characters": 2833
-                                }
-                            ]
+                            "fileNumber": 0,
+                            "lines": 0,
+                            "characters": 0,
+                            "childrens": []
                         }
                     ]
                 },
@@ -126,16 +111,16 @@
                     "type": "dir",
                     "fullPath": "/src/canvas",
                     "fileNumber": 14,
-                    "lines": 1074,
-                    "characters": 29528,
+                    "lines": 1047,
+                    "characters": 28829,
                     "childrens": [
                         {
                             "name": "utils",
                             "type": "dir",
                             "fullPath": "/src/canvas/utils",
                             "fileNumber": 10,
-                            "lines": 720,
-                            "characters": 18894,
+                            "lines": 719,
+                            "characters": 18857,
                             "childrens": [
                                 {
                                     "name": "adjustHexShades.ts",
@@ -162,8 +147,8 @@
                                     "name": "generateAvatar.ts",
                                     "type": "file",
                                     "fullPath": "/src/canvas/utils/generateAvatar.ts",
-                                    "lines": 69,
-                                    "characters": 1845
+                                    "lines": 68,
+                                    "characters": 1805
                                 },
                                 {
                                     "name": "generateBackground.ts",
@@ -177,7 +162,7 @@
                                     "type": "file",
                                     "fullPath": "/src/canvas/utils/generateLeaderboardUserTile.ts",
                                     "lines": 260,
-                                    "characters": 7129
+                                    "characters": 7132
                                 },
                                 {
                                     "name": "generateLvlTransition.ts",
@@ -220,8 +205,8 @@
                             "name": "generateGquestMazeLeaderboardImage.ts",
                             "type": "file",
                             "fullPath": "/src/canvas/generateGquestMazeLeaderboardImage.ts",
-                            "lines": 180,
-                            "characters": 5425
+                            "lines": 154,
+                            "characters": 4733
                         },
                         {
                             "name": "generateLevelUpCard.ts",
@@ -235,7 +220,7 @@
                             "type": "file",
                             "fullPath": "/src/canvas/generateRankCard.ts",
                             "lines": 65,
-                            "characters": 1940
+                            "characters": 1970
                         }
                     ]
                 },
@@ -243,89 +228,82 @@
                     "name": "commands",
                     "type": "dir",
                     "fullPath": "/src/commands",
-                    "fileNumber": 82,
-                    "lines": 8347,
-                    "characters": 264607,
+                    "fileNumber": 86,
+                    "lines": 9429,
+                    "characters": 300182,
                     "childrens": [
                         {
                             "name": "giveaways",
                             "type": "dir",
                             "fullPath": "/src/commands/giveaways",
-                            "fileNumber": 16,
-                            "lines": 1873,
-                            "characters": 58748,
+                            "fileNumber": 17,
+                            "lines": 2024,
+                            "characters": 63935,
                             "childrens": [
                                 {
                                     "name": "subcommands",
                                     "type": "dir",
                                     "fullPath": "/src/commands/giveaways/subcommands",
-                                    "fileNumber": 15,
-                                    "lines": 1722,
-                                    "characters": 53754,
+                                    "fileNumber": 16,
+                                    "lines": 1870,
+                                    "characters": 58665,
                                     "childrens": [
                                         {
                                             "name": "admin",
                                             "type": "dir",
                                             "fullPath": "/src/commands/giveaways/subcommands/admin",
-                                            "fileNumber": 8,
-                                            "lines": 734,
-                                            "characters": 22566,
+                                            "fileNumber": 7,
+                                            "lines": 654,
+                                            "characters": 20351,
                                             "childrens": [
                                                 {
                                                     "name": "assignrole.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/giveaways/subcommands/admin/assignrole.ts",
-                                                    "lines": 95,
-                                                    "characters": 3024
+                                                    "lines": 93,
+                                                    "characters": 3005
                                                 },
                                                 {
                                                     "name": "ban.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/giveaways/subcommands/admin/ban.ts",
-                                                    "lines": 93,
-                                                    "characters": 2917
+                                                    "lines": 92,
+                                                    "characters": 2937
                                                 },
                                                 {
                                                     "name": "banlist.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/giveaways/subcommands/admin/banlist.ts",
-                                                    "lines": 90,
-                                                    "characters": 2691
-                                                },
-                                                {
-                                                    "name": "channel.ts",
-                                                    "type": "file",
-                                                    "fullPath": "/src/commands/giveaways/subcommands/admin/channel.ts",
-                                                    "lines": 66,
-                                                    "characters": 2017
+                                                    "lines": 88,
+                                                    "characters": 2650
                                                 },
                                                 {
                                                     "name": "entries.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/giveaways/subcommands/admin/entries.ts",
-                                                    "lines": 158,
-                                                    "characters": 4945
+                                                    "lines": 156,
+                                                    "characters": 4922
                                                 },
                                                 {
                                                     "name": "remove_role.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/giveaways/subcommands/admin/remove_role.ts",
-                                                    "lines": 83,
-                                                    "characters": 2501
+                                                    "lines": 80,
+                                                    "characters": 2443
                                                 },
                                                 {
                                                     "name": "unban.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/giveaways/subcommands/admin/unban.ts",
-                                                    "lines": 81,
-                                                    "characters": 2466
+                                                    "lines": 79,
+                                                    "characters": 2443
                                                 },
                                                 {
                                                     "name": "use_role.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/giveaways/subcommands/admin/use_role.ts",
-                                                    "lines": 68,
-                                                    "characters": 2005
+                                                    "lines": 66,
+                                                    "characters": 1951
                                                 }
                                             ]
                                         },
@@ -333,23 +311,30 @@
                                             "name": "owner",
                                             "type": "dir",
                                             "fullPath": "/src/commands/giveaways/subcommands/owner",
-                                            "fileNumber": 2,
-                                            "lines": 167,
-                                            "characters": 5126,
+                                            "fileNumber": 3,
+                                            "lines": 211,
+                                            "characters": 6418,
                                             "childrens": [
                                                 {
                                                     "name": "add_admin.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/giveaways/subcommands/owner/add_admin.ts",
-                                                    "lines": 82,
-                                                    "characters": 2502
+                                                    "lines": 72,
+                                                    "characters": 2160
+                                                },
+                                                {
+                                                    "name": "channel.ts",
+                                                    "type": "file",
+                                                    "fullPath": "/src/commands/giveaways/subcommands/owner/channel.ts",
+                                                    "lines": 64,
+                                                    "characters": 1976
                                                 },
                                                 {
                                                     "name": "remove_admin.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/giveaways/subcommands/owner/remove_admin.ts",
-                                                    "lines": 85,
-                                                    "characters": 2624
+                                                    "lines": 75,
+                                                    "characters": 2282
                                                 }
                                             ]
                                         },
@@ -357,44 +342,51 @@
                                             "name": "user",
                                             "type": "dir",
                                             "fullPath": "/src/commands/giveaways/subcommands/user",
-                                            "fileNumber": 5,
-                                            "lines": 821,
-                                            "characters": 26062,
+                                            "fileNumber": 6,
+                                            "lines": 1005,
+                                            "characters": 31896,
                                             "childrens": [
                                                 {
                                                     "name": "delete.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/giveaways/subcommands/user/delete.ts",
-                                                    "lines": 98,
-                                                    "characters": 2984
+                                                    "lines": 126,
+                                                    "characters": 3832
+                                                },
+                                                {
+                                                    "name": "find.ts",
+                                                    "type": "file",
+                                                    "fullPath": "/src/commands/giveaways/subcommands/user/find.ts",
+                                                    "lines": 85,
+                                                    "characters": 2533
                                                 },
                                                 {
                                                     "name": "list.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/giveaways/subcommands/user/list.ts",
-                                                    "lines": 147,
-                                                    "characters": 4517
+                                                    "lines": 148,
+                                                    "characters": 4601
                                                 },
                                                 {
                                                     "name": "reroll.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/giveaways/subcommands/user/reroll.ts",
-                                                    "lines": 153,
-                                                    "characters": 4758
+                                                    "lines": 210,
+                                                    "characters": 6783
                                                 },
                                                 {
                                                     "name": "start.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/giveaways/subcommands/user/start.ts",
-                                                    "lines": 261,
-                                                    "characters": 8620
+                                                    "lines": 278,
+                                                    "characters": 9124
                                                 },
                                                 {
                                                     "name": "wins.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/giveaways/subcommands/user/wins.ts",
-                                                    "lines": 162,
-                                                    "characters": 5183
+                                                    "lines": 158,
+                                                    "characters": 5023
                                                 }
                                             ]
                                         }
@@ -404,8 +396,8 @@
                                     "name": "index.ts",
                                     "type": "file",
                                     "fullPath": "/src/commands/giveaways/index.ts",
-                                    "lines": 151,
-                                    "characters": 4994
+                                    "lines": 154,
+                                    "characters": 5270
                                 }
                             ]
                         },
@@ -413,46 +405,39 @@
                             "name": "gquests",
                             "type": "dir",
                             "fullPath": "/src/commands/gquests",
-                            "fileNumber": 14,
-                            "lines": 1245,
-                            "characters": 38996,
+                            "fileNumber": 15,
+                            "lines": 1391,
+                            "characters": 43491,
                             "childrens": [
                                 {
                                     "name": "subcommands",
                                     "type": "dir",
                                     "fullPath": "/src/commands/gquests/subcommands",
-                                    "fileNumber": 13,
-                                    "lines": 1094,
-                                    "characters": 34015,
+                                    "fileNumber": 14,
+                                    "lines": 1225,
+                                    "characters": 38062,
                                     "childrens": [
                                         {
                                             "name": "admin",
                                             "type": "dir",
                                             "fullPath": "/src/commands/gquests/subcommands/admin",
-                                            "fileNumber": 3,
-                                            "lines": 205,
-                                            "characters": 6136,
+                                            "fileNumber": 2,
+                                            "lines": 134,
+                                            "characters": 3996,
                                             "childrens": [
-                                                {
-                                                    "name": "channel.ts",
-                                                    "type": "file",
-                                                    "fullPath": "/src/commands/gquests/subcommands/admin/channel.ts",
-                                                    "lines": 69,
-                                                    "characters": 2116
-                                                },
                                                 {
                                                     "name": "reward_amount.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/gquests/subcommands/admin/reward_amount.ts",
                                                     "lines": 68,
-                                                    "characters": 2036
+                                                    "characters": 2054
                                                 },
                                                 {
                                                     "name": "use_role.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/gquests/subcommands/admin/use_role.ts",
-                                                    "lines": 68,
-                                                    "characters": 1984
+                                                    "lines": 66,
+                                                    "characters": 1942
                                                 }
                                             ]
                                         },
@@ -460,23 +445,30 @@
                                             "name": "owner",
                                             "type": "dir",
                                             "fullPath": "/src/commands/gquests/subcommands/owner",
-                                            "fileNumber": 2,
-                                            "lines": 170,
-                                            "characters": 5203,
+                                            "fileNumber": 3,
+                                            "lines": 217,
+                                            "characters": 6619,
                                             "childrens": [
                                                 {
                                                     "name": "add_admin.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/gquests/subcommands/owner/add_admin.ts",
-                                                    "lines": 83,
-                                                    "characters": 2527
+                                                    "lines": 73,
+                                                    "characters": 2199
+                                                },
+                                                {
+                                                    "name": "channel.ts",
+                                                    "type": "file",
+                                                    "fullPath": "/src/commands/gquests/subcommands/owner/channel.ts",
+                                                    "lines": 67,
+                                                    "characters": 2074
                                                 },
                                                 {
                                                     "name": "remove_admin.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/gquests/subcommands/owner/remove_admin.ts",
-                                                    "lines": 87,
-                                                    "characters": 2676
+                                                    "lines": 77,
+                                                    "characters": 2346
                                                 }
                                             ]
                                         },
@@ -484,65 +476,72 @@
                                             "name": "user",
                                             "type": "dir",
                                             "fullPath": "/src/commands/gquests/subcommands/user",
-                                            "fileNumber": 8,
-                                            "lines": 719,
-                                            "characters": 22676,
+                                            "fileNumber": 9,
+                                            "lines": 874,
+                                            "characters": 27447,
                                             "childrens": [
+                                                {
+                                                    "name": "delete.ts",
+                                                    "type": "file",
+                                                    "fullPath": "/src/commands/gquests/subcommands/user/delete.ts",
+                                                    "lines": 121,
+                                                    "characters": 3662
+                                                },
                                                 {
                                                     "name": "dm_notif.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/gquests/subcommands/user/dm_notif.ts",
-                                                    "lines": 67,
-                                                    "characters": 2081
+                                                    "lines": 65,
+                                                    "characters": 2010
                                                 },
                                                 {
                                                     "name": "find.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/gquests/subcommands/user/find.ts",
-                                                    "lines": 80,
-                                                    "characters": 2403
+                                                    "lines": 83,
+                                                    "characters": 2458
                                                 },
                                                 {
                                                     "name": "leaderboard.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/gquests/subcommands/user/leaderboard.ts",
-                                                    "lines": 53,
-                                                    "characters": 1455
+                                                    "lines": 62,
+                                                    "characters": 1899
                                                 },
                                                 {
                                                     "name": "pending.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/gquests/subcommands/user/pending.ts",
-                                                    "lines": 70,
-                                                    "characters": 2162
+                                                    "lines": 72,
+                                                    "characters": 2266
                                                 },
                                                 {
                                                     "name": "rejected.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/gquests/subcommands/user/rejected.ts",
-                                                    "lines": 70,
-                                                    "characters": 2178
+                                                    "lines": 72,
+                                                    "characters": 2278
                                                 },
                                                 {
                                                     "name": "rewarded.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/gquests/subcommands/user/rewarded.ts",
-                                                    "lines": 70,
-                                                    "characters": 2178
+                                                    "lines": 72,
+                                                    "characters": 2278
                                                 },
                                                 {
                                                     "name": "stats.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/gquests/subcommands/user/stats.ts",
-                                                    "lines": 120,
-                                                    "characters": 3904
+                                                    "lines": 129,
+                                                    "characters": 4188
                                                 },
                                                 {
                                                     "name": "submit.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/gquests/subcommands/user/submit.ts",
-                                                    "lines": 189,
-                                                    "characters": 6315
+                                                    "lines": 198,
+                                                    "characters": 6408
                                                 }
                                             ]
                                         }
@@ -552,8 +551,8 @@
                                     "name": "index.ts",
                                     "type": "file",
                                     "fullPath": "/src/commands/gquests/index.ts",
-                                    "lines": 151,
-                                    "characters": 4981
+                                    "lines": 166,
+                                    "characters": 5429
                                 }
                             ]
                         },
@@ -561,190 +560,159 @@
                             "name": "leveling",
                             "type": "dir",
                             "fullPath": "/src/commands/leveling",
-                            "fileNumber": 18,
-                            "lines": 2022,
-                            "characters": 66079,
+                            "fileNumber": 17,
+                            "lines": 2274,
+                            "characters": 73536,
                             "childrens": [
-                                {
-                                    "name": "economy",
-                                    "type": "dir",
-                                    "fullPath": "/src/commands/leveling/economy",
-                                    "fileNumber": 6,
-                                    "lines": 807,
-                                    "characters": 26194,
-                                    "childrens": [
-                                        {
-                                            "name": "addxp.ts",
-                                            "type": "file",
-                                            "fullPath": "/src/commands/leveling/economy/addxp.ts",
-                                            "lines": 119,
-                                            "characters": 3704
-                                        },
-                                        {
-                                            "name": "removexp.ts",
-                                            "type": "file",
-                                            "fullPath": "/src/commands/leveling/economy/removexp.ts",
-                                            "lines": 141,
-                                            "characters": 4407
-                                        },
-                                        {
-                                            "name": "resetserverxp.ts",
-                                            "type": "file",
-                                            "fullPath": "/src/commands/leveling/economy/resetserverxp.ts",
-                                            "lines": 162,
-                                            "characters": 5847
-                                        },
-                                        {
-                                            "name": "resetxp.ts",
-                                            "type": "file",
-                                            "fullPath": "/src/commands/leveling/economy/resetxp.ts",
-                                            "lines": 107,
-                                            "characters": 3220
-                                        },
-                                        {
-                                            "name": "setlevel.ts",
-                                            "type": "file",
-                                            "fullPath": "/src/commands/leveling/economy/setlevel.ts",
-                                            "lines": 135,
-                                            "characters": 4488
-                                        },
-                                        {
-                                            "name": "setxp.ts",
-                                            "type": "file",
-                                            "fullPath": "/src/commands/leveling/economy/setxp.ts",
-                                            "lines": 143,
-                                            "characters": 4528
-                                        }
-                                    ]
-                                },
                                 {
                                     "name": "subcommands",
                                     "type": "dir",
                                     "fullPath": "/src/commands/leveling/subcommands",
-                                    "fileNumber": 2,
-                                    "lines": 0,
-                                    "characters": 0,
+                                    "fileNumber": 16,
+                                    "lines": 2115,
+                                    "characters": 68209,
                                     "childrens": [
                                         {
                                             "name": "admin",
                                             "type": "dir",
                                             "fullPath": "/src/commands/leveling/subcommands/admin",
-                                            "fileNumber": 0,
-                                            "lines": 0,
-                                            "characters": 0,
-                                            "childrens": []
+                                            "fileNumber": 10,
+                                            "lines": 1132,
+                                            "characters": 35880,
+                                            "childrens": [
+                                                {
+                                                    "name": "addxp.ts",
+                                                    "type": "file",
+                                                    "fullPath": "/src/commands/leveling/subcommands/admin/addxp.ts",
+                                                    "lines": 130,
+                                                    "characters": 4148
+                                                },
+                                                {
+                                                    "name": "blacklist_channel.ts",
+                                                    "type": "file",
+                                                    "fullPath": "/src/commands/leveling/subcommands/admin/blacklist_channel.ts",
+                                                    "lines": 75,
+                                                    "characters": 2387
+                                                },
+                                                {
+                                                    "name": "ignore_channel.ts",
+                                                    "type": "file",
+                                                    "fullPath": "/src/commands/leveling/subcommands/admin/ignore_channel.ts",
+                                                    "lines": 76,
+                                                    "characters": 2355
+                                                },
+                                                {
+                                                    "name": "listen_channel.ts",
+                                                    "type": "file",
+                                                    "fullPath": "/src/commands/leveling/subcommands/admin/listen_channel.ts",
+                                                    "lines": 85,
+                                                    "characters": 2520
+                                                },
+                                                {
+                                                    "name": "removexp.ts",
+                                                    "type": "file",
+                                                    "fullPath": "/src/commands/leveling/subcommands/admin/removexp.ts",
+                                                    "lines": 146,
+                                                    "characters": 4664
+                                                },
+                                                {
+                                                    "name": "resetxp.ts",
+                                                    "type": "file",
+                                                    "fullPath": "/src/commands/leveling/subcommands/admin/resetxp.ts",
+                                                    "lines": 121,
+                                                    "characters": 3579
+                                                },
+                                                {
+                                                    "name": "setlevel.ts",
+                                                    "type": "file",
+                                                    "fullPath": "/src/commands/leveling/subcommands/admin/setlevel.ts",
+                                                    "lines": 152,
+                                                    "characters": 4977
+                                                },
+                                                {
+                                                    "name": "setxp.ts",
+                                                    "type": "file",
+                                                    "fullPath": "/src/commands/leveling/subcommands/admin/setxp.ts",
+                                                    "lines": 155,
+                                                    "characters": 4958
+                                                },
+                                                {
+                                                    "name": "view.ts",
+                                                    "type": "file",
+                                                    "fullPath": "/src/commands/leveling/subcommands/admin/view.ts",
+                                                    "lines": 115,
+                                                    "characters": 3835
+                                                },
+                                                {
+                                                    "name": "whitelist_channel.ts",
+                                                    "type": "file",
+                                                    "fullPath": "/src/commands/leveling/subcommands/admin/whitelist_channel.ts",
+                                                    "lines": 77,
+                                                    "characters": 2457
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "name": "owner",
+                                            "type": "dir",
+                                            "fullPath": "/src/commands/leveling/subcommands/owner",
+                                            "fileNumber": 4,
+                                            "lines": 418,
+                                            "characters": 13599,
+                                            "childrens": [
+                                                {
+                                                    "name": "add_admin.ts",
+                                                    "type": "file",
+                                                    "fullPath": "/src/commands/leveling/subcommands/owner/add_admin.ts",
+                                                    "lines": 73,
+                                                    "characters": 2169
+                                                },
+                                                {
+                                                    "name": "channel.ts",
+                                                    "type": "file",
+                                                    "fullPath": "/src/commands/leveling/subcommands/owner/channel.ts",
+                                                    "lines": 76,
+                                                    "characters": 2420
+                                                },
+                                                {
+                                                    "name": "remove_admin.ts",
+                                                    "type": "file",
+                                                    "fullPath": "/src/commands/leveling/subcommands/owner/remove_admin.ts",
+                                                    "lines": 77,
+                                                    "characters": 2311
+                                                },
+                                                {
+                                                    "name": "resetserverxp.ts",
+                                                    "type": "file",
+                                                    "fullPath": "/src/commands/leveling/subcommands/owner/resetserverxp.ts",
+                                                    "lines": 192,
+                                                    "characters": 6699
+                                                }
+                                            ]
                                         },
                                         {
                                             "name": "user",
                                             "type": "dir",
                                             "fullPath": "/src/commands/leveling/subcommands/user",
-                                            "fileNumber": 0,
-                                            "lines": 0,
-                                            "characters": 0,
-                                            "childrens": []
-                                        }
-                                    ]
-                                },
-                                {
-                                    "name": "user",
-                                    "type": "dir",
-                                    "fullPath": "/src/commands/leveling/user",
-                                    "fileNumber": 2,
-                                    "lines": 557,
-                                    "characters": 18707,
-                                    "childrens": [
-                                        {
-                                            "name": "leaderboard.ts",
-                                            "type": "file",
-                                            "fullPath": "/src/commands/leveling/user/leaderboard.ts",
-                                            "lines": 421,
-                                            "characters": 14535
-                                        },
-                                        {
-                                            "name": "rank.ts",
-                                            "type": "file",
-                                            "fullPath": "/src/commands/leveling/user/rank.ts",
-                                            "lines": 136,
-                                            "characters": 4172
-                                        }
-                                    ]
-                                },
-                                {
-                                    "name": "xpconfig",
-                                    "type": "dir",
-                                    "fullPath": "/src/commands/leveling/xpconfig",
-                                    "fileNumber": 7,
-                                    "lines": 524,
-                                    "characters": 16680,
-                                    "childrens": [
-                                        {
-                                            "name": "set",
-                                            "type": "dir",
-                                            "fullPath": "/src/commands/leveling/xpconfig/set",
-                                            "fileNumber": 5,
-                                            "lines": 304,
-                                            "characters": 9471,
+                                            "fileNumber": 2,
+                                            "lines": 565,
+                                            "characters": 18730,
                                             "childrens": [
                                                 {
-                                                    "name": "blacklist_channel.ts",
+                                                    "name": "leaderboard.ts",
                                                     "type": "file",
-                                                    "fullPath": "/src/commands/leveling/xpconfig/set/blacklist_channel.ts",
-                                                    "lines": 57,
-                                                    "characters": 1826
+                                                    "fullPath": "/src/commands/leveling/subcommands/user/leaderboard.ts",
+                                                    "lines": 400,
+                                                    "characters": 13724
                                                 },
                                                 {
-                                                    "name": "ignore_channel.ts",
+                                                    "name": "rank.ts",
                                                     "type": "file",
-                                                    "fullPath": "/src/commands/leveling/xpconfig/set/ignore_channel.ts",
-                                                    "lines": 57,
-                                                    "characters": 1807
-                                                },
-                                                {
-                                                    "name": "listen_channel.ts",
-                                                    "type": "file",
-                                                    "fullPath": "/src/commands/leveling/xpconfig/set/listen_channel.ts",
-                                                    "lines": 65,
-                                                    "characters": 1959
-                                                },
-                                                {
-                                                    "name": "notif_channel.ts",
-                                                    "type": "file",
-                                                    "fullPath": "/src/commands/leveling/xpconfig/set/notif_channel.ts",
-                                                    "lines": 64,
-                                                    "characters": 1961
-                                                },
-                                                {
-                                                    "name": "whitelist_channel.ts",
-                                                    "type": "file",
-                                                    "fullPath": "/src/commands/leveling/xpconfig/set/whitelist_channel.ts",
-                                                    "lines": 61,
-                                                    "characters": 1918
+                                                    "fullPath": "/src/commands/leveling/subcommands/user/rank.ts",
+                                                    "lines": 165,
+                                                    "characters": 5006
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "name": "view",
-                                            "type": "dir",
-                                            "fullPath": "/src/commands/leveling/xpconfig/view",
-                                            "fileNumber": 1,
-                                            "lines": 117,
-                                            "characters": 3905,
-                                            "childrens": [
-                                                {
-                                                    "name": "view.ts",
-                                                    "type": "file",
-                                                    "fullPath": "/src/commands/leveling/xpconfig/view/view.ts",
-                                                    "lines": 117,
-                                                    "characters": 3905
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "name": "index.ts",
-                                            "type": "file",
-                                            "fullPath": "/src/commands/leveling/xpconfig/index.ts",
-                                            "lines": 103,
-                                            "characters": 3304
                                         }
                                     ]
                                 },
@@ -752,8 +720,8 @@
                                     "name": "index.ts",
                                     "type": "file",
                                     "fullPath": "/src/commands/leveling/index.ts",
-                                    "lines": 134,
-                                    "characters": 4498
+                                    "lines": 159,
+                                    "characters": 5327
                                 }
                             ]
                         },
@@ -761,46 +729,56 @@
                             "name": "maze",
                             "type": "dir",
                             "fullPath": "/src/commands/maze",
-                            "fileNumber": 12,
-                            "lines": 930,
-                            "characters": 28659,
+                            "fileNumber": 13,
+                            "lines": 1170,
+                            "characters": 36671,
                             "childrens": [
                                 {
                                     "name": "subcommands",
                                     "type": "dir",
                                     "fullPath": "/src/commands/maze/subcommands",
-                                    "fileNumber": 11,
-                                    "lines": 853,
-                                    "characters": 26426,
+                                    "fileNumber": 12,
+                                    "lines": 1011,
+                                    "characters": 31359,
                                     "childrens": [
                                         {
                                             "name": "admin",
                                             "type": "dir",
                                             "fullPath": "/src/commands/maze/subcommands/admin",
-                                            "fileNumber": 3,
-                                            "lines": 199,
-                                            "characters": 5817,
+                                            "fileNumber": 2,
+                                            "lines": 134,
+                                            "characters": 4009,
                                             "childrens": [
-                                                {
-                                                    "name": "channel.ts",
-                                                    "type": "file",
-                                                    "fullPath": "/src/commands/maze/subcommands/admin/channel.ts",
-                                                    "lines": 67,
-                                                    "characters": 1991
-                                                },
                                                 {
                                                     "name": "reward_amount.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/maze/subcommands/admin/reward_amount.ts",
-                                                    "lines": 66,
-                                                    "characters": 1933
+                                                    "lines": 68,
+                                                    "characters": 2074
                                                 },
                                                 {
                                                     "name": "use_role.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/maze/subcommands/admin/use_role.ts",
                                                     "lines": 66,
-                                                    "characters": 1893
+                                                    "characters": 1935
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "name": "owner",
+                                            "type": "dir",
+                                            "fullPath": "/src/commands/maze/subcommands/owner",
+                                            "fileNumber": 1,
+                                            "lines": 67,
+                                            "characters": 2067,
+                                            "childrens": [
+                                                {
+                                                    "name": "channel.ts",
+                                                    "type": "file",
+                                                    "fullPath": "/src/commands/maze/subcommands/owner/channel.ts",
+                                                    "lines": 67,
+                                                    "characters": 2067
                                                 }
                                             ]
                                         },
@@ -808,65 +786,72 @@
                                             "name": "user",
                                             "type": "dir",
                                             "fullPath": "/src/commands/maze/subcommands/user",
-                                            "fileNumber": 8,
-                                            "lines": 654,
-                                            "characters": 20609,
+                                            "fileNumber": 9,
+                                            "lines": 810,
+                                            "characters": 25283,
                                             "childrens": [
+                                                {
+                                                    "name": "delete.ts",
+                                                    "type": "file",
+                                                    "fullPath": "/src/commands/maze/subcommands/user/delete.ts",
+                                                    "lines": 123,
+                                                    "characters": 3757
+                                                },
                                                 {
                                                     "name": "dm_notif.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/maze/subcommands/user/dm_notif.ts",
-                                                    "lines": 63,
-                                                    "characters": 1965
+                                                    "lines": 65,
+                                                    "characters": 1992
                                                 },
                                                 {
                                                     "name": "find.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/maze/subcommands/user/find.ts",
-                                                    "lines": 78,
-                                                    "characters": 2300
+                                                    "lines": 76,
+                                                    "characters": 2266
                                                 },
                                                 {
                                                     "name": "leaderboard.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/maze/subcommands/user/leaderboard.ts",
-                                                    "lines": 53,
-                                                    "characters": 1444
+                                                    "lines": 62,
+                                                    "characters": 1851
                                                 },
                                                 {
                                                     "name": "pending.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/maze/subcommands/user/pending.ts",
-                                                    "lines": 66,
-                                                    "characters": 2070
+                                                    "lines": 74,
+                                                    "characters": 2240
                                                 },
                                                 {
                                                     "name": "rejected.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/maze/subcommands/user/rejected.ts",
-                                                    "lines": 66,
-                                                    "characters": 2140
+                                                    "lines": 75,
+                                                    "characters": 2312
                                                 },
                                                 {
                                                     "name": "rewarded.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/maze/subcommands/user/rewarded.ts",
-                                                    "lines": 66,
-                                                    "characters": 2141
+                                                    "lines": 75,
+                                                    "characters": 2313
                                                 },
                                                 {
                                                     "name": "stats.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/maze/subcommands/user/stats.ts",
-                                                    "lines": 120,
-                                                    "characters": 3887
+                                                    "lines": 121,
+                                                    "characters": 3962
                                                 },
                                                 {
                                                     "name": "submit.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/maze/subcommands/user/submit.ts",
-                                                    "lines": 142,
-                                                    "characters": 4662
+                                                    "lines": 139,
+                                                    "characters": 4590
                                                 }
                                             ]
                                         }
@@ -876,8 +861,8 @@
                                     "name": "index.ts",
                                     "type": "file",
                                     "fullPath": "/src/commands/maze/index.ts",
-                                    "lines": 77,
-                                    "characters": 2233
+                                    "lines": 159,
+                                    "characters": 5312
                                 }
                             ]
                         },
@@ -902,38 +887,52 @@
                             "name": "moderation",
                             "type": "dir",
                             "fullPath": "/src/commands/moderation",
-                            "fileNumber": 4,
-                            "lines": 378,
-                            "characters": 12066,
+                            "fileNumber": 6,
+                            "lines": 529,
+                            "characters": 16913,
                             "childrens": [
                                 {
                                     "name": "subcommands",
                                     "type": "dir",
                                     "fullPath": "/src/commands/moderation/subcommands",
-                                    "fileNumber": 3,
-                                    "lines": 269,
-                                    "characters": 8811,
+                                    "fileNumber": 5,
+                                    "lines": 425,
+                                    "characters": 13823,
                                     "childrens": [
                                         {
                                             "name": "add_admin.ts",
                                             "type": "file",
                                             "fullPath": "/src/commands/moderation/subcommands/add_admin.ts",
-                                            "lines": 74,
-                                            "characters": 2127
+                                            "lines": 72,
+                                            "characters": 2082
+                                        },
+                                        {
+                                            "name": "farewell_channel.ts",
+                                            "type": "file",
+                                            "fullPath": "/src/commands/moderation/subcommands/farewell_channel.ts",
+                                            "lines": 67,
+                                            "characters": 2027
                                         },
                                         {
                                             "name": "remove_admin.ts",
                                             "type": "file",
                                             "fullPath": "/src/commands/moderation/subcommands/remove_admin.ts",
-                                            "lines": 77,
-                                            "characters": 2266
+                                            "lines": 75,
+                                            "characters": 2221
                                         },
                                         {
                                             "name": "setup.ts",
                                             "type": "file",
                                             "fullPath": "/src/commands/moderation/subcommands/setup.ts",
-                                            "lines": 118,
-                                            "characters": 4418
+                                            "lines": 144,
+                                            "characters": 5472
+                                        },
+                                        {
+                                            "name": "welcome_channel.ts",
+                                            "type": "file",
+                                            "fullPath": "/src/commands/moderation/subcommands/welcome_channel.ts",
+                                            "lines": 67,
+                                            "characters": 2021
                                         }
                                     ]
                                 },
@@ -941,8 +940,8 @@
                                     "name": "index.ts",
                                     "type": "file",
                                     "fullPath": "/src/commands/moderation/index.ts",
-                                    "lines": 109,
-                                    "characters": 3255
+                                    "lines": 104,
+                                    "characters": 3090
                                 }
                             ]
                         },
@@ -951,129 +950,139 @@
                             "type": "dir",
                             "fullPath": "/src/commands/raids",
                             "fileNumber": 17,
-                            "lines": 1878,
-                            "characters": 59539,
+                            "lines": 2020,
+                            "characters": 65116,
                             "childrens": [
                                 {
                                     "name": "subcommands",
                                     "type": "dir",
                                     "fullPath": "/src/commands/raids/subcommands",
                                     "fileNumber": 16,
-                                    "lines": 1802,
-                                    "characters": 57276,
+                                    "lines": 1854,
+                                    "characters": 59684,
                                     "childrens": [
                                         {
                                             "name": "admin",
                                             "type": "dir",
                                             "fullPath": "/src/commands/raids/subcommands/admin",
-                                            "fileNumber": 15,
-                                            "lines": 1802,
-                                            "characters": 57276,
+                                            "fileNumber": 12,
+                                            "lines": 1640,
+                                            "characters": 53264,
                                             "childrens": [
-                                                {
-                                                    "name": "add_admin.ts",
-                                                    "type": "file",
-                                                    "fullPath": "/src/commands/raids/subcommands/admin/add_admin.ts",
-                                                    "lines": 71,
-                                                    "characters": 2097
-                                                },
                                                 {
                                                     "name": "ban.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/raids/subcommands/admin/ban.ts",
-                                                    "lines": 87,
-                                                    "characters": 2681
+                                                    "lines": 90,
+                                                    "characters": 2788
                                                 },
                                                 {
                                                     "name": "banList.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/raids/subcommands/admin/banList.ts",
-                                                    "lines": 79,
-                                                    "characters": 2462
+                                                    "lines": 86,
+                                                    "characters": 2616
                                                 },
                                                 {
                                                     "name": "cancel.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/raids/subcommands/admin/cancel.ts",
-                                                    "lines": 63,
-                                                    "characters": 1798
-                                                },
-                                                {
-                                                    "name": "channel.ts",
-                                                    "type": "file",
-                                                    "fullPath": "/src/commands/raids/subcommands/admin/channel.ts",
-                                                    "lines": 66,
-                                                    "characters": 1938
+                                                    "lines": 61,
+                                                    "characters": 1758
                                                 },
                                                 {
                                                     "name": "dps_emoji.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/raids/subcommands/admin/dps_emoji.ts",
-                                                    "lines": 74,
-                                                    "characters": 2186
+                                                    "lines": 75,
+                                                    "characters": 2287
                                                 },
                                                 {
                                                     "name": "postpone.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/raids/subcommands/admin/postpone.ts",
                                                     "lines": 163,
-                                                    "characters": 4759
-                                                },
-                                                {
-                                                    "name": "remove_admin.ts",
-                                                    "type": "file",
-                                                    "fullPath": "/src/commands/raids/subcommands/admin/remove_admin.ts",
-                                                    "lines": 74,
-                                                    "characters": 2242
+                                                    "characters": 4789
                                                 },
                                                 {
                                                     "name": "review.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/raids/subcommands/admin/review.ts",
                                                     "lines": 295,
-                                                    "characters": 10617
+                                                    "characters": 10586
                                                 },
                                                 {
                                                     "name": "scout.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/raids/subcommands/admin/scout.ts",
-                                                    "lines": 216,
-                                                    "characters": 7514
+                                                    "lines": 214,
+                                                    "characters": 7475
                                                 },
                                                 {
                                                     "name": "start.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/raids/subcommands/admin/start.ts",
-                                                    "lines": 320,
-                                                    "characters": 10356
+                                                    "lines": 357,
+                                                    "characters": 11971
                                                 },
                                                 {
                                                     "name": "support_emoji.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/raids/subcommands/admin/support_emoji.ts",
-                                                    "lines": 77,
-                                                    "characters": 2249
+                                                    "lines": 78,
+                                                    "characters": 2350
                                                 },
                                                 {
                                                     "name": "tank_emoji.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/raids/subcommands/admin/tank_emoji.ts",
-                                                    "lines": 74,
-                                                    "characters": 2192
+                                                    "lines": 75,
+                                                    "characters": 2293
                                                 },
                                                 {
                                                     "name": "unban.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/raids/subcommands/admin/unban.ts",
-                                                    "lines": 77,
-                                                    "characters": 2309
+                                                    "lines": 80,
+                                                    "characters": 2427
                                                 },
                                                 {
                                                     "name": "use_role.ts",
                                                     "type": "file",
                                                     "fullPath": "/src/commands/raids/subcommands/admin/use_role.ts",
                                                     "lines": 66,
-                                                    "characters": 1876
+                                                    "characters": 1924
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "name": "owner",
+                                            "type": "dir",
+                                            "fullPath": "/src/commands/raids/subcommands/owner",
+                                            "fileNumber": 3,
+                                            "lines": 214,
+                                            "characters": 6420,
+                                            "childrens": [
+                                                {
+                                                    "name": "add_admin.ts",
+                                                    "type": "file",
+                                                    "fullPath": "/src/commands/raids/subcommands/owner/add_admin.ts",
+                                                    "lines": 72,
+                                                    "characters": 2150
+                                                },
+                                                {
+                                                    "name": "channel.ts",
+                                                    "type": "file",
+                                                    "fullPath": "/src/commands/raids/subcommands/owner/channel.ts",
+                                                    "lines": 66,
+                                                    "characters": 1987
+                                                },
+                                                {
+                                                    "name": "remove_admin.ts",
+                                                    "type": "file",
+                                                    "fullPath": "/src/commands/raids/subcommands/owner/remove_admin.ts",
+                                                    "lines": 76,
+                                                    "characters": 2283
                                                 }
                                             ]
                                         },
@@ -1092,8 +1101,8 @@
                                     "name": "index.ts",
                                     "type": "file",
                                     "fullPath": "/src/commands/raids/index.ts",
-                                    "lines": 76,
-                                    "characters": 2263
+                                    "lines": 166,
+                                    "characters": 5432
                                 }
                             ]
                         }
@@ -1103,9 +1112,9 @@
                     "name": "data",
                     "type": "dir",
                     "fullPath": "/src/data",
-                    "fileNumber": 2,
-                    "lines": 896,
-                    "characters": 44477,
+                    "fileNumber": 3,
+                    "lines": 3077,
+                    "characters": 129012,
                     "childrens": [
                         {
                             "name": "config.ts",
@@ -1118,8 +1127,15 @@
                             "name": "helperArrays.ts",
                             "type": "file",
                             "fullPath": "/src/data/helperArrays.ts",
-                            "lines": 890,
-                            "characters": 44344
+                            "lines": 1666,
+                            "characters": 80177
+                        },
+                        {
+                            "name": "moodTemplates.ts",
+                            "type": "file",
+                            "fullPath": "/src/data/moodTemplates.ts",
+                            "lines": 1405,
+                            "characters": 48702
                         }
                     ]
                 },
@@ -1127,18 +1143,26 @@
                     "name": "events",
                     "type": "dir",
                     "fullPath": "/src/events",
-                    "fileNumber": 13,
-                    "lines": 1048,
-                    "characters": 32255,
+                    "fileNumber": 18,
+                    "lines": 1559,
+                    "characters": 48113,
                     "childrens": [
                         {
                             "name": "guildCreate",
                             "type": "dir",
                             "fullPath": "/src/events/guildCreate",
-                            "fileNumber": 0,
-                            "lines": 0,
-                            "characters": 0,
-                            "childrens": []
+                            "fileNumber": 1,
+                            "lines": 170,
+                            "characters": 5325,
+                            "childrens": [
+                                {
+                                    "name": "01registerGuildConfigs.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/events/guildCreate/01registerGuildConfigs.ts",
+                                    "lines": 170,
+                                    "characters": 5325
+                                }
+                            ]
                         },
                         {
                             "name": "guildDelete",
@@ -1146,14 +1170,14 @@
                             "fullPath": "/src/events/guildDelete",
                             "fileNumber": 1,
                             "lines": 14,
-                            "characters": 425,
+                            "characters": 398,
                             "childrens": [
                                 {
                                     "name": "handleGuildLeave.ts",
                                     "type": "file",
                                     "fullPath": "/src/events/guildDelete/handleGuildLeave.ts",
                                     "lines": 14,
-                                    "characters": 425
+                                    "characters": 398
                                 }
                             ]
                         },
@@ -1180,14 +1204,31 @@
                             "fullPath": "/src/events/guildMemberRemove",
                             "fileNumber": 1,
                             "lines": 45,
-                            "characters": 1337,
+                            "characters": 1326,
                             "childrens": [
                                 {
                                     "name": "handleGuildMemberRemove.ts",
                                     "type": "file",
                                     "fullPath": "/src/events/guildMemberRemove/handleGuildMemberRemove.ts",
                                     "lines": 45,
-                                    "characters": 1337
+                                    "characters": 1326
+                                }
+                            ]
+                        },
+                        {
+                            "name": "guildMemberUpdate",
+                            "type": "dir",
+                            "fullPath": "/src/events/guildMemberUpdate",
+                            "fileNumber": 1,
+                            "lines": 47,
+                            "characters": 1415,
+                            "childrens": [
+                                {
+                                    "name": "handleServerBoost.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/events/guildMemberUpdate/handleServerBoost.ts",
+                                    "lines": 47,
+                                    "characters": 1415
                                 }
                             ]
                         },
@@ -1196,22 +1237,22 @@
                             "type": "dir",
                             "fullPath": "/src/events/interactionCreate",
                             "fileNumber": 2,
-                            "lines": 336,
-                            "characters": 10202,
+                            "lines": 412,
+                            "characters": 12467,
                             "childrens": [
                                 {
                                     "name": "handleInteractionCommands.ts",
                                     "type": "file",
                                     "fullPath": "/src/events/interactionCreate/handleInteractionCommands.ts",
-                                    "lines": 121,
-                                    "characters": 3706
+                                    "lines": 165,
+                                    "characters": 5060
                                 },
                                 {
                                     "name": "handleModalSubmissions.ts",
                                     "type": "file",
                                     "fullPath": "/src/events/interactionCreate/handleModalSubmissions.ts",
-                                    "lines": 215,
-                                    "characters": 6496
+                                    "lines": 247,
+                                    "characters": 7407
                                 }
                             ]
                         },
@@ -1219,16 +1260,23 @@
                             "name": "messageCreate",
                             "type": "dir",
                             "fullPath": "/src/events/messageCreate",
-                            "fileNumber": 1,
-                            "lines": 146,
-                            "characters": 4620,
+                            "fileNumber": 2,
+                            "lines": 183,
+                            "characters": 5759,
                             "childrens": [
                                 {
                                     "name": "handleMessageEvents.ts",
                                     "type": "file",
                                     "fullPath": "/src/events/messageCreate/handleMessageEvents.ts",
-                                    "lines": 146,
-                                    "characters": 4620
+                                    "lines": 142,
+                                    "characters": 4649
+                                },
+                                {
+                                    "name": "handleSeraphinaTalk.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/events/messageCreate/handleSeraphinaTalk.ts",
+                                    "lines": 41,
+                                    "characters": 1110
                                 }
                             ]
                         },
@@ -1236,16 +1284,16 @@
                             "name": "ready",
                             "type": "dir",
                             "fullPath": "/src/events/ready",
-                            "fileNumber": 5,
-                            "lines": 342,
-                            "characters": 10865,
+                            "fileNumber": 8,
+                            "lines": 512,
+                            "characters": 16309,
                             "childrens": [
                                 {
                                     "name": "01registerGuildConfigs.ts",
                                     "type": "file",
                                     "fullPath": "/src/events/ready/01registerGuildConfigs.ts",
-                                    "lines": 164,
-                                    "characters": 5185
+                                    "lines": 168,
+                                    "characters": 5283
                                 },
                                 {
                                     "name": "02registerCommands.ts",
@@ -1265,8 +1313,29 @@
                                     "name": "04resumeGquestSubmissions.ts",
                                     "type": "file",
                                     "fullPath": "/src/events/ready/04resumeGquestSubmissions.ts",
-                                    "lines": 19,
-                                    "characters": 613
+                                    "lines": 21,
+                                    "characters": 678
+                                },
+                                {
+                                    "name": "05resumeGuildMaze.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/events/ready/05resumeGuildMaze.ts",
+                                    "lines": 24,
+                                    "characters": 842
+                                },
+                                {
+                                    "name": "06resumeRaids.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/events/ready/06resumeRaids.ts",
+                                    "lines": 122,
+                                    "characters": 3949
+                                },
+                                {
+                                    "name": "07runCronJobs.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/events/ready/07runCronJobs.ts",
+                                    "lines": 18,
+                                    "characters": 490
                                 },
                                 {
                                     "name": "ready.ts",
@@ -1282,15 +1351,15 @@
                             "type": "dir",
                             "fullPath": "/src/events/voiceStateUpdate",
                             "fileNumber": 1,
-                            "lines": 150,
-                            "characters": 4436,
+                            "lines": 161,
+                            "characters": 4744,
                             "childrens": [
                                 {
                                     "name": "handleVoiceStateUpdate.ts",
                                     "type": "file",
                                     "fullPath": "/src/events/voiceStateUpdate/handleVoiceStateUpdate.ts",
-                                    "lines": 150,
-                                    "characters": 4436
+                                    "lines": 161,
+                                    "characters": 4744
                                 }
                             ]
                         }
@@ -1317,32 +1386,39 @@
                     "name": "jobs",
                     "type": "dir",
                     "fullPath": "/src/jobs",
-                    "fileNumber": 1,
-                    "lines": 12,
-                    "characters": 328,
+                    "fileNumber": 2,
+                    "lines": 212,
+                    "characters": 6603,
                     "childrens": [
                         {
                             "name": "cron",
                             "type": "dir",
                             "fullPath": "/src/jobs/cron",
-                            "fileNumber": 1,
-                            "lines": 12,
-                            "characters": 328,
+                            "fileNumber": 2,
+                            "lines": 212,
+                            "characters": 6603,
                             "childrens": [
                                 {
                                     "name": "daily",
                                     "type": "dir",
                                     "fullPath": "/src/jobs/cron/daily",
-                                    "fileNumber": 1,
-                                    "lines": 12,
-                                    "characters": 328,
+                                    "fileNumber": 2,
+                                    "lines": 212,
+                                    "characters": 6603,
                                     "childrens": [
                                         {
                                             "name": "giveawayRankCron.ts",
                                             "type": "file",
                                             "fullPath": "/src/jobs/cron/daily/giveawayRankCron.ts",
-                                            "lines": 12,
-                                            "characters": 328
+                                            "lines": 162,
+                                            "characters": 5164
+                                        },
+                                        {
+                                            "name": "seraphinaMoodCron.ts",
+                                            "type": "file",
+                                            "fullPath": "/src/jobs/cron/daily/seraphinaMoodCron.ts",
+                                            "lines": 50,
+                                            "characters": 1439
                                         }
                                     ]
                                 }
@@ -1354,10 +1430,17 @@
                     "name": "models",
                     "type": "dir",
                     "fullPath": "/src/models",
-                    "fileNumber": 7,
-                    "lines": 431,
-                    "characters": 15103,
+                    "fileNumber": 8,
+                    "lines": 500,
+                    "characters": 16795,
                     "childrens": [
+                        {
+                            "name": "chatMemorySchema.ts",
+                            "type": "file",
+                            "fullPath": "/src/models/chatMemorySchema.ts",
+                            "lines": 28,
+                            "characters": 619
+                        },
                         {
                             "name": "commandSchema.ts",
                             "type": "file",
@@ -1369,8 +1452,8 @@
                             "name": "configSchema.ts",
                             "type": "file",
                             "fullPath": "/src/models/configSchema.ts",
-                            "lines": 130,
-                            "characters": 4553
+                            "lines": 166,
+                            "characters": 5425
                         },
                         {
                             "name": "giveawaySchema.ts",
@@ -1384,7 +1467,7 @@
                             "type": "file",
                             "fullPath": "/src/models/guildQuestsSchema.ts",
                             "lines": 35,
-                            "characters": 1200
+                            "characters": 1262
                         },
                         {
                             "name": "mazeSchema.ts",
@@ -1397,8 +1480,8 @@
                             "name": "raidSchema.ts",
                             "type": "file",
                             "fullPath": "/src/models/raidSchema.ts",
-                            "lines": 68,
-                            "characters": 2336
+                            "lines": 73,
+                            "characters": 2475
                         },
                         {
                             "name": "userSchema.ts",
@@ -1430,16 +1513,68 @@
                     "name": "utils",
                     "type": "dir",
                     "fullPath": "/src/utils",
-                    "fileNumber": 22,
-                    "lines": 3389,
-                    "characters": 103397,
+                    "fileNumber": 28,
+                    "lines": 4112,
+                    "characters": 132697,
                     "childrens": [
+                        {
+                            "name": "LLMUtils",
+                            "type": "dir",
+                            "fullPath": "/src/utils/LLMUtils",
+                            "fileNumber": 4,
+                            "lines": 372,
+                            "characters": 18087,
+                            "childrens": [
+                                {
+                                    "name": "generateSeraphinaCommandReply.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/utils/LLMUtils/generateSeraphinaCommandReply.ts",
+                                    "lines": 43,
+                                    "characters": 1462
+                                },
+                                {
+                                    "name": "generateSeraphinaConvoReply.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/utils/LLMUtils/generateSeraphinaConvoReply.ts",
+                                    "lines": 107,
+                                    "characters": 5567
+                                },
+                                {
+                                    "name": "generateSeraphinaRankUpMessage.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/utils/LLMUtils/generateSeraphinaRankUpMessage.ts",
+                                    "lines": 64,
+                                    "characters": 1705
+                                },
+                                {
+                                    "name": "seraphinaPrompt.ts",
+                                    "type": "file",
+                                    "fullPath": "/src/utils/LLMUtils/seraphinaPrompt.ts",
+                                    "lines": 158,
+                                    "characters": 9353
+                                }
+                            ]
+                        },
                         {
                             "name": "areCommandsSame.ts",
                             "type": "file",
                             "fullPath": "/src/utils/areCommandsSame.ts",
                             "lines": 80,
                             "characters": 2417
+                        },
+                        {
+                            "name": "behaviourUtils.ts",
+                            "type": "file",
+                            "fullPath": "/src/utils/behaviourUtils.ts",
+                            "lines": 58,
+                            "characters": 1480
+                        },
+                        {
+                            "name": "commonUtils.ts",
+                            "type": "file",
+                            "fullPath": "/src/utils/commonUtils.ts",
+                            "lines": 14,
+                            "characters": 407
                         },
                         {
                             "name": "compareStrings.ts",
@@ -1466,8 +1601,8 @@
                             "name": "createNewUser.ts",
                             "type": "file",
                             "fullPath": "/src/utils/createNewUser.ts",
-                            "lines": 142,
-                            "characters": 4047
+                            "lines": 198,
+                            "characters": 5979
                         },
                         {
                             "name": "demoteUser.ts",
@@ -1536,15 +1671,15 @@
                             "name": "giveawayUtils.ts",
                             "type": "file",
                             "fullPath": "/src/utils/giveawayUtils.ts",
-                            "lines": 459,
-                            "characters": 14329
+                            "lines": 460,
+                            "characters": 13920
                         },
                         {
                             "name": "gquestUtils.ts",
                             "type": "file",
                             "fullPath": "/src/utils/gquestUtils.ts",
-                            "lines": 740,
-                            "characters": 24500
+                            "lines": 772,
+                            "characters": 25488
                         },
                         {
                             "name": "imageSubmissionUtils.ts",
@@ -1557,36 +1692,36 @@
                             "name": "interfaces.ts",
                             "type": "file",
                             "fullPath": "/src/utils/interfaces.ts",
-                            "lines": 328,
-                            "characters": 7275
+                            "lines": 473,
+                            "characters": 12835
                         },
                         {
                             "name": "mazeUtils.ts",
                             "type": "file",
                             "fullPath": "/src/utils/mazeUtils.ts",
-                            "lines": 231,
-                            "characters": 7413
+                            "lines": 258,
+                            "characters": 8217
                         },
                         {
                             "name": "permissionsCheck.ts",
                             "type": "file",
                             "fullPath": "/src/utils/permissionsCheck.ts",
-                            "lines": 97,
-                            "characters": 2702
+                            "lines": 101,
+                            "characters": 2771
                         },
                         {
                             "name": "promoteUser.ts",
                             "type": "file",
                             "fullPath": "/src/utils/promoteUser.ts",
-                            "lines": 62,
-                            "characters": 1889
+                            "lines": 74,
+                            "characters": 2250
                         },
                         {
                             "name": "raidUtils.ts",
                             "type": "file",
                             "fullPath": "/src/utils/raidUtils.ts",
-                            "lines": 737,
-                            "characters": 23790
+                            "lines": 739,
+                            "characters": 23811
                         }
                     ]
                 },
@@ -1594,8 +1729,8 @@
                     "name": "index.ts",
                     "type": "file",
                     "fullPath": "/src/index.ts",
-                    "lines": 45,
-                    "characters": 1169
+                    "lines": 74,
+                    "characters": 2028
                 }
             ]
         },
@@ -1604,21 +1739,21 @@
             "type": "file",
             "fullPath": "/.env.development",
             "lines": 1,
-            "characters": 204
+            "characters": 263
         },
         {
             "name": ".env.production",
             "type": "file",
             "fullPath": "/.env.production",
             "lines": 1,
-            "characters": 203
+            "characters": 258
         },
         {
             "name": ".gitattributes",
             "type": "file",
             "fullPath": "/.gitattributes",
-            "lines": 2,
-            "characters": 49
+            "lines": 4,
+            "characters": 135
         },
         {
             "name": ".gitignore",
@@ -1645,8 +1780,8 @@
             "name": "roadmap.txt",
             "type": "file",
             "fullPath": "/roadmap.txt",
-            "lines": 211,
-            "characters": 8865
+            "lines": 297,
+            "characters": 11344
         },
         {
             "name": "tsconfig.json",
