@@ -1,4 +1,4 @@
-import { Client, GuildMember } from "discord.js";
+import { ChannelType, Client, GuildMember } from "discord.js";
 import Config from "../../models/configSchema";
 import User from "../../models/userSchema";
 import { farewellMessages } from "../../data/helperArrays";
@@ -29,7 +29,7 @@ const execute = async (client: Client, member: GuildMember) => {
       { $pull: { users: user._id } }
     );
 
-    if (farewellChannel && farewellChannel.isTextBased()) {
+    if (farewellChannel && farewellChannel.type === ChannelType.GuildText) {
       await farewellChannel.send({
         content: farewellMessages[
           Math.floor(Math.random() * farewellMessages.length)

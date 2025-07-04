@@ -272,76 +272,97 @@ const init = async (): Promise<ISubcommand | undefined> => {
           // if that's the case send scout reminder immediately
           const isWithin24H = startTime - currTime < 24 * 60 * 60 * 1000;
 
-          setTimeout(
-            async () => {
+          const scoutTimers = new Set<string>(),
+            allocationTimers = new Set<string>(),
+            reminderTimers = new Set<string>(),
+            reviewTimers = new Set<string>();
+
+          if (!scoutTimers.has(raidMsg.id)) {
+            scoutTimers.add(raidMsg.id);
+
+            setTimeout(
+              async () => {
+                try {
+                  const freshRaid = await Raid.findOne({
+                    announcementMessageID: raidMsg.id,
+                    serverID: guild.id,
+                  });
+
+                  if (
+                    freshRaid &&
+                    (!freshRaid.bossBuffsImageUrl.length ||
+                      !freshRaid.bossDebuffsImageUrl.length)
+                  )
+                    await sendScoutReminder(client, freshRaid as IRaid);
+                } catch (err) {
+                  console.error("Error in scout reminder timer : ", err);
+                }
+              },
+              isWithin24H ? 1000 : startTime - 24 * 60 * 60 * 1000 - currTime
+            );
+          }
+
+          if (!allocationTimers.has(raidMsg.id)) {
+            allocationTimers.add(raidMsg.id);
+
+            // allocate teams and send a message, do this 1 hr before raid
+            setTimeout(async () => {
               try {
                 const freshRaid = await Raid.findOne({
                   announcementMessageID: raidMsg.id,
                   serverID: guild.id,
                 });
 
-                if (
-                  freshRaid &&
-                  (!freshRaid.bossBuffsImageUrl.length ||
-                    !freshRaid.bossDebuffsImageUrl.length)
-                )
-                  await sendScoutReminder(client, freshRaid as IRaid);
+                if (freshRaid)
+                  await announceAllocation(client, freshRaid as IRaid);
               } catch (err) {
-                console.error("Error in scout reminder timer : ", err);
+                console.error("Error in team allocation timer : ", err);
               }
-            },
-            isWithin24H ? 1000 : startTime - 24 * 60 * 60 * 1000 - currTime
-          );
+            }, startTime - currTime - 60 * 60 * 1000);
+          }
 
-          // allocate teams and send a message, do this 1 hr before raid
-          setTimeout(async () => {
-            try {
-              const freshRaid = await Raid.findOne({
-                announcementMessageID: raidMsg.id,
-                serverID: guild.id,
-              });
+          if (!reminderTimers.has(raidMsg.id)) {
+            reminderTimers.add(raidMsg.id);
 
-              if (freshRaid)
-                await announceAllocation(client, freshRaid as IRaid);
-            } catch (err) {
-              console.error("Error in team allocation timer : ", err);
-            }
-          }, startTime - currTime - 60 * 60 * 1000);
+            // send a reminder to all participants 30 minutes before raid
+            setTimeout(async () => {
+              try {
+                const freshRaid = await Raid.findOne({
+                  announcementMessageID: raidMsg.id,
+                  serverID: guild.id,
+                });
 
-          // send a reminder to all participants 30 minutes before raid
-          setTimeout(async () => {
-            try {
-              const freshRaid = await Raid.findOne({
-                announcementMessageID: raidMsg.id,
-                serverID: guild.id,
-              });
+                if (freshRaid)
+                  await raidRemindParticipants(client, freshRaid as IRaid);
+              } catch (err) {
+                console.error("Error in raid reminder timer : ", err);
+              }
+            }, startTime - currTime - 30 * 60 * 1000);
+          }
 
-              if (freshRaid)
-                await raidRemindParticipants(client, freshRaid as IRaid);
-            } catch (err) {
-              console.error("Error in raid reminder timer : ", err);
-            }
-          }, startTime - currTime - 30 * 60 * 1000);
+          if (!reviewTimers.has(raidMsg.id)) {
+            reviewTimers.add(raidMsg.id);
 
-          // timer for sending a review reminder, do this 3 hour after raid
-          setTimeout(async () => {
-            const freshRaid = await Raid.findOneAndUpdate(
-              {
-                announcementMessageID: raidMsg.id,
-                serverID: guild.id,
-              },
-              {
-                $set: {
-                  stage: "finished",
-                  "raidTimestamps.finishTime": Date.now(),
+            // timer for sending a review reminder, do this 3 hour after raid
+            setTimeout(async () => {
+              const freshRaid = await Raid.findOneAndUpdate(
+                {
+                  announcementMessageID: raidMsg.id,
+                  serverID: guild.id,
                 },
-              },
-              { new: true }
-            );
+                {
+                  $set: {
+                    stage: "finished",
+                    "raidTimestamps.finishTime": Date.now(),
+                  },
+                },
+                { new: true }
+              );
 
-            if (freshRaid && !freshRaid.raidTimestamps.reviewTime)
-              await raidReviewReminder(client, freshRaid as IRaid);
-          }, startTime - currTime + 3 * 60 * 60 * 1000);
+              if (freshRaid && !freshRaid.raidTimestamps.reviewTime)
+                await raidReviewReminder(client, freshRaid as IRaid);
+            }, startTime - currTime + 3 * 60 * 60 * 1000);
+          }
         } catch (err) {
           console.error("Error in raid start subcommand callback : ", err);
         }
