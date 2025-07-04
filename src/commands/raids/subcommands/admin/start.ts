@@ -95,7 +95,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
           }
 
           // get all bosses
-          const selectedBosses = [];
+          const selectedBosses: string[] = [];
 
           for (let i = 1; i <= 5; i++) {
             const boss = interaction.options.getString(`boss_${i}`);
@@ -135,22 +135,19 @@ const init = async (): Promise<ISubcommand | undefined> => {
             "raidTimestamps.startTime": -1,
           });
 
-          if (!raids.length) {
-            await interaction.editReply({ content: "No raids found." });
-            return;
-          }
+          if (raids.length) {
+            const latestRaid = raids[0] as IRaid;
 
-          const latestRaid = raids[0] as IRaid;
-
-          if (
-            !latestRaid.raidTimestamps.finishTime &&
-            latestRaid.raidTimestamps.startTime > currTime
-          ) {
-            await interaction.editReply({
-              content:
-                "Cannot start a new raid when a raid is already scheduled.",
-            });
-            return;
+            if (
+              !latestRaid.raidTimestamps.finishTime &&
+              latestRaid.raidTimestamps.startTime > currTime
+            ) {
+              await interaction.editReply({
+                content:
+                  "Cannot start a new raid when a raid is already scheduled.",
+              });
+              return;
+            }
           }
 
           const day = interaction.options.getNumber("day") ?? raidDay;

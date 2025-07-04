@@ -115,7 +115,7 @@ const init = async (): Promise<ICommandObj | undefined> => {
                 client,
                 interaction.user.id,
                 guild.id,
-                "giveaway"
+                "raid"
               ))
             ) {
               await interaction.editReply({
@@ -128,7 +128,7 @@ const init = async (): Promise<ICommandObj | undefined> => {
 
           if (userCommands.includes(subcommandName)) {
             if (
-              !(await isUser(client, interaction.user.id, guild.id, "giveaway"))
+              !(await isUser(client, interaction.user.id, guild.id, "raid"))
             ) {
               await interaction.editReply({
                 content:

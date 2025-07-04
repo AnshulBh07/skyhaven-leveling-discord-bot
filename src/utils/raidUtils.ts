@@ -105,7 +105,7 @@ export const attachRaidParticipationCollector = async (
     await announceMsg.edit({ components: [buttonRow] });
 
     const collector = announceMsg.createMessageComponentCollector({
-      time: raid.raidTimestamps.finishTime! - Date.now(),
+      time: 0,
       filter: (i) =>
         ["raid_tank", "raid_support", "raid_dps", "raid_remove"].includes(
           i.customId
