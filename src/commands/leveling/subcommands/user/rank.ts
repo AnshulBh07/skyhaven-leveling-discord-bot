@@ -113,7 +113,9 @@ const init = async (): Promise<ISubcommand | undefined> => {
             };
           });
 
-          const user = users.find((user) => user.userID === targetUser.id);
+          const user = users.find(
+            (user) => String(user.userID) === String(targetUser.id)
+          );
 
           if (!user) {
             interaction.editReply("No user found");

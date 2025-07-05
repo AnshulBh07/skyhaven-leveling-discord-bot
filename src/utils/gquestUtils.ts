@@ -16,6 +16,7 @@ import {
   TextInputStyle,
   User as DiscordUser,
   ChannelType,
+  Message,
 } from "discord.js";
 import { IGquest, IMaze, IUser, questMazeLeaderboardUser } from "./interfaces";
 import Config from "../models/configSchema";
@@ -43,10 +44,22 @@ export const attachQuestMazeReviewCollector = async (
 
     if (!channel || channel.type !== 0) return;
 
-    const message = await channel.messages.fetch({
-      message: gquestMazeData.messageID,
-      force: true,
-    });
+    let message: Message | null = null;
+
+    try {
+      message = await channel.messages.fetch({
+        message: gquestMazeData.messageID,
+        force: true,
+      });
+    } catch (err) {
+      if ((err as DiscordAPIError).code === 10008) {
+        console.warn(
+          `Cannot find gquest/maze : ${gquestMazeData.messageID}, skipping attaching collector...`
+        );
+      } else throw err;
+    }
+
+    if (!message) return;
 
     // create buttons and edit reply again, we didn't create them before to avoid interaction failure
     const buttonsRow = new ActionRowBuilder<ButtonBuilder>().addComponents(

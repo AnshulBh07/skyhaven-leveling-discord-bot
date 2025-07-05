@@ -61,7 +61,10 @@ const execute = async (client: Client, message: Message) => {
     const hasStickers = message.stickers.size > 0;
 
     // if message does not exist in userstates make one
-    let user = await User.findOne({ userID: message.author.id });
+    let user = await User.findOne({
+      userID: message.author.id,
+      serverID: guildID,
+    });
 
     if (!user) {
       await createNewUser(client, guildID, message.author.id);
@@ -76,7 +79,7 @@ const execute = async (client: Client, message: Message) => {
 
     // generate xp for user and check level upgrade
     const msgLength = message.content.length - countEmojis(message.content);
-    const xpGain = Math.min(Math.max(5, Math.floor(msgLength / 10)), 200);
+    const xpGain = Math.min(Math.max(5, Math.floor(msgLength / 10)), 500);
 
     const totalXpGainFromMessage =
       (hasText && xpFromText ? xpGain : 0) +

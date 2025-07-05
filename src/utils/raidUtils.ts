@@ -10,7 +10,6 @@ import {
   ButtonStyle,
   ChannelType,
   Client,
-  ComponentType,
   DiscordAPIError,
   EmbedBuilder,
   MessageActionRowComponentBuilder,

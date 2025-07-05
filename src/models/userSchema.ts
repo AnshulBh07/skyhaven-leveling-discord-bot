@@ -66,7 +66,7 @@ const Raids = new Schema(
 
 const UserSchema = new Schema(
   {
-    userID: { type: String, required: true, unique: true },
+    userID: { type: String, required: true },
     username: { type: String, required: true },
     nickname: { type: String, default: "" },
     serverID: { type: String, required: true },

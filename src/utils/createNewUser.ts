@@ -15,7 +15,7 @@ export const createNewUser = async (
     });
     if (!guildConfig) return;
 
-    const { levelConfig, moderationConfig } = guildConfig;
+    const { levelConfig } = guildConfig;
     const usersArr = guildConfig.users as unknown as IUser[];
     const userInGuildConfig = usersArr.some((user) => user.userID === userID);
     const basicRole = (levelConfig.levelRoles as ILevelRoles[]).find(

@@ -9,13 +9,14 @@ const execute = async (client: Client, message: Message) => {
     const msg = message.content;
 
     if (
-      !msg.startsWith("s!") ||
       !guild ||
       !channel ||
       channel.type != ChannelType.GuildText ||
       !message.content.length
     )
       return;
+
+    if (!msg.startsWith("s!") && !msg.startsWith("S!")) return;
 
     const guildConfig = await Config.findOne({ serverID: guild.id });
 
