@@ -290,10 +290,14 @@ const init = async (): Promise<ISubcommand | undefined> => {
 
                   if (
                     freshRaid &&
+                    freshRaid.stage !== "scout_reminded" &&
                     (!freshRaid.bossBuffsImageUrl.length ||
                       !freshRaid.bossDebuffsImageUrl.length)
-                  )
+                  ) {
                     await sendScoutReminder(client, freshRaid as IRaid);
+                    freshRaid.stage = "scout_reminded";
+                    await freshRaid.save();
+                  }
                 } catch (err) {
                   console.error("Error in scout reminder timer : ", err);
                 }

@@ -28,6 +28,7 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
+    "@google/genai": "^1.8.0",
     "@napi-rs/canvas": "^0.1.70",
     "@types/axios": "^0.9.36",
     "@types/mongoose": "^5.11.96",

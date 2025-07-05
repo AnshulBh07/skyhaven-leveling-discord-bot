@@ -206,8 +206,10 @@ export interface IRaid {
   bossDebuffsImageUrl: string;
   stage:
     | "announced"
+    | "scout_reminded"
     | "scouted"
     | "alloted"
+    | "player_reminded"
     | "finished"
     | "reviewed"
     | "completed";

@@ -54,8 +54,10 @@ const RaidSchema = new Schema(
       type: String,
       enum: [
         "announced", //raid announced first message
+        "scout_reminded",//reminded admins/officials for raid
         "scouted", //scouted for buffs and debuffs
         "alloted", //teams are alloted
+        "player_reminded", //reminding participants a few minutes before
         "finished", //raid finished
         "reviewed", //particpation reviewed by admin
         "completed", //raid completed
