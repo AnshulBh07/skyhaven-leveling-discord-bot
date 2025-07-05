@@ -16,7 +16,7 @@ const execute = async (client: Client) => {
       // end all pending giveaways
       if (timeLeft <= 0) await endGiveaway(client, giveaway.messageID);
       else {
-        console.log("Resuming giveaway : ", giveaway.messageID);
+        console.log("🔁 resuming giveaway : ", giveaway.messageID);
         // schedule the giveaway again
         const collector = await attachCollector(client, giveaway);
         if (collector)

@@ -9,7 +9,7 @@ const execute = async (client: Client) => {
     const mazes = await Maze.find({ status: "pending" });
 
     for (const maze of mazes) {
-      console.log("resuming maze : ", maze.messageID);
+      console.log("🔁 resuming maze : ", maze.messageID);
       // continue thread if non archived
       await attachMazeThreadCollector(client, maze.submissionThreadID);
       // attach fresh button collectors on message

@@ -9,7 +9,7 @@ const execute = async (client: Client) => {
 
     // attach a collector on each one
     for (const gquest of gquests) {
-      console.log(`resuming gquest : `, gquest.messageID);
+      console.log(`🔁 resuming gquest : `, gquest.messageID);
       await attachQuestMazeReviewCollector(client, gquest as IGquest, "gq");
     }
   } catch (err) {

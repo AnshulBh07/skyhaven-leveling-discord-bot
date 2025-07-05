@@ -19,6 +19,7 @@ const execute = async (client: Client) => {
     });
 
     for (const raid of ongoinRaids) {
+      console.log("🔁 resuming raid : ", raid.announcementMessageID);
       // if the currtime is more than raid startTime and it is unfinished, simply finish it, this
       // raid won't contribute to any of the scores for user
       if (raid.raidTimestamps.startTime < currTime) {
