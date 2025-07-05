@@ -24,8 +24,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
 
       callback: async (client, interaction) => {
         try {
-          const targetUser =
-            interaction.options.getUser("user") ?? interaction.user;
+          const targetUser = interaction.options.getUser("user");
           const guild = interaction.guild;
           const channel = interaction.channel;
 
@@ -42,11 +41,17 @@ const init = async (): Promise<ISubcommand | undefined> => {
             status: "rejected",
           });
 
-          gquests = (gquests as IGquest[]).filter(
-            (gquest) => gquest.userID === targetUser.id
-          );
+          let title = "📃 List of Pending Guild Quests";
 
-          const title = `📃 List of Rejected Guild Quests for ${targetUser.username}`;
+          if (targetUser) {
+            gquests = (gquests as IGquest[]).filter(
+              (gquest) => gquest.userID === targetUser.id
+            );
+
+            title = `📃 List of Rejected Guild Quests for ${
+              targetUser ? targetUser.username : ""
+            }`;
+          }
 
           //   create embed with buttons
           await generateGquestsListEmbed(
@@ -54,8 +59,9 @@ const init = async (): Promise<ISubcommand | undefined> => {
             interaction,
             gquests,
             title,
-            targetUser.id,
-            "rejected"
+            targetUser ? targetUser.id : "",
+            "rejected",
+            "gquest"
           );
         } catch (err) {
           console.error("Error in gquest rejected subcommand callback : ", err);

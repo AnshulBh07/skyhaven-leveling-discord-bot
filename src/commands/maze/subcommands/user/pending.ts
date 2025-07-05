@@ -24,8 +24,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
 
       callback: async (client, interaction) => {
         try {
-          const targetUser =
-            interaction.options.getUser("user") ?? interaction.user;
+          const targetUser = interaction.options.getUser("user");
           const guild = interaction.guild;
 
           if (!guild) {
@@ -47,7 +46,9 @@ const init = async (): Promise<ISubcommand | undefined> => {
             mazes = (mazes as IMaze[]).filter(
               (maze) => maze.userID === targetUser.id
             );
-            title = `📃 List of Pending Guild Mazes for ${targetUser.username}`;
+            title = `📃 List of Pending Guild Mazes for ${
+              targetUser ? targetUser.username : ""
+            }`;
           }
 
           //   create embed with buttons
@@ -56,8 +57,9 @@ const init = async (): Promise<ISubcommand | undefined> => {
             interaction,
             mazes,
             title,
-            targetUser.id,
-            "pending"
+            targetUser ? targetUser.id : "",
+            "pending",
+            "maze"
           );
         } catch (err) {
           console.error("Error in maze pending subcommand callback : ", err);

@@ -22,10 +22,10 @@ const init = async (): Promise<ISubcommand | undefined> => {
         ],
       },
 
+      // if user is not specified give all pending, otherwise only for that user
       callback: async (client, interaction) => {
         try {
-          const targetUser =
-            interaction.options.getUser("user") ?? interaction.user;
+          const targetUser = interaction.options.getUser("user");
           const guild = interaction.guild;
           const channel = interaction.channel;
 
@@ -42,11 +42,17 @@ const init = async (): Promise<ISubcommand | undefined> => {
             status: "pending",
           });
 
-          gquests = (gquests as IGquest[]).filter(
-            (gquest) => gquest.userID === targetUser.id
-          );
+          let title = "📃 List of Pending Guild Quests";
 
-          const title = `📃 List of Pending Guild Quests for ${targetUser.displayName}`;
+          if (targetUser) {
+            gquests = (gquests as IGquest[]).filter(
+              (gquest) => gquest.userID === targetUser.id
+            );
+
+            title = `📃 List of Pending Guild Quests for${
+              targetUser ? targetUser.displayName : ""
+            }`;
+          }
 
           //   create embed with buttons
           await generateGquestsListEmbed(
@@ -54,8 +60,9 @@ const init = async (): Promise<ISubcommand | undefined> => {
             interaction,
             gquests,
             title,
-            targetUser.id,
-            "pending"
+            targetUser ? targetUser.id : "",
+            "pending",
+            "gquest"
           );
         } catch (err) {
           console.error("Error in pending subcommand callback : ", err);

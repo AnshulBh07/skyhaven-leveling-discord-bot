@@ -14,6 +14,8 @@ import {
   TextChannel,
   TextInputBuilder,
   TextInputStyle,
+  User as DiscordUser,
+  ChannelType,
 } from "discord.js";
 import { IGquest, IMaze, IUser, questMazeLeaderboardUser } from "./interfaces";
 import Config from "../models/configSchema";
@@ -419,14 +421,18 @@ export const generateGquestsListEmbed = async (
   gquestMazeArr: IGquest[] | IMaze[],
   title: string,
   userID: string,
-  type: string
+  type: string,
+  systemType: string
 ) => {
   try {
     const guild = await client.guilds.fetch(interaction.guild!.id);
-    const user = await client.users.fetch(userID, { force: true });
+
+    let user: DiscordUser;
+
+    if (userID.length) user = await client.users.fetch(userID, { force: true });
 
     let page = 0;
-    const pageSize = 5;
+    const pageSize = 3;
     const totalPages = Math.ceil(gquestMazeArr.length / pageSize);
 
     const getEmbed = (page: number, pageSize: number) => {
@@ -436,13 +442,13 @@ export const generateGquestsListEmbed = async (
       const slicedArr = gquestMazeArr.slice(startIndex, endIndex);
 
       const description = !slicedArr.length
-        ? `${user.displayName} has no pending guild quests`
+        ? `${user ? user.displayName : "Guild'"} has no ${type} guild quests`
         : slicedArr
             .map((ele, idx) => {
-              const submittedLine = `\n\n**${startIndex + idx + 1}. [${
-                type === "guild_quest" ? "Guild Quest" : "Guild Maze"
-              } ID: \`${ele.messageID}\`]\n**
-**👤 Submitted by: **<@${ele.userID}>
+              const submittedLine = `\n\n**${startIndex + idx + 1}. 🪪 ${
+                systemType === "gquest" ? "Guild Quest" : "Guild Maze"
+              } ID: \`${ele.messageID}\`\n**
+**👤 Submitted by: **<@${ele.userID}>\n
 ** Submitted on: **<t:${Math.ceil(ele.submittedAt! / 1000)}:F>`;
 
               const rewardedLine =
@@ -458,11 +464,19 @@ export const generateGquestsListEmbed = async (
 ** Reason: **_${ele.rejectionReason!}_`
                   : "";
 
-              return [submittedLine, rewardedLine, rejectedLine]
-                .filter(Boolean)
-                .join("\n");
+              const floors = `**Start Floor : **${
+                (ele as IMaze).startFloor
+              }\n**End Floor : **${(ele as IMaze).endFloor}\n`;
+
+              const arr = [submittedLine, rewardedLine, rejectedLine];
+
+              if (systemType === "maze") {
+                arr.push(floors);
+              }
+
+              return arr.filter(Boolean).join("\n");
             })
-            .join("\n\n────────────\n\n");
+            .join("\n");
 
       const embed = new EmbedBuilder()
         .setTitle(`${title}`)
@@ -471,7 +485,7 @@ export const generateGquestsListEmbed = async (
         .setDescription(description)
         .setFooter({
           text: `${guild.name} • Guild ${
-            type === "guild_quest" ? "Quests" : "Mazes"
+            systemType === "gquest" ? "Quests" : "Mazes"
           }`,
         })
         .setTimestamp();
@@ -494,15 +508,22 @@ export const generateGquestsListEmbed = async (
         .setDisabled(page >= totalPages - 1)
     );
 
-    await interaction.editReply({
+    const channel = interaction.channel;
+
+    if (!channel || channel.type !== ChannelType.GuildText) {
+      await interaction.editReply({ content: "Invalid channel." });
+      return;
+    }
+
+    await interaction.editReply({ content: "generating list..." });
+
+    const msg = await channel.send({
       embeds: [initialEmbed],
       components: [buttonsRow],
       files: [thumbnail],
     });
 
-    const reply = await interaction.fetchReply();
-
-    const collector = reply.createMessageComponentCollector({
+    const collector = msg.createMessageComponentCollector({
       time: 60_000 * 10, //10 minutes
       filter: (i) =>
         [`${type}_prev`, `${type}_next`].includes(i.customId) &&
@@ -522,7 +543,7 @@ export const generateGquestsListEmbed = async (
 
         const newEmbed = getEmbed(page, pageSize);
 
-        await reply.edit({
+        await msg.edit({
           embeds: [newEmbed],
           components: [buttonsRow],
         });
@@ -534,7 +555,7 @@ export const generateGquestsListEmbed = async (
     collector.on("end", async (collected, reason) => {
       try {
         if (reason === "time") {
-          await reply.edit({
+          await msg.edit({
             content: "⏱️ Interaction timed out.",
             components: [],
           });
@@ -544,7 +565,7 @@ export const generateGquestsListEmbed = async (
       }
     });
   } catch (err) {
-    console.error("Error generating gquests list embed : ", err);
+    console.error("Error generating gquests/mazes list embed : ", err);
   }
 };
 

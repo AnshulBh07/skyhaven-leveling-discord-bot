@@ -25,8 +25,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
 
       callback: async (client, interaction) => {
         try {
-          const targetUser =
-            interaction.options.getUser("user") ?? interaction.user;
+          const targetUser = interaction.options.getUser("user");
           const guild = interaction.guild;
 
           if (!guild) {
@@ -57,8 +56,9 @@ const init = async (): Promise<ISubcommand | undefined> => {
             interaction,
             mazes,
             title,
-            targetUser.id,
-            "rewarded"
+            targetUser ? targetUser.id : "",
+            "rewarded",
+            "maze"
           );
         } catch (err) {
           console.error("Error in maze rewarded subcommand callback : ", err);
