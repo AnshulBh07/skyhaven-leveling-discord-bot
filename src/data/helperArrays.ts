@@ -402,36 +402,45 @@ export const leaderboardThumbnail = path.resolve(
 );
 
 export const farewellMessages: string[] = [
-  "{user} has vanished into the depths of Sofya City. Safe travels, adventurer!",
-  "{user} has left the guild hall. May the Mana guide you.",
-  "{user}'s orb disappeared in a flash of light. Farewell!",
-  "{user} unequipped their guild badge and logged out. Until next time!",
-  "{user} has left to forge a new destiny. The world of Toram awaits.",
-  "A portal opened... and {user} stepped through. Safe journeys, brave soul.",
-  "{user} has returned to the land of the NPCs. Goodbye, traveler.",
-  "{user}'s name fades from the guild roster. We’ll remember your contributions.",
-  "A mysterious adventurer named {user} has left the party...",
-  "{user} put down their weapon and walked into the sunset. Farewell, comrade.",
-  "{user} triggered the Return Warp and disappeared from the map.",
-  "{user} left the party... The formation feels a bit emptier now.",
-  "{user} was auto-kicked by the Blacksmith for failing too many refines. 💥",
-  "{user} used Stealth Walk... and now they're gone. Maybe.",
-  "{user}'s party slot is now open. LF1M for emotional support.",
-  "{user} answered the call of another realm. May their story continue elsewhere.",
-  "{user}'s name was etched into the Book of Departed Heroes.",
-  "{user} left to chase whispers of a lost treasure beyond El Scaro.",
-  "{user} faded like a memory in Hora Diomedea.",
-  "{user} now walks the silent roads of forgotten adventurers.",
-  "{user} has logged off for the last time... but their presence lingers.",
-  "{user}, the guild won’t be the same without your spirit.",
-  "Some adventurers leave, but their impact stays. Farewell, {user}.",
-  "{user} has moved on, but the bonds forged remain unbroken.",
-  "Even if you're no longer in the guild, you’ll always be part of our story, {user}.",
-  "{user} rage quit after failing +15 refine. Can’t blame them.",
-  "{user} tried to solo Venena... and hasn’t been seen since.",
-  "{user} tripped over a Mini Boss and rolled out of the server.",
-  "{user} forgot to feed their Pet and was dragged out by it.",
-  "{user} hit the logout button thinking it was jump. Oops.",
+  `Notice: <@{userId}> has officially left the halls of Skyhaven. There was no farewell speech, no teary goodbyes, and definitely no loot drop. Just a clean exit into the unknown. Their chair is now cold. Their emojis, expired.`,
+
+  `Update from the system: <@{userId}> has been removed from the guild roster. Their belongings have been digitally boxed, their permissions revoked, and their ping trail erased from existence. May their next server bring better luck with RNG.`,
+
+  `The winds shift in Skyhaven as <@{userId}> disappears from our list of active members. No confetti was thrown. No banners were raised. But somewhere, a guild member just sighed in relief at one fewer notification.`,
+
+  `Guild memo: <@{userId}> has exited the server. Whether they rode off into the pixelated sunset or were escorted out by unseen hands, we can’t say. All we know is that their spot on the roster is now available for rent.`,
+
+  `<@{userId}> is no longer with us in Skyhaven. Their departure was swift, their impact... classified. The guild bot sheds no tears. But their empty slot echoes faintly with the sound of unread pings.`,
+
+  `Let it be recorded in the scrolls of Skyhaven: <@{userId}>'s time among us has ended. Their final act? A silent logout. Their legacy? Probably lost to cache refresh. But their memory lives on, at least until the next server restart.`,
+
+  `Guild logs confirm the departure of <@{userId}>. They left behind no farewell message, no guild tax, and no sense of closure. But we respect a clean exit. Quiet. Efficient. Like a ninja uninstalling Discord.`,
+
+  `<@{userId}> has departed Skyhaven. There was no dramatic exit cutscene, no suspicious explosion — just a standard disconnect and a mild reduction in server chaos. We assume the mods survived.`,
+
+  `System report: <@{userId}> has left the server. Their data trail has been vacuumed, their roles unassigned, and their digital soul returned to the aether. If you see them again, it’s probably an alt.`,
+
+  `One moment they were here, the next — gone. <@{userId}> has exited Skyhaven with minimal disturbance and maximum mystery. The cause of departure? Unspecified. The result? One fewer “hi” in general chat.`,
+
+  `Effective immediately, <@{userId}> has been removed from the Skyhaven guild registry. Their code is no longer part of the simulation. Please do not attempt to summon them using mentions, rituals, or carrier pigeons.`,
+
+  `This just in: <@{userId}> has been removed from the server. No need for panic — the member was stable, the logs are clean, and the bots haven’t revolted. We’ll just pretend they were never here... unless you have screenshots.`,
+
+  `Guild integrity remains stable. <@{userId}> has disconnected. No fireworks were triggered. No memory leaks detected. Their emoji usage has been safely contained and deleted. We move on.`,
+
+  `Please be advised: <@{userId}> has vacated the premises. We checked their inventory — no guild funds were taken. The chair they left behind has been blessed by the admin team for future use.`,
+
+  `<@{userId}>'s time in Skyhaven has come to an end. Their access card has been revoked, and their guild ID retired. If they attempt to return via secret alt, our detection owls are standing by.`,
+
+  `Guild departure recorded: <@{userId}> has officially left the server. Whether through quiet departure or abrupt yeeting, their space is now open for another adventurer with questionable fashion choices.`,
+
+  `The archives now reflect <@{userId}>'s departure from Skyhaven. Their tab at the tavern has been closed, their quests auto-failed, and their contribution to guild chaos quietly archived.`,
+
+  `<@{userId}> has disappeared from Skyhaven. The echo of their last message still lingers, and someone in #memes cried a single pixelated tear. We shall continue... with one fewer emoji reaction.`,
+
+  `We interrupt your scrolling to announce: <@{userId}> is no longer part of this server. No plot twists, no end credits — just a silent fade to offline. Please direct all farewell emotes to the nearest reaction bar.`,
+
+  `With this final update, <@{userId}> is no longer in Skyhaven. Their seat has been unassigned, their notifications turned to dust, and their legacy… well, that depends on the screenshots you saved.`,
 ];
 
 export const giveawayStartMessages = [

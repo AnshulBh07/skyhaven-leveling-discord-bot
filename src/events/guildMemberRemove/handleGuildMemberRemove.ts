@@ -1,7 +1,8 @@
-import { ChannelType, Client, GuildMember } from "discord.js";
+import { ChannelType, Client, EmbedBuilder, GuildMember } from "discord.js";
 import Config from "../../models/configSchema";
 import User from "../../models/userSchema";
 import { farewellMessages } from "../../data/helperArrays";
+import { getThumbnail } from "../../utils/commonUtils";
 
 const execute = async (client: Client, member: GuildMember) => {
   try {
@@ -20,7 +21,7 @@ const execute = async (client: Client, member: GuildMember) => {
       force: true,
     });
 
-    const user = await User.findOne({ userID: userID });
+    const user = await User.findOne({ userID: userID, serverID: guild.id });
 
     if (!user) return;
 
@@ -29,11 +30,24 @@ const execute = async (client: Client, member: GuildMember) => {
       { $pull: { users: user._id } }
     );
 
+    const thumbnail = getThumbnail();
+
+    const msg = farewellMessages[
+      Math.floor(Math.random() * farewellMessages.length)
+    ].replace("{userId}", member.user.id);
+
+    const farewellEmbed = new EmbedBuilder()
+      .setTitle("🍃 Farewell, Traveler")
+      .setDescription(msg.split(".").join("\n"))
+      .setFooter({
+        text: `${member.guild.name}`,
+        iconURL: "attachment://thumbnail.png",
+      });
+
     if (farewellChannel && farewellChannel.type === ChannelType.GuildText) {
       await farewellChannel.send({
-        content: farewellMessages[
-          Math.floor(Math.random() * farewellMessages.length)
-        ].replace("{user}", member.user.tag),
+        embeds: [farewellEmbed],
+        files: [thumbnail],
       });
     }
   } catch (err) {

@@ -29,7 +29,7 @@ const execute = async (client: Client, member: GuildMember) => {
     const thumbnail = getThumbnail();
 
     const allImages = getAllFiles(
-      path.join(__dirname, "..", "assets/images/welcome_msg"),
+      path.join(__dirname, "../..", "assets/images/welcome_msg"),
       false
     );
 
@@ -62,7 +62,7 @@ const execute = async (client: Client, member: GuildMember) => {
     };
 
     const guildImg = new AttachmentBuilder(getRandomImage(allImages)).setName(
-      "guildImage.png"
+      "guildImg.png"
     );
 
     // get welcome channel
@@ -76,7 +76,7 @@ const execute = async (client: Client, member: GuildMember) => {
       // generate welcome embed
       const randomMessage = welcomeMessages[
         Math.floor(Math.random() * welcomeMessages.length)
-      ].replace("userId", member.user.id);
+      ].replace("{userId}", member.user.id);
 
       await welcomeChannel.send({
         embeds: [generateWelcomeEmbed(randomMessage, guild.name)],
