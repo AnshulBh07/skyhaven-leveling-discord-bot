@@ -2,8 +2,6 @@ import { Client, IntentsBitField } from "discord.js";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import eventHandler from "./handlers/eventHandler";
-import Config from "./models/configSchema";
-import User from "./models/userSchema";
 
 const myIntents = new IntentsBitField();
 myIntents.add(

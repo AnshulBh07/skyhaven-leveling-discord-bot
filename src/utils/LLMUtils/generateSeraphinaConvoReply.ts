@@ -74,7 +74,7 @@ export const generateSeraphinaConvoReply = async (
       config: {
         temperature: 0.85,
         thinkingConfig: {
-          thinkingBudget: 2048,
+          thinkingBudget: 1024,
         },
 
         safetySettings: [
