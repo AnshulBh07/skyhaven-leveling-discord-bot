@@ -1,0 +1,486 @@
+----------------------------------------------------------------------------------------------
+                                       LEVELING SYSTEM
+----------------------------------------------------------------------------------------------
+
+***** PHASE 1 *****
+🎯 CORE FEATURES: DISCORD LEVELING SYSTEM
+
+1. 📈 XP & LEVELING SYSTEM
+   - Users gain XP based on message activity (with cooldown to prevent spam farming).
+   - XP-to-level formula (e.g. `XP = 5 * level² + 50 * level + 100`) determines level-ups.
+   - Level-up detection and notification in a dedicated channel.
+
+3. 🧍 USER COMMANDS
+   - `/rank` – Display user level, XP, and rank.
+   - `/leaderboard` – Show top users in the server by level.
+
+4. 🗃️ DATABASE INTEGRATION
+   - Store user data (XP, levels) and guild settings in MongoDB for persistence.
+
+5. 🚫 RESTRICTIONS
+   - No XP from:
+     - Bots
+     - Slash commands
+     - Ignored or blacklisted channels
+     - Non-text channels (e.g. voice)
+   - Commands cannot be used in blacklisted channels.
+   - Anti-spam cooldown applied per user per guild.
+
+📜 LEVEL ROLES — SKYHAVEN 🏰
+
+| Level Range | Role Name            |
+|-------------|----------------------|
+| 1–5         | Certified Lurker     |
+| 6–10        | Yapmaster Apprentice |
+| 11–20       | Message Goblin       |
+| 21–30       | Keyboard Crusader    |
+| 31–50       | Legendary Typist     |
+| 51–69       | The Yapfather        |
+| 70+         | Chat Ascendant       |
+
+
+***** PHASE 2 *****
+👤 ECONOMY AND ADMIN COMMANDS
+
+1. 🛠️ ADMIN COMMANDS
+All of the following are subcommands under: /xpconfig
+
+   - `/xpconfig notif-channel`         → Set the notification channel for level-up messages.
+   - `/xpconfig ignore-channel`        → Prevent XP gain in specified channels.
+   - `/xpconfig listen-channel`        → Remove a channel from the ignore list.
+   - `/xpconfig blacklist-channel`     → Block all command usage in a channel.
+   - `/xpconfig whitelist-channel`     → Remove a channel from the blacklist.
+   - `/xpconfig view`                  → View the current server configuration for the bot.
+
+
+2. 💰 ECONOMY COMMANDS
+   - `/setxp @user <amount>`           → Set a user's XP to a specific amount.
+   - `/addxp @user <amount>`           → Add XP to a user.
+   - `/removexp @user <amount>`        → Removes specified amount of xp from user.
+   - `/setlevel @user <level>`         → Set a user's level manually.
+   - `/resetserverxp`                  → Reset XP and levels for **all users** in the server.
+
+
+***** PHASE 3 *****
+🖼️ RANK & LEVELING CARDS (Canvas-based)
+
+1. 🧾 USER RANK CARD
+   - Automatically generated when user runs: `/rank`
+   - Displays:
+     - Avatar with circular border
+     - Username and Discriminator
+     - Current XP / XP required for next level
+     - Level and Rank
+     - Progress bar with animated XP fill
+     - Optional badge overlays (if any)
+
+2. 📋 LEADERBOARD CARD
+   - Generated when user runs: `/leaderboard`
+   - Displays:
+     - Top 10 users by XP or Level
+     - Avatars, usernames, and rank numbers
+     - Can be sorted by level or XP
+     - Compact and readable layout
+
+3. 🎨 CUSTOMIZATION FEATURES
+   - Accent color auto-detected from user's Discord profile (fallback to default if `null`)
+   - Dynamic background options (solid, gradient, or custom image)
+   - Rounded corners and soft shadows for visual polish
+   - Smooth XP bar animation with arrow indicator
+
+4. ⚙️ TECH DETAILS
+   - Canvas size: `800 x 180`
+   - Libraries used: `canvas`, `node-fetch`
+   - All elements rendered to canvas before combining into a final image
+   - Error-handling for missing avatars or broken URLs
+
+
+***** PHASE 4 *****
+🎧 VOICE XP SYSTEM
+
+1. 🎙️ VOICE CHAT XP
+   - Users gain XP by participating in voice channels.
+   - XP is awarded periodically while meeting all the below conditions.
+
+2. ✅ VOICE XP CONDITIONS
+   - At least **2 or more** legitimate (non-bot) members must be present in the voice channel.
+   - The user must **not be self-muted**.
+   - The user must **not be self-deafened**.
+   - The user must **not be server-muted or server-deafened**.
+
+3. 🏆 LEADERBOARD INTEGRATION
+   - Voice XP is stored alongside message XP and used in the `/leaderboard` command.
+   - Encourages active participation in both text and voice channels.
+
+
+----------------------------------------------------------------------------------------------
+                                       Giveaway system
+----------------------------------------------------------------------------------------------
+
+1. 🔨 MODERATION COMMANDS
+   - `/gban <user> [reason]`
+     • Bans a user from participating in giveaways.
+     • Optional reason can be added for moderation records.
+
+   - `/gunban <user>`
+     • Unbans a user, removing them from the giveaway banlist.
+
+   - `/gbanlist`
+     • (Optional) Displays all currently banned users.
+     
+   - `/gchannel`
+      - sets giveaway channel
+
+2. 🚀 GIVEAWAY MANAGEMENT
+   - `/gstart <prize> <duration> <number_of_winners> [role requirement] [image] [hosted_by]`
+     • Starts a giveaway creation flow.
+     • Initial options: prize, time, number of winners, and hosted by (optional).
+     • Bot follows up with:
+       › Entry requirements (e.g., level, role, previous wins).
+       › Tier restrictions (e.g., gold/silver/bronze).
+       › 📷 **Optional item image upload** – user can attach an image to be shown in the giveaway embed.
+
+   - `/greroll <giveaway_id>`
+     • Picks a new winner for a previous giveaway.
+     • Consider adding dropdown/autocomplete for giveaway selection.
+
+   - `/gdelete <giveaway_id>`
+     • Deletes a currently running giveaway by ID.
+
+   - `/glist`
+     • Shows all active giveaways in the server.
+   
+   - `/gentries` <user>
+      * list of all the giveaways a user has entered
+   
+   - `/gwins` <user>
+      * list of all the giveaways won by user
+
+3. 🛡️ ROLE / TIER CONFIGURATION
+   - `/gassignrole <user> <tier>` (secondt thoughts on it as this should be a more of moderation feature)
+     • Assigns a giveaway access tier to a user.
+     • Tiers: gold, silver, bronze — can be used to limit access to special giveaways.
+
+   - *(Alternative idea)* `/gconfigrole <discord_role> <tier>`
+     • Maps a server role to a giveaway tier, useful for global config.
+
+4. ⏸️ OPTIONAL / SKIPPED FEATURES
+   - `/gpause`
+     • (Not planned) Would pause a running giveaway.
+
+   - `/gedit`
+     • (Not planned) Would allow editing giveaway parameters live.
+
+
+----------------------------------------------------------------------------------------------
+                                       Guild Quest System
+----------------------------------------------------------------------------------------------
+
+1. 🧑‍🎓 USER COMMANDS
+
+- /gq submit <image> [user]
+  • Submit a Guild Quest screenshot for yourself or on behalf of another user.
+
+- /gq dm-notif <boolean> [user]
+  • Toggle DM notifications for Guild Quest updates (approved/rejected).
+  • If [user] is provided, only accessible by GQ admins.
+
+- /gq stats [user]
+  • Displays full Guild Quest statistics for the user.
+    › Total submitted
+    › Rewarded count
+    › Rejected count
+    › Pending count
+
+- /gq pending [user]
+  • Lists all currently pending (unreviewed) submissions for the user.
+
+- /gq rewarded [user]
+  • Lists all approved and rewarded submissions for the user.
+
+- /gq rejected [user]
+  • Lists all rejected submissions for the user.
+
+- /gq find <gquest_id>
+  • Locates a specific Guild Quest submission by ID.
+  • Responds with a link button to jump to the original message.
+
+- /gq leaderboard
+  • Displays the Guild Quest leaderboard based on rewarded submissions.
+
+- /gq delete <gquest_id>
+  • Deletes a submission.
+  • Only allowed if the submission is pending.
+
+2. 🛡️ ADMIN COMMANDS
+
+- /gq reward-amount <amount>
+  • Sets the base reward value (e.g., points/spina) per approved Guild Quest.
+
+- /gq channel
+  • Sets the channel where Guild Quest submissions are logged or reviewed.
+
+- /gq role <role>
+  • Assigns a role that determines access to Guild Quest participation or admin commands.
+
+- /gq add-admin <user>
+  • Grants Guild Quest admin permissions to the specified user.
+
+- /gq remove-admin <user>
+  • Revokes Guild Quest admin permissions from the specified user.
+
+----------------------------------------------------------------------------------------------
+                                       Guild Maze System
+----------------------------------------------------------------------------------------------
+
+1. 🧑‍🎓 USER COMMANDS
+
+- /mz submit <start_floor> <end_floor> [user]
+  • Begin a maze submission for the given floor range.
+  • A thread will be created where the user can manually upload proof images.
+
+- /mz dm-notif <boolean> [user]
+  • Toggle DM notifications for maze reward updates.
+  • If [user] is provided, only accessible by maze admins.
+
+- /mz stats [user]
+  • Displays full maze statistics for the user.
+    › Total mazes submitted
+    › Total rewarded floors
+    › Last rewarded date
+    › Rejected count
+
+- /mz pending [user]
+  • Lists all currently pending (unreviewed) maze submissions for the user.
+
+- /mz rewarded [user]
+  • Lists all approved/rewarded maze submissions.
+  • Includes floor ranges and reward timestamps.
+
+- /mz rejected [user]
+  • Lists all rejected maze submissions.
+  • Displays rejection reasons and relevant details.
+
+- /mz find <maze_id>
+  • Locates a specific maze submission by ID.
+  • Returns a jump link to the original message.
+
+- /mz leaderboard
+  • Displays the maze leaderboard based on total rewarded floors.
+
+- /mz delete <maze_id>
+  • Deletes a maze submission.
+  • Only allowed if the maze is pending.
+
+ 
+----------------------------------------------------------------------------------------------
+                                       Guild Raids System
+----------------------------------------------------------------------------------------------
+
+raid flow is something like announce date time (ask for participation in same) -> scout raid bosses and announce buffs and debuffs -> allot teams and announce allotment -> raid finish announcement -> review message for admin who will provide a review on who actually joined and who didn't
+- raid start time is taken as input
+- ask for scout buff debuff for the latest raid exactly 5 hours before raid (only if not provided yet)
+- team allocation before 3 hours of raid start time (if not allocated yet)
+- DM all the participants with an embed reminder 30 min before raid 
+- after 3 hours of raid completion send a review message to all the admins on raid channel. This will contain a checklist of who participated and who didn't.
+admin will also be able to add people who joined raids but didn't participated
+- raid is completely finished
+
+
+
+GOOGLE GEMINI INTEGRATION FOR SERAPHINA PERSONALITY
+To make the best out of free tier do this
+- use templates for command replies
+- cache responses to avoid duplicate prompts
+- maintain chat history in mongodb and keep size of prompt small
+- throttle long convos - if user gets a lot chatty tell them to chat next day
+
+
+---------------------------------------------------------------------------------------------------------------------------------
+              COMMAND KNOWLEDGE BASE 
+------------------------------------------------------------------------------------------------------------------------------------
+Full Flow Summary
+1. 🔍 User sends: s! how do I submit a guild quest?
+
+2. 🧠 Heuristic Scoring:
+    Your upgraded getIntentScore(query) returns, say, 8
+
+    That score says: “Looks like a command-related query!”
+
+3. 🔎 Fuzzy Match via fuse.js:
+    Use fuse.search(query) on your command_knowledge_base.json
+
+    Find the best matching command (like gq submit)
+
+4. 🗣️ Generate reply:
+    Use a mood-based template like:
+
+    "Of course! You can use /gq submit <image> to submit your completed quest proof. Don’t forget to flex your reward later, too! ✨"
+
+5. ❌ If no match, fallback to LLM chat with a single call.
+
+Changes
+- seraphina has command context awareness, when asked "how to submit maze?" she will reply.
+- seraphina can now analyze images
+- fixed prompt for conversation 
+
+-----------------------------------------------------------------------------------------------------------
+📖 Seraphina's Fuzzy PDF Skill Guide System
+------------------------------------------------------------------------------------------------------------
+Seraphina, Skyhaven’s divine Discord bot, can now intelligently answer gameplay-related questions using uploaded skill or strategy documents. This system combines fuzzy search, document analysis, and LLM response generation to allow users to query Seraphina about builds, combos, DPS, or stats — and receive lore-rich, mood-based answers in return.
+
+✨ Overview
+This system allows Seraphina to:
+
+- Store a set of PDF documents (skill guides, stat sheets, combo references)
+- Fuzzily match user questions to the most relevant document
+- Read and interpret the PDF using Gemini’s multimodal capabilities
+- Respond to the user in-character, matching her divine mood and style
+
+This enables true gameplay support without requiring the user to upload a file every time.
+
+🧭 Flow of Operation
+1. 🔍 Fuzzy Matching
+When a user asks a gameplay-related question, such as:
+
+“What’s a good halberd burst combo?”
+
+The bot uses fuzzy string matching (via Fuse.js) to compare the user’s query against the document names and keywords. The closest-matching document is selected as the most likely source of relevant information.
+
+2. 📤 Document Injection
+Once the correct PDF is selected, it is:
+
+Loaded from disk
+
+Converted to base64
+
+Passed to Google’s Gemini model as inline document content
+
+3. 🧠 LLM Prompt Composition
+A custom prompt is constructed based on:
+
+The user's question
+
+The selected document
+
+Seraphina's current mood (e.g., tsundere, cheerful, cold)
+
+Example prompt:
+
+“The user asks: ‘What’s a good halberd burst combo?’
+Use the attached document to answer in the tone of a divine tsundere. Be informative, sarcastic if needed, and avoid robotic responses.”
+
+This prompt ensures Seraphina stays in-character while also leveraging accurate data from the PDF.
+
+4. 💬 Response Delivery
+Gemini generates a detailed, mood-rich response based on the document contents. This reply is then sent to the Discord channel as Seraphina’s divine guidance.
+
+Example response:
+
+“Tch. You want to burst like a pro? Use Dragon Tooth at the end, obviously. Don’t forget Impact first unless you enjoy wasting MP like a clueless scrub.”
+
+✅ Benefits of This System
+Feature	Description
+📄 Reusable Documents	Admins can upload meta guides once — users can query them forever
+🔍 Flexible Matching	Fuzzy search means users don’t need perfect wording
+🧙 Personalized Replies	Seraphina answers in her unique tone and mood
+🧠 Grounded & Informed	Answers are based on real game guides, not hallucinated lore
+🔁 Scalable	Add more PDFs and keywords over time to improve coverage
+
+🔒 Limitations
+Gemini's PDF size cap is ~10MB
+
+Does not support image-based (scanned) PDFs — must be text-based
+
+Only one document is used per query (no multi-file fusion yet)
+
+Fuzzy match quality depends on metadata coverage
+
+🌟 Future Improvements (Optional)
+Add vector embeddings for more precise retrieval (RAG-style)
+
+Cache responses per user + query to save LLM quota
+
+Auto-summarize each document into long-term memory
+
+Let users browse or request document list via /guide list
+
+💬 Example User Queries
+“Best burst rotation for halberd?”
+“Compare Meteor Breaker vs Finale.”
+“What’s a good budget combo for bowgun?”
+“Do I need high crit for storm?”
+“How to make a reliable 1mp combo?”
+
+Seraphina will divine the proper scroll (PDF), read it, and reply accordingly.
+
+AGENTIC EVOLUTION OF SERAPHINA (Really advanced stuff, core AI)
+- this is basically creating an alogrithm that will help seraphina develop her own "PERSONALITY"
+- she will have her own opinions on things and develop them
+- this is a crucial step towards global memory and making her learn things from user feedback
+
+Core Concepts to Learn
+1. Agentic AI Basics
+What is an agent? (Autonomous, goal-driven system)
+
+How agents differ from chatbots (planning, memory, autonomy)
+
+Key terms: agent loop, tool use, planning, reflection, autonomy
+
+2. Memory Systems
+Short-term memory vs. long-term memory
+
+Vector databases (e.g. Chroma, Weaviate, Pinecone)
+
+Embedding and retrieval (how AI "remembers" past knowledge)
+
+Schema evolution (growing memory structure with interaction)
+
+3. Tool Use and Planning
+Using tools like calculators, web browsers, or APIs in real-time
+
+ReAct Pattern (Reason + Act loops)
+
+Function calling in OpenAI/Gemini/Claude APIs
+
+4. Learning and Reflection
+Auto-updating skills and knowledge (via logs, feedback, etc.)
+
+Fine-tuning vs. Prompt-based learning
+
+RAG (Retrieval-Augmented Generation) with self-reflection
+
+Techniques like Chain-of-Thought, Tree-of-Thought
+
+5. Emotions and Personality Modeling
+Mood-driven responses (what you’ve already started)
+
+Personality consistency over time
+
+Affective computing (detecting and adapting to user emotion)
+
+6. Ethics & Alignment
+How to prevent hallucination & bias
+
+Human alignment: AI stays helpful, harmless, honest
+
+Guardrails and feedback loops
+
+🧠 Practical Tools & Libraries
+LangChain / LlamaIndex – Frameworks to build AI agents with memory and tool use
+
+AutoGPT / BabyAGI – Early agent frameworks (more research-y, less production-ready)
+
+Haystack – Open-source RAG platform with pipelines
+
+Gemini API – Your current system, which supports tools + PDFs
+
+OpenAI Assistants API – State + code + tool calling + long memory
+
+2. Foundational Concepts to Learn
+🧠 Autonomous Agents	- Core building block — agents that can sense, plan, act
+📚 RAG (Retrieval-Augmented Generation) -	Lets AI pull accurate external knowledge into conversation
+🧬 Memory Architectures	- For evolving understanding, remembering context, forming patterns
+🛠️ Tool Use / Plugins / APIs -	Agent uses tools to act on your behalf
+🎯 Goal-driven Planning	- How the agent decides what to do next or learn next
+👁️ Reflection / Meta-cognition -	How it analyzes its past mistakes to grow

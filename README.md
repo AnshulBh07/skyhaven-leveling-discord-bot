@@ -1,0 +1,91 @@
+***** PHASE 1 *****
+🎯 CORE FEATURES: DISCORD LEVELING SYSTEM
+
+1. 📈 XP & LEVELING SYSTEM
+   - Users gain XP based on message activity (with cooldown to prevent spam farming).
+   - XP-to-level formula (e.g. `XP = 5 * level² + 50 * level + 100`) determines level-ups.
+   - Level-up detection and notification in a dedicated channel.
+
+3. 🧍 USER COMMANDS
+   - `/rank` – Display user level, XP, and rank.
+   - `/leaderboard` – Show top users in the server by level.
+
+4. 🗃️ DATABASE INTEGRATION
+   - Store user data (XP, levels) and guild settings in MongoDB for persistence.
+
+5. 🚫 RESTRICTIONS
+   - No XP from:
+     - Bots
+     - Slash commands
+     - Ignored or blacklisted channels
+     - Non-text channels (e.g. voice)
+   - Commands cannot be used in blacklisted channels.
+   - Anti-spam cooldown applied per user per guild.
+
+📜 LEVEL ROLES — SKYHAVEN 🏰
+
+| Level Range | Role Name            |
+|-------------|----------------------|
+| 1–5         | Certified Lurker     |
+| 6–10        | Yapmaster Apprentice |
+| 11–20       | Message Goblin       |
+| 21–30       | Keyboard Crusader    |
+| 31–50       | Legendary Typist     |
+| 51–69       | The Yapfather        |
+| 70+         | Chat Ascendant       |
+
+
+***** PHASE 2 *****
+👤 ECONOMY AND ADMIN COMMANDS
+
+1. 🛠️ ADMIN COMMANDS
+All of the following are subcommands under: /xpconfig
+
+   - `/xpconfig notif-channel`         → Set the notification channel for level-up messages.
+   - `/xpconfig ignore-channel`        → Prevent XP gain in specified channels.
+   - `/xpconfig listen-channel`        → Remove a channel from the ignore list.
+   - `/xpconfig blacklist-channel`     → Block all command usage in a channel.
+   - `/xpconfig whitelist-channel`     → Remove a channel from the blacklist.
+   - `/xpconfig view`                  → View the current server configuration for the bot.
+
+
+2. 💰 ECONOMY COMMANDS
+   - `/setxp @user <amount>`           → Set a user's XP to a specific amount.
+   - `/addxp @user <amount>`           → Add XP to a user.
+   - `/removexp @user <amount>`        → Removes specified amount of xp from user.
+   - `/setlevel @user <level>`         → Set a user's level manually.
+   - `/resetserverxp`                  → Reset XP and levels for **all users** in the server.
+
+
+***** PHASE 3 *****
+🖼️ RANK & LEVELING CARDS (Canvas-based)
+
+1. 🧾 USER RANK CARD
+   - Automatically generated when user runs: `/rank`
+   - Displays:
+     - Avatar with circular border
+     - Username and Discriminator
+     - Current XP / XP required for next level
+     - Level and Rank
+     - Progress bar with animated XP fill
+     - Optional badge overlays (if any)
+
+2. 📋 LEADERBOARD CARD
+   - Generated when user runs: `/leaderboard`
+   - Displays:
+     - Top 10 users by XP or Level
+     - Avatars, usernames, and rank numbers
+     - Can be sorted by level or XP
+     - Compact and readable layout
+
+3. 🎨 CUSTOMIZATION FEATURES
+   - Accent color auto-detected from user's Discord profile (fallback to default if `null`)
+   - Dynamic background options (solid, gradient, or custom image)
+   - Rounded corners and soft shadows for visual polish
+   - Smooth XP bar animation with arrow indicator
+
+4. ⚙️ TECH DETAILS
+   - Canvas size: `800 x 180`
+   - Libraries used: `canvas`, `node-fetch`
+   - All elements rendered to canvas before combining into a final image
+   - Error-handling for missing avatars or broken URLs
