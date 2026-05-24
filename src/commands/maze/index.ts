@@ -1,158 +1,133 @@
 // root file for guild maze commands
 import path from "path";
-import getAllFiles from "../../utils/getAllFiles";
-import { ICommandObj, ISubcommand } from "../../utils/interfaces";
+import { ICommandObj } from "../../utils/interfaces";
 import { isManager, isUser } from "../../utils/permissionsCheck";
 import Config from "../../models/configSchema";
+import { fetchAllSubcommands } from "../../utils/fetchSubCommands";
 
 const init = async (): Promise<ICommandObj | undefined> => {
-  try {
-    // fetch all commands from the parent folder and map them to their names
-    const subcommandsMap = new Map<string, ISubcommand>();
-    const allSubcommandFiles = getAllFiles(
-      path.join(__dirname, "", "subcommands"),
-      false
-    );
+	try {
+		const result = await fetchAllSubcommands(
+			path.join(__dirname, "", "subcommands"),
+			false,
+		);
 
-    const adminCommands: string[] = [],
-      userCommands: string[] = [],
-      ownerCommands: string[] = [];
+		if (!result) return undefined;
 
-    for (const file of allSubcommandFiles) {
-      const module = await import(file);
+		const [adminCommands, userCommands, ownerCommands, subcommandsMap] = result;
 
-      if (!module) continue;
+		return {
+			name: "mz",
+			description: "All commands related to guild maze",
+			options: Array.from(subcommandsMap.entries()).map(
+				([_, subcommand]) => subcommand.data,
+			),
+			permissionsRequired: [],
 
-      const commandObj: ISubcommand = await module.default();
+			callback: async (client, interaction) => {
+				try {
+					// for a valid command call the clalback function using map
+					const subcommandName = interaction.options.getSubcommand(false);
+					const guild = interaction.guild;
+					const channel = interaction.channel;
 
-      // get key string
-      const cmdName = path.basename(file).split(".")[0];
-      const cmdKey = cmdName.includes("_")
-        ? cmdName.replace("_", "-")
-        : cmdName;
-      const subcommand = commandObj;
-      subcommandsMap.set(cmdKey, subcommand);
+					if (!guild || !channel) {
+						await interaction.editReply({
+							content:
+								"⚠️ Invalid command. Please check your input and try again.",
+						});
+						return;
+					}
 
-      // track admin and user commands for permissions check
-      const type = file.split("\\").at(-2)!;
+					if (!subcommandName) {
+						await interaction.editReply({
+							content:
+								"⚠️ No subcommands detected. Make sure you're using the correct syntax.",
+						});
+						return;
+					}
 
-      if (type === "admin") adminCommands.push(cmdName);
-      if (type === "user") userCommands.push(cmdName);
-      if (type === "owner") ownerCommands.push(cmdName);
-    }
+					const subCmdKey = subcommandName;
+					const subCmd = subcommandsMap.get(subCmdKey);
 
-    return {
-      name: "mz",
-      description: "All commands related to guild maze",
-      options: Array.from(subcommandsMap.entries()).map(
-        ([_, subcommand]) => subcommand.data
-      ),
-      permissionsRequired: [],
+					if (!subCmd) {
+						await interaction.editReply({
+							content:
+								"⚠️ No subcommands detected. Make sure you're using the correct syntax.",
+						});
+						return;
+					}
 
-      callback: async (client, interaction) => {
-        try {
-          // for a valid command call the clalback function using map
-          const subcommandName = interaction.options.getSubcommand(false);
-          const guild = interaction.guild;
-          const channel = interaction.channel;
+					const guildConfig = await Config.findOne({ serverID: guild.id });
 
-          if (!guild || !channel) {
-            await interaction.editReply({
-              content:
-                "⚠️ Invalid command. Please check your input and try again.",
-            });
-            return;
-          }
+					if (!guildConfig) {
+						await interaction.editReply(
+							"🔍 This server could not be identified. Check if the bot has access.",
+						);
+						return;
+					}
 
-          if (!subcommandName) {
-            await interaction.editReply({
-              content:
-                "⚠️ No subcommands detected. Make sure you're using the correct syntax.",
-            });
-            return;
-          }
+					const { botAdminIDs } = guildConfig.moderationConfig;
+					const { mazeChannelID } = guildConfig.gquestMazeConfig;
 
-          const subCmdKey = subcommandName;
-          const subCmd = subcommandsMap.get(subCmdKey);
+					// if it is an owner command and user is not owner
+					if (
+						ownerCommands.includes(subcommandName) &&
+						!botAdminIDs.includes(interaction.user.id)
+					) {
+						await interaction.editReply({
+							content:
+								"⚠️ You lack the required permissions to use this command.",
+						});
+						return;
+					}
 
-          if (!subCmd) {
-            await interaction.editReply({
-              content:
-                "⚠️ No subcommands detected. Make sure you're using the correct syntax.",
-            });
-            return;
-          }
+					// check permissions
+					// command name is gonna be unique for given root command
+					if (adminCommands.includes(subcommandName)) {
+						if (
+							!(await isManager(client, interaction.user.id, guild.id, "mz"))
+						) {
+							await interaction.editReply({
+								content:
+									"⚠️ You lack the required permissions to use this command.",
+							});
+							return;
+						}
+					}
 
-          const guildConfig = await Config.findOne({ serverID: guild.id });
+					if (userCommands.includes(subcommandName)) {
+						if (!(await isUser(client, interaction.user.id, guild.id, "mz"))) {
+							await interaction.editReply({
+								content:
+									"⚠️ You lack the required permissions to use this command.",
+							});
+							return;
+						}
+					}
 
-          if (!guildConfig) {
-            await interaction.editReply(
-              "🔍 This server could not be identified. Check if the bot has access."
-            );
-            return;
-          }
+					// admins and users will be forced to use designated channel
+					if (
+						!botAdminIDs.includes(interaction.user.id) &&
+						channel.id !== mazeChannelID
+					) {
+						await interaction.editReply({
+							content: `⚠️ You cannot use this command in this channel. Please use it in <#${mazeChannelID}>.`,
+						});
+						return;
+					}
 
-          const { botAdminIDs } = guildConfig.moderationConfig;
-          const { mazeChannelID } = guildConfig.gquestMazeConfig;
-
-          // if it is an owner command and user is not owner
-          if (
-            ownerCommands.includes(subcommandName) &&
-            !botAdminIDs.includes(interaction.user.id)
-          ) {
-            await interaction.editReply({
-              content:
-                "⚠️ You lack the required permissions to use this command.",
-            });
-            return;
-          }
-
-          // check permissions
-          // command name is gonna be unique for given root command
-          if (adminCommands.includes(subcommandName)) {
-            if (
-              !(await isManager(client, interaction.user.id, guild.id, "mz"))
-            ) {
-              await interaction.editReply({
-                content:
-                  "⚠️ You lack the required permissions to use this command.",
-              });
-              return;
-            }
-          }
-
-          if (userCommands.includes(subcommandName)) {
-            if (!(await isUser(client, interaction.user.id, guild.id, "mz"))) {
-              await interaction.editReply({
-                content:
-                  "⚠️ You lack the required permissions to use this command.",
-              });
-              return;
-            }
-          }
-
-          // admins and users will be forced to use designated channel
-          if (
-            !botAdminIDs.includes(interaction.user.id) &&
-            channel.id !== mazeChannelID
-          ) {
-            await interaction.editReply({
-              content: `⚠️ You cannot use this command in this channel. Please use it in <#${mazeChannelID}>.`,
-            });
-            return;
-          }
-
-          // call the function
-          await subCmd.callback(client, interaction);
-        } catch (err) {
-          console.error("Error in guild maze root command callback : ", err);
-        }
-      },
-    };
-  } catch (err) {
-    console.error("Error in guild maze root command : ", err);
-    return undefined;
-  }
+					// call the function
+					await subCmd.callback(client, interaction);
+				} catch (err) {
+					console.error("Error in guild maze root command callback : ", err);
+				}
+			},
+		};
+	} catch (err) {
+		console.error("Error in guild maze root command : ", err);
+		return undefined;
+	}
 };
 
 export default init;

@@ -31,6 +31,8 @@ export const isManager = async (
 				case "ga":
 					return giveawayConfig.managerRoles;
 				case "cs":
+					console.log("hit community support manager roles");
+					console.log(communitySupportConfig.managerRoles);
 					return communitySupportConfig.managerRoles;
 				case "lvl":
 					return levelConfig.managerRoles;

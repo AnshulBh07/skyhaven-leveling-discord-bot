@@ -33,6 +33,7 @@
   "dependencies": {
     "@google/genai": "^1.8.0",
     "@napi-rs/canvas": "^0.1.70",
+    "@qdrant/js-client-rest": "^1.18.0",
     "@types/axios": "^0.9.36",
     "@types/mongoose": "^5.11.96",
     "@types/ms": "^2.1.0",
@@ -40,6 +41,7 @@
     "canvas": "^3.1.0",
     "color-thief-ts": "^1.1.1",
     "colorthief": "^2.6.0",
+    "crypto": "^1.0.1",
     "dayjs": "^1.11.13",
     "discord-arts": "^0.7.1",
     "discord.js": "^14.19.3",
@@ -50,7 +52,8 @@
     "ms": "^2.1.3",
     "node-cron": "^4.1.0",
     "node-fetch": "^3.3.2",
-    "tesseract.js": "^6.0.1"
+    "tesseract.js": "^6.0.1",
+    "zod": "^4.4.3"
   },
   "engines": {
     "node": ">=20.0.0"

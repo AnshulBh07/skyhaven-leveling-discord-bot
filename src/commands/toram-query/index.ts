@@ -1,9 +1,8 @@
-// root file for leveling commands
 import path from "path";
 import { ICommandObj } from "../../utils/interfaces";
-import { isManager, isUser } from "../../utils/permissionsCheck";
-import Config from "../../models/configSchema";
 import { fetchAllSubcommands } from "../../utils/fetchSubCommands";
+import Config from "../../models/configSchema";
+import { isManager, isUser } from "../../utils/permissionsCheck";
 
 const init = async (): Promise<ICommandObj | undefined> => {
 	try {
@@ -17,16 +16,16 @@ const init = async (): Promise<ICommandObj | undefined> => {
 		const [adminCommands, userCommands, ownerCommands, subcommandsMap] = result;
 
 		return {
-			name: "lvl",
-			description: "All commands related to leveling system",
+			name: "ti",
+			description: "All commands related to toram query",
 			options: Array.from(subcommandsMap.entries()).map(
 				([_, subcommand]) => subcommand.data,
 			),
 			permissionsRequired: [],
 
-			callback: async (client, interaction) => {
+			callback: async (client, interaction, mood) => {
 				try {
-					// for a valid command call the clalback function using map
+					// get input from user interaction
 					const subcommandName = interaction.options.getSubcommand(false);
 					const guild = interaction.guild;
 					const channel = interaction.channel;
@@ -68,13 +67,11 @@ const init = async (): Promise<ICommandObj | undefined> => {
 					}
 
 					const { botAdminIDs } = guildConfig.moderationConfig;
-					const { notificationChannelID } = guildConfig.levelConfig;
+					const { supportChannelID } = guildConfig.communitySupportConfig;
+					const isAdmin = botAdminIDs.includes(interaction.user.id);
 
 					// if it is an owner command and user is not owner
-					if (
-						ownerCommands.includes(subcommandName) &&
-						!botAdminIDs.includes(interaction.user.id)
-					) {
+					if (ownerCommands.includes(subcommandName) && !isAdmin) {
 						await interaction.editReply({
 							content:
 								"⚠️ You lack the required permissions to use this command.",
@@ -84,9 +81,9 @@ const init = async (): Promise<ICommandObj | undefined> => {
 
 					// check permissions
 					// command name is gonna be unique for given root command
-					if (adminCommands.includes(subcommandName)) {
+					if (adminCommands.includes(subcommandName) && !isAdmin) {
 						if (
-							!(await isManager(client, interaction.user.id, guild.id, "lvl"))
+							!(await isManager(client, interaction.user.id, guild.id, "cs"))
 						) {
 							await interaction.editReply({
 								content:
@@ -96,8 +93,8 @@ const init = async (): Promise<ICommandObj | undefined> => {
 						}
 					}
 
-					if (userCommands.includes(subcommandName)) {
-						if (!(await isUser(client, interaction.user.id, guild.id, "lvl"))) {
+					if (userCommands.includes(subcommandName) && !isAdmin) {
+						if (!(await isUser(client, interaction.user.id, guild.id, "cs"))) {
 							await interaction.editReply({
 								content:
 									"⚠️ You lack the required permissions to use this command.",
@@ -107,12 +104,9 @@ const init = async (): Promise<ICommandObj | undefined> => {
 					}
 
 					// admins and users will be forced to use designated channel
-					if (
-						!botAdminIDs.includes(interaction.user.id) &&
-						channel.id !== notificationChannelID
-					) {
+					if (!isAdmin && channel.id !== supportChannelID) {
 						await interaction.editReply({
-							content: `⚠️ You cannot use this command in this channel. Please use it in <#${notificationChannelID}>.`,
+							content: `⚠️ You cannot use this command in this channel. Please use it in <#${supportChannelID}>.`,
 						});
 						return;
 					}
@@ -120,12 +114,15 @@ const init = async (): Promise<ICommandObj | undefined> => {
 					// call the function
 					await subCmd.callback(client, interaction);
 				} catch (err) {
-					console.error("Error in level root command callback : ", err);
+					console.error(
+						"Error in community-support root command callabck : ",
+						err,
+					);
 				}
 			},
 		};
 	} catch (err) {
-		console.error("Error in level root command : ", err);
+		console.error("Error in community support root command! : ", err);
 		return undefined;
 	}
 };
