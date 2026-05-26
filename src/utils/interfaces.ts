@@ -538,3 +538,14 @@ export interface ICommunitySupport {
 	updatedAt: number;
 	isEnded: boolean;
 }
+
+export interface StoredChatMemory {
+	userID: string;
+	createdAt: Date;
+	updatedAt: Date;
+	messages: {
+		role: string;
+		content: string;
+		timestamp: number;
+	}[];
+}

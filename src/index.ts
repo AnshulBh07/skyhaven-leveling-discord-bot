@@ -2,21 +2,22 @@ import { Client, IntentsBitField } from "discord.js";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import eventHandler from "./handlers/eventHandler";
+import { setupQdrant } from "./cognition/vector/qdrant";
 
 const myIntents = new IntentsBitField();
 myIntents.add(
-  IntentsBitField.Flags.Guilds,
-  IntentsBitField.Flags.GuildMembers,
-  IntentsBitField.Flags.GuildMessages,
-  IntentsBitField.Flags.MessageContent,
-  IntentsBitField.Flags.GuildPresences,
-  IntentsBitField.Flags.GuildVoiceStates,
-  IntentsBitField.Flags.GuildMessageReactions
+	IntentsBitField.Flags.Guilds,
+	IntentsBitField.Flags.GuildMembers,
+	IntentsBitField.Flags.GuildMessages,
+	IntentsBitField.Flags.MessageContent,
+	IntentsBitField.Flags.GuildPresences,
+	IntentsBitField.Flags.GuildVoiceStates,
+	IntentsBitField.Flags.GuildMessageReactions,
 );
 
 // create a bot instance
 const bot = new Client({
-  intents: myIntents,
+	intents: myIntents,
 });
 
 const envFile = `.env.${process.env.NODE_ENV || "development"}`;
@@ -34,15 +35,19 @@ console.log("fresh boot up...");
 
 // connect to db and initialise bot
 const main = async () => {
-  try {
-    await mongoose.connect(process.env.ATLAS_URI || "");
-    bot.login(process.env.DISCORD_BOT_TOKEN);
-    // await insertUsers();
-    // console.log("users added");
-  } catch (err) {
-    console.error(err);
-    process.exit(0);
-  }
+	try {
+		await mongoose.connect(process.env.ATLAS_URI || "");
+
+		// connect to qdrant vector db
+		await setupQdrant();
+
+		bot.login(process.env.DISCORD_BOT_TOKEN);
+		// await insertUsers();
+		// console.log("users added");
+	} catch (err) {
+		console.error(err);
+		process.exit(0);
+	}
 };
 
 main();
