@@ -72,7 +72,7 @@ const EpisodicMemorySchema = new Schema(
 		},
 
 		// db only fields
-		user_id: { type: String, required: true, unique: true, index: true },
+		user_id: { type: String, required: true },
 		createdAt: { type: Number, required: true, default: Date.now() },
 		updatedAt: { type: Number, required: true, default: Date.now() },
 		times_recalled: { type: Number, required: true },

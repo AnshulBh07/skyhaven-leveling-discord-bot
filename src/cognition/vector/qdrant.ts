@@ -1,6 +1,9 @@
 import { QdrantClient } from "@qdrant/js-client-rest";
 import dotenv from "dotenv";
-import { QdrantPayload } from "../utils/memoryArchitectureTypes";
+import {
+	IQdrantRetrieved,
+	QdrantPayload,
+} from "../utils/memoryArchitectureTypes";
 
 const envFile = `.env.${process.env.NODE_ENV || "development"}`;
 
@@ -19,7 +22,7 @@ export const setupQdrant = async () => {
 		const collections = await qdrant.getCollections();
 		const existing = collections.collections.map((c) => c.name);
 
-		if (!existing.includes("episodic_memories"))
+		if (!existing.includes("episodic_memories")) {
 			await qdrant.createCollection("episodic_memories", {
 				vectors: {
 					size: VECTOR_SIZE,
@@ -27,13 +30,25 @@ export const setupQdrant = async () => {
 				},
 			});
 
-		if (!existing.includes("semantic_memories"))
+			await qdrant.createPayloadIndex("episodic_memories", {
+				field_name: "userID",
+				field_schema: "keyword",
+			});
+		}
+
+		if (!existing.includes("semantic_memories")) {
 			await qdrant.createCollection("semantic_memories", {
 				vectors: {
 					size: VECTOR_SIZE,
 					distance: "Cosine",
 				},
 			});
+
+			await qdrant.createPayloadIndex("semantic_memories", {
+				field_name: "userID",
+				field_schema: "keyword",
+			});
+		}
 	} catch (err) {
 		console.error("Error while setting up qdrant db : ", err);
 	}
@@ -58,7 +73,7 @@ export const searchVector = async (
 	embed: number[],
 	user_id: string,
 	collectionName: string,
-) => {
+): Promise<IQdrantRetrieved[]> => {
 	try {
 		const results = await qdrant.search(collectionName, {
 			vector: embed,

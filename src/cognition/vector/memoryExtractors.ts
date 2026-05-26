@@ -1,46 +1,44 @@
 // Seraphina’s autobiographical memory processor.
-import { aiModel, genAI } from "../../utils/LLMUtils/seraphinaPrompt";
+import { zodTextFormat } from "openai/helpers/zod.mjs";
 import {
 	EpisodicMemory,
 	ReflectiveMemory,
 	RelationshipState,
 	SemanticMemory,
 } from "../utils/memoryArchitectureTypes";
+import { openai, openaiModel } from "../utils/openai";
 import {
 	episodicMemoryExtractorPrompt,
 	reflectionMemoryExtractorPrompt,
 	relationshipMemoryExtractorPrompt,
 	semanticMemoryExtractorPrompt,
 } from "../utils/seraphinaCognitionPrompts";
+import { episodicMemorySchema } from "../zodValidation/inferEpisodicMemory";
+import { semanticMemorySchema } from "../zodValidation/inferSemanticMemory";
+import { relationshipMemorySchema } from "../zodValidation/inferRelationshipState";
+import { reflectiveMemorySchema } from "../zodValidation/inferReflectionMemory";
 
 export const extractEpisodicMemory = async (
 	interaction: string,
 ): Promise<EpisodicMemory | undefined> => {
 	try {
-		const result = await genAI.models.generateContent({
-			model: aiModel,
-			contents: interaction,
-			config: {
-				systemInstruction: episodicMemoryExtractorPrompt,
-			},
+		const response = await openai.responses.parse({
+			model: openaiModel,
+			instructions: episodicMemoryExtractorPrompt,
+			input: interaction,
+
+			text: { format: zodTextFormat(episodicMemorySchema, "episodic_memory") },
 		});
 
 		// You pass the user's *latest* message to sendMessage
-		const reply = result.text;
+		const parsed = response.output_parsed;
 
-		if (!reply) {
+		if (!parsed) {
 			console.log(
 				"⚠️ Seraphina fell out of sync with the divine stream. Try again shortly.",
 			);
 			return undefined;
 		}
-
-		const cleaned = reply
-			.replace(/```json/g, "")
-			.replace(/```/g, "")
-			.trim();
-
-		const parsed: EpisodicMemory = JSON.parse(cleaned);
 
 		return parsed;
 	} catch (err) {
@@ -53,16 +51,16 @@ export const extractSemanticMemory = async (
 	interaction: string,
 ): Promise<SemanticMemory | undefined> => {
 	try {
-		const result = await genAI.models.generateContent({
-			model: aiModel,
-			contents: interaction,
-			config: {
-				systemInstruction: semanticMemoryExtractorPrompt,
-			},
+		const result = await openai.responses.parse({
+			model: openaiModel,
+			instructions: semanticMemoryExtractorPrompt,
+			input: interaction,
+
+			text: { format: zodTextFormat(semanticMemorySchema, "semantic_memory") },
 		});
 
 		// You pass the user's *latest* message to sendMessage
-		const reply = result.text;
+		const reply = result.output_parsed;
 
 		if (!reply) {
 			console.log(
@@ -71,14 +69,7 @@ export const extractSemanticMemory = async (
 			return undefined;
 		}
 
-		const cleaned = reply
-			.replace(/```json/g, "")
-			.replace(/```/g, "")
-			.trim();
-
-		const parsed: SemanticMemory = JSON.parse(cleaned);
-
-		return parsed;
+		return { ...reply, memoryVersion: 1 };
 	} catch (err) {
 		console.error("Error while executing memory evaluation : ", err);
 		return undefined;
@@ -87,18 +78,21 @@ export const extractSemanticMemory = async (
 
 export const extractRelationshipMemory = async (
 	interaction: string,
+	oldState: string,
 ): Promise<RelationshipState | undefined> => {
 	try {
-		const result = await genAI.models.generateContent({
-			model: aiModel,
-			contents: interaction,
-			config: {
-				systemInstruction: relationshipMemoryExtractorPrompt,
+		const result = await openai.responses.parse({
+			model: openaiModel,
+			instructions: relationshipMemoryExtractorPrompt,
+			input: oldState + "\n" + interaction,
+
+			text: {
+				format: zodTextFormat(relationshipMemorySchema, "relationship_memory"),
 			},
 		});
 
 		// You pass the user's *latest* message to sendMessage
-		const reply = result.text;
+		const reply = result.output_parsed;
 
 		if (!reply) {
 			console.log(
@@ -107,14 +101,7 @@ export const extractRelationshipMemory = async (
 			return undefined;
 		}
 
-		const cleaned = reply
-			.replace(/```json/g, "")
-			.replace(/```/g, "")
-			.trim();
-
-		const parsed: RelationshipState = JSON.parse(cleaned);
-
-		return parsed;
+		return reply;
 	} catch (err) {
 		console.error("Error while executing memory evaluation : ", err);
 		return undefined;
@@ -125,16 +112,18 @@ export const extractReflectionMemory = async (
 	interaction: string,
 ): Promise<ReflectiveMemory | undefined> => {
 	try {
-		const result = await genAI.models.generateContent({
-			model: aiModel,
-			contents: interaction,
-			config: {
-				systemInstruction: reflectionMemoryExtractorPrompt,
+		const result = await openai.responses.parse({
+			model: openaiModel,
+			instructions: reflectionMemoryExtractorPrompt,
+			input: interaction,
+
+			text: {
+				format: zodTextFormat(reflectiveMemorySchema, "reflection_memory"),
 			},
 		});
 
 		// You pass the user's *latest* message to sendMessage
-		const reply = result.text;
+		const reply = result.output_parsed;
 
 		if (!reply) {
 			console.log(
@@ -143,14 +132,7 @@ export const extractReflectionMemory = async (
 			return undefined;
 		}
 
-		const cleaned = reply
-			.replace(/```json/g, "")
-			.replace(/```/g, "")
-			.trim();
-
-		const parsed: ReflectiveMemory = JSON.parse(cleaned);
-
-		return parsed;
+		return reply;
 	} catch (err) {
 		console.error("Error while executing memory evaluation : ", err);
 		return undefined;

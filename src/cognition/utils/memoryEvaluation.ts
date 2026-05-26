@@ -1,39 +1,33 @@
-import { aiModel, genAI } from "../../utils/LLMUtils/seraphinaPrompt";
-import { MemoryEvaluation } from "./memoryArchitectureTypes";
+import { zodTextFormat } from "openai/helpers/zod.mjs";
+import { memoryEvaluationSchema } from "../zodValidation/inferMemoryEvaluation";
 import { memoryEvaluationPrompt } from "./seraphinaCognitionPrompts";
+import { openai, openaiModel } from "./openai";
+import { MemoryEvaluation } from "./memoryArchitectureTypes";
 
 export const evaluateMemory = async (
 	interaction: string,
 ): Promise<MemoryEvaluation | undefined> => {
 	try {
-		const result = await genAI.models.generateContent({
-			model: aiModel,
-			contents: interaction,
-			config: {
-				systemInstruction: memoryEvaluationPrompt,
+		const response = await openai.responses.parse({
+			model: openaiModel,
+
+			instructions: memoryEvaluationPrompt,
+
+			input: interaction,
+
+			text: {
+				format: zodTextFormat(
+					memoryEvaluationSchema,
+
+					"memory_evaluation",
+				),
 			},
 		});
 
-		// You pass the user's *latest* message to sendMessage
-		const reply = result.text;
-
-		if (!reply) {
-			console.log(
-				"⚠️ Seraphina fell out of sync with the divine stream. Try again shortly.",
-			);
-			return undefined;
-		}
-
-		const cleaned = reply
-			.replace(/```json/g, "")
-			.replace(/```/g, "")
-			.trim();
-
-		const parsed: MemoryEvaluation = JSON.parse(cleaned);
-
-		return parsed;
+		return response.output_parsed || undefined;
 	} catch (err) {
-		console.error("Error while executing memory evaluation : ", err);
+		console.error("Error while evaluating memory:", err);
+
 		return undefined;
 	}
 };

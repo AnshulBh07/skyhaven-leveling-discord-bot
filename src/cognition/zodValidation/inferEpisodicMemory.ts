@@ -20,19 +20,19 @@ export const episodicMemorySchema = z.object({
 	emotionalTone: z.string(),
 
 	emotions: z.object({
-		curiosity: z.number().min(0).max(1).optional(),
+		curiosity: z.number().min(0).max(1),
 
-		warmth: z.number().min(0).max(1).optional(),
+		warmth: z.number().min(0).max(1),
 
-		sadness: z.number().min(0).max(1).optional(),
+		sadness: z.number().min(0).max(1),
 
-		concern: z.number().min(0).max(1).optional(),
+		concern: z.number().min(0).max(1),
 
-		attachment: z.number().min(0).max(1).optional(),
+		attachment: z.number().min(0).max(1),
 
-		admiration: z.number().min(0).max(1).optional(),
+		admiration: z.number().min(0).max(1),
 
-		existentialWeight: z.number().min(0).max(1).optional(),
+		existentialWeight: z.number().min(0).max(1),
 	}),
 
 	emotionalIntensity: z.number().min(0).max(1),

@@ -10,19 +10,20 @@ import { seraphinaAnalyzeImage } from "../../utils/LLMUtils/seraphinaImageAnalys
 import { runCognition } from "../../cognition/vector/runCognition";
 import ChatMemory from "../../models/chatMemorySchema";
 import { StoredChatMemory } from "../../utils/interfaces";
+import { retriveRelatedMemories } from "../../cognition/vector/retrieveMemories";
 
 // Flow for cognition and reply is given below, we try to simulate human thinking
 // message
 // ↓
 // detect type
 // ↓
-// run cognition pipeline
-// ↓
 // retrieve memories (so that new reply has knowledge of older one too)
 // ↓
 // generate reply
 // ↓
 // send reply
+// ↓
+// run cognition pipeline
 
 const execute = async (client: Client, message: Message) => {
 	try {
@@ -100,6 +101,9 @@ const execute = async (client: Client, message: Message) => {
 
 		// run cognition pipeline, pass current user message and old seraphina reply
 		// retrieve from last message chat memories (bound to be from seraphina)
+		let interaction = "",
+			pastMemories = "";
+
 		const userChats = (await ChatMemory.findOne({
 			userID: message.author.id,
 		})) as StoredChatMemory;
@@ -113,23 +117,41 @@ const execute = async (client: Client, message: Message) => {
 				chats[chats.length - 1].content.length > 0
 			) {
 				// form interaction that contains last seraphina message + current user message
-				const interaction = `Seraphina : ${chats[chats.length - 1].content}
-				${message.author.displayName} : ${userMsg}`;
-
-				await runCognition(interaction, message.author.id);
+				interaction = `Previous Seraphina reply : ${chats[chats.length - 1].content}
+				Current ${message.author.displayName} message : ${userMsg}`;
 			}
 		}
 
-		// retrieve all the related memories from vector db and thn from mongo so that they can be sent in prompt
+		if (!interaction.length) {
+			interaction = `
+			Current ${message.author.displayName} message:
+			${userMsg}
+			`;
+		}
+
+		try {
+			pastMemories = await retriveRelatedMemories(
+				interaction,
+				message.author.id,
+			);
+		} catch (err) {
+			console.error("Memory retrieval failed : ", err);
+		}
 
 		// generate normal reply with convo prompt
 		const seraphinaReply = await generateSeraphinaConvoReply(
 			seraphinaMood,
 			message.author.id,
 			userMsg,
+			pastMemories,
 		);
 
 		await channel.send({ content: seraphinaReply });
+
+		// run cognition at last so that it doesnt block our reply
+		runCognition(interaction, message.author.id).catch((err) => {
+			console.error("Cognition failed : ", err);
+		});
 	} catch (err) {
 		console.error("Error while talking to seraphina :", err);
 	}

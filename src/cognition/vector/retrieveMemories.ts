@@ -1,10 +1,14 @@
 import EpisodicMemoryModel from "../../models/cognition/episodicMemorySchema";
+import ReflectiveMemoryModel from "../../models/cognition/reflectiveMemorySchema";
+import RelationshipStateModel from "../../models/cognition/relationshipStateSchema";
 import SemanticMemoryModel from "../../models/cognition/semanticMemorySchema";
 import {
 	IQdrantRetrieved,
 	MappedEpisodicMemory,
 	MappedSemanticMemory,
 	StoredEpisodicMemory,
+	StoredReflectionMemory,
+	StoredRelationshipMemory,
 	StoredSemanticMemory,
 } from "../utils/memoryArchitectureTypes";
 import { generateEmbedding } from "./generateEmbedding";
@@ -68,7 +72,7 @@ const getRelatedQdrantMemories = async (
 		if (collectionName === "episodic_memories") {
 			const episodicMemories = (await EpisodicMemoryModel.find({
 				vector_embed_id: { $in: vectorIDs },
-			})) as StoredEpisodicMemory[];
+			}).lean()) as StoredEpisodicMemory[];
 
 			const topMemories = getRelevantMemories(
 				episodicMemories,
@@ -99,13 +103,13 @@ const getRelatedQdrantMemories = async (
             interpreted meaning:
             ${memory.interpretedMeaning}`,
 							)
-							.join("\n")}`;
+							.join("\n---\n")}`;
 		}
 
 		if (collectionName === "semantic_memories") {
 			const semanticMemories = (await SemanticMemoryModel.find({
 				vector_embed_id: { $in: vectorIDs },
-			})) as StoredSemanticMemory[];
+			}).lean()) as StoredSemanticMemory[];
 
 			const topMemories = getRelevantMemories(
 				semanticMemories,
@@ -114,12 +118,108 @@ const getRelatedQdrantMemories = async (
 
 			memoryContext = `## Known Truths
             
-            ${topMemories.map((memory) => `${memory.statement}`).join("\n")}`;
+            ${topMemories.map((memory) => `${memory.statement}`).join("\n---\n")}`;
 		}
 
 		return memoryContext;
 	} catch (err) {
 		console.error("Error while fetching related episodic memories : ", err);
+		return "";
+	}
+};
+
+const getRelationshipContext = async (user_id: string) => {
+	try {
+		const relationshipState = (await RelationshipStateModel.findOne({
+			user_id: user_id,
+		})) as StoredRelationshipMemory;
+
+		if (!relationshipState) return "";
+
+		return `
+		## Current Relationship State
+
+		Overall Impression:
+		${relationshipState.overallImpression}
+
+		Relationship Narrative:
+		${relationshipState.relationshipNarrative}
+
+		Emotional Associations:
+		${relationshipState.emotionalAssociations.join(", ")}
+
+		Perceived Traits:
+		${relationshipState.perceivedTraits.join(", ")}
+
+		Communication Patterns:
+		${relationshipState.communicationPatterns.join(", ")}
+
+		Recurring Dynamics:
+		${relationshipState.recurringDynamics.join(", ")}
+
+		Behavioral Expectations:
+		${relationshipState.behavioralExpectations.join(", ")}
+
+		Last Interaction Summary:
+		${relationshipState.lastInteractionSummary}
+
+		${
+			relationshipState.insideJokes.length
+				? `Inside Jokes:
+		${relationshipState.insideJokes.join(", ")}`
+				: ""
+		}
+
+		${
+			relationshipState.unresolvedTensions.length
+				? `Unresolved Tensions:
+		${relationshipState.unresolvedTensions.join(", ")}`
+				: ""
+		}
+		`;
+	} catch (err) {
+		console.error("Error while making relationship context : ", err);
+		return "";
+	}
+};
+
+const getReflectionContext = async (user_id: string) => {
+	try {
+		const reflectionMemories = (await ReflectiveMemoryModel.find({
+			user_id: user_id,
+		})
+			.sort({ updatedAt: -1 })
+			.limit(3)) as StoredReflectionMemory[];
+
+		if (!reflectionMemories.length) return "";
+
+		return `
+		## Internal Reflections
+
+		${reflectionMemories
+			.map(
+				(reflection) => `
+
+		Trigger:
+		${reflection.triggerEvent}
+
+		Reflection:
+		${reflection.reflection}
+
+		Self Observation:
+		${reflection.selfObservation}
+
+		Behavioral Adjustment:
+		${reflection.behavioralAdjustment}
+
+		Emotional Effect:
+		${reflection.emotionalEffect}
+		`,
+			)
+			.join("\n")}
+		`;
+	} catch (err) {
+		console.error("Error while forming reflection context : ", err);
 		return "";
 	}
 };
@@ -135,19 +235,27 @@ export const retriveRelatedMemories = async (
 
 		if (!vectorEmbed.length) return "";
 
-		const episodicContext = await getRelatedQdrantMemories(
-			vectorEmbed,
-			user_id,
-			"episodic_memories",
-		);
+		// use promise.all() for parallel execution and add await so only proceeds after all resolved in porallel
+		const [
+			episodicContext,
+			semanticContext,
+			relationshipContext,
+			reflectionContext,
+		] = await Promise.allSettled([
+			getRelatedQdrantMemories(vectorEmbed, user_id, "episodic_memories"),
+			getRelatedQdrantMemories(vectorEmbed, user_id, "semantic_memories"),
+			getRelationshipContext(user_id),
+			getReflectionContext(user_id),
+		]);
 
-		const semanticContext = await getRelatedQdrantMemories(
-			vectorEmbed,
-			user_id,
-			"semantic_memories",
-		);
+		const retrievedMemories = [
+			episodicContext,
+			semanticContext,
+			relationshipContext,
+			reflectionContext,
+		].join("\n");
 
-		return episodicContext + "\n\n" + semanticContext;
+		return retrievedMemories;
 	} catch (err) {
 		console.error("Error while retrieving related memories : ", err);
 		return "";

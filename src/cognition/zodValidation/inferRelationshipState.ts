@@ -3,7 +3,7 @@ import { z } from "zod";
 export const relationshipMemorySchema = z.object({
 	overallImpression: z.string(),
 
-	emotionalAssociation: z.array(z.string()),
+	emotionalAssociations: z.array(z.string()),
 
 	perceivedTraits: z.array(z.string()),
 

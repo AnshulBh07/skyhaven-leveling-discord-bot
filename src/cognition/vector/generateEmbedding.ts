@@ -1,10 +1,13 @@
-import { aiModel, genAI } from "../../utils/LLMUtils/seraphinaPrompt";
+import { genAI } from "../../utils/LLMUtils/seraphinaPrompt";
 
 export const generateEmbedding = async (text: string): Promise<number[]> => {
 	try {
 		const result = await genAI.models.embedContent({
-			model: aiModel,
+			model: "gemini-embedding-001",
 			contents: text,
+			config: {
+				outputDimensionality: 768,
+			},
 		});
 
 		if (!result.embeddings) return [];
