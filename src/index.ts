@@ -36,10 +36,10 @@ console.log("fresh boot up...");
 // connect to db and initialise bot
 const main = async () => {
 	try {
-		await mongoose.connect(process.env.ATLAS_URI || "");
-
-		// connect to qdrant vector db
-		await setupQdrant();
+		await Promise.all([
+			mongoose.connect(process.env.ATLAS_URI || ""),
+			setupQdrant(),
+		]);
 
 		bot.login(process.env.DISCORD_BOT_TOKEN);
 		// await insertUsers();

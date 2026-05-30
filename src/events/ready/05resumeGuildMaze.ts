@@ -5,19 +5,32 @@ import { attachQuestMazeReviewCollector } from "../../utils/gquestUtils";
 import { IMaze } from "../../utils/interfaces";
 
 const execute = async (client: Client) => {
-  try {
-    const mazes = await Maze.find({ status: "pending" });
+	try {
+		const mazes = await Maze.find({ status: "pending" });
 
-    for (const maze of mazes) {
-      console.log("🔁 resuming maze : ", maze.messageID);
-      // continue thread if non archived
-      await attachMazeThreadCollector(client, maze.submissionThreadID);
-      // attach fresh button collectors on message
-      await attachQuestMazeReviewCollector(client, maze as IMaze, "mz");
-    }
-  } catch (err) {
-    console.error("Error while resuming mazes : ", err);
-  }
+		const resumeMazeThreadCollectors: Promise<any>[] = [],
+			resumeMazeReviewCollectors: Promise<any>[] = [];
+
+		for (const maze of mazes) {
+			console.log("🔁 resuming maze : ", maze.messageID);
+
+			// continue thread if non archived
+			// attach fresh button collectors on message
+			resumeMazeThreadCollectors.push(
+				attachMazeThreadCollector(client, maze.submissionThreadID),
+			);
+			resumeMazeReviewCollectors.push(
+				attachQuestMazeReviewCollector(client, maze as IMaze, "mz"),
+			);
+		}
+
+		await Promise.all([
+			...resumeMazeThreadCollectors,
+			...resumeMazeReviewCollectors,
+		]);
+	} catch (err) {
+		console.error("Error while resuming mazes : ", err);
+	}
 };
 
 export default execute;

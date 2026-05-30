@@ -80,30 +80,12 @@ const getRelatedQdrantMemories = async (
 			) as MappedEpisodicMemory[];
 
 			memoryContext = `
-            ## Relevant Memories : 
-            ${topMemories
-							.map(
-								(memory) =>
-									`
-            summary:
-            ${memory.summary}
-            
-            scene description:
-            ${memory.sceneDescription}
-            
-            perspective:
-            ${memory.perspective}
-            
-            emotional tone:
-            ${memory.emotionalTone}
-            
-            internal response:
-            ${memory.internalResponse}
-            
-            interpreted meaning:
-            ${memory.interpretedMeaning}`,
-							)
-							.join("\n---\n")}`;
+				## Relevant Experiences
+
+				${topMemories
+					.map((memory) => `- ${memory.summary} (${memory.emotionalTone})`)
+					.join("\n")}
+				`;
 		}
 
 		if (collectionName === "semantic_memories") {
@@ -137,43 +119,37 @@ const getRelationshipContext = async (user_id: string) => {
 		if (!relationshipState) return "";
 
 		return `
-		## Current Relationship State
+		## Relationship Context
 
-		Overall Impression:
-		${relationshipState.overallImpression}
+		- Overall impression: ${relationshipState.overallImpression}
 
-		Relationship Narrative:
-		${relationshipState.relationshipNarrative}
+		- User traits:
+		${relationshipState.perceivedTraits
+			.slice(0, 5)
+			.map((t) => `  • ${t}`)
+			.join("\n")}
 
-		Emotional Associations:
-		${relationshipState.emotionalAssociations.join(", ")}
+		- Communication style:
+		${relationshipState.communicationPatterns
+			.slice(0, 3)
+			.map((t) => `  • ${t}`)
+			.join("\n")}
 
-		Perceived Traits:
-		${relationshipState.perceivedTraits.join(", ")}
-
-		Communication Patterns:
-		${relationshipState.communicationPatterns.join(", ")}
-
-		Recurring Dynamics:
-		${relationshipState.recurringDynamics.join(", ")}
-
-		Behavioral Expectations:
-		${relationshipState.behavioralExpectations.join(", ")}
-
-		Last Interaction Summary:
-		${relationshipState.lastInteractionSummary}
+		- Shared dynamics:
+		${relationshipState.recurringDynamics
+			.slice(0, 3)
+			.map((t) => `  • ${t}`)
+			.join("\n")}
 
 		${
 			relationshipState.insideJokes.length
-				? `Inside Jokes:
-		${relationshipState.insideJokes.join(", ")}`
-				: ""
-		}
-
-		${
-			relationshipState.unresolvedTensions.length
-				? `Unresolved Tensions:
-		${relationshipState.unresolvedTensions.join(", ")}`
+				? `
+		- Inside jokes:
+		${relationshipState.insideJokes
+			.slice(0, 3)
+			.map((j) => `  • ${j}`)
+			.join("\n")}
+		`
 				: ""
 		}
 		`;
@@ -194,28 +170,10 @@ const getReflectionContext = async (user_id: string) => {
 		if (!reflectionMemories.length) return "";
 
 		return `
-		## Internal Reflections
+		## Personal Reflections
 
 		${reflectionMemories
-			.map(
-				(reflection) => `
-
-		Trigger:
-		${reflection.triggerEvent}
-
-		Reflection:
-		${reflection.reflection}
-
-		Self Observation:
-		${reflection.selfObservation}
-
-		Behavioral Adjustment:
-		${reflection.behavioralAdjustment}
-
-		Emotional Effect:
-		${reflection.emotionalEffect}
-		`,
-			)
+			.map((reflection) => `- ${reflection.selfObservation}`)
 			.join("\n")}
 		`;
 	} catch (err) {
@@ -241,7 +199,7 @@ export const retriveRelatedMemories = async (
 			semanticContext,
 			relationshipContext,
 			reflectionContext,
-		] = await Promise.allSettled([
+		] = await Promise.all([
 			getRelatedQdrantMemories(vectorEmbed, user_id, "episodic_memories"),
 			getRelatedQdrantMemories(vectorEmbed, user_id, "semantic_memories"),
 			getRelationshipContext(user_id),

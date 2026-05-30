@@ -7,14 +7,17 @@ const execute = async (client: Client) => {
 	try {
 		const campaigns = await CommunitySupport.find({ isEnded: false });
 
+		const collectorTasks: Promise<unknown>[] = [];
+
 		for (const campaign of campaigns) {
 			console.log("🔁 resuming support campaign : ", campaign.messageID);
 
-			await attachCommunitySupportCollector(
-				client,
-				campaign as ICommunitySupport,
+			collectorTasks.push(
+				attachCommunitySupportCollector(client, campaign as ICommunitySupport),
 			);
 		}
+
+		await Promise.all(collectorTasks);
 	} catch (err) {
 		console.error("Error while resuming support campaigns : ", err);
 	}

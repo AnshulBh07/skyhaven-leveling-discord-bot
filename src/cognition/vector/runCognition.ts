@@ -258,7 +258,7 @@ export const runCognition = async (interaction: string, user_id: string) => {
 		// decide what type of memory it has to be
 		const evaluated = await evaluateMemory(interaction);
 
-		console.log(evaluated);
+		// console.log(evaluated);
 
 		if (!evaluated || !evaluated.shouldCreateMemory) return;
 
@@ -283,7 +283,7 @@ export const runCognition = async (interaction: string, user_id: string) => {
 			cognitionTasks.push(handleReflectionMemory(interaction, user_id));
 		}
 
-		await Promise.allSettled(cognitionTasks);
+		await Promise.all(cognitionTasks);
 	} catch (err) {
 		console.error("Error while running cognition pipeline : ", err);
 	}
