@@ -17,7 +17,7 @@ const execute = async (client: Client) => {
 			);
 		}
 
-		await Promise.allSettled(collectorTasks);
+		await Promise.all(collectorTasks);
 	} catch (err) {
 		console.error("Error while resuming support campaigns : ", err);
 	}

@@ -75,25 +75,28 @@ export const searchVector = async (
 	collectionName: string,
 ): Promise<IQdrantRetrieved[]> => {
 	try {
-		const results = await qdrant.search(collectionName, {
+		const searchOptions: any = {
 			vector: embed,
 			limit: 15,
-			filter: {
+		};
+
+		if (collectionName !== "semantic_memories") {
+			searchOptions.filter = {
 				must: [{ key: "userID", match: { value: user_id } }],
-			},
-		});
+			};
+		}
+
+		const results = await qdrant.search(collectionName, searchOptions);
 
 		return results
-			? results
-					.filter((r) => r.score >= 0.72)
-					.map((r) => ({
-						id: String(r.id),
-						score: Number(r.score),
-						payload: {
-							userID: String(r.payload?.userID),
-							type: r.payload?.type as "episodic" | "semantic",
-						},
-					}))
+			? results.map((r) => ({
+					id: String(r.id),
+					score: Number(r.score),
+					payload: {
+						userID: String(r.payload?.userID),
+						type: r.payload?.type as "episodic" | "semantic",
+					},
+				}))
 			: [];
 	} catch (err) {
 		console.error("Error while searching in qdrant vector db : ", err);

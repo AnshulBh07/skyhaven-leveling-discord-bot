@@ -24,7 +24,7 @@ const execute = async (client: Client) => {
 			);
 		}
 
-		await Promise.allSettled([
+		await Promise.all([
 			...resumeMazeThreadCollectors,
 			...resumeMazeReviewCollectors,
 		]);

@@ -52,7 +52,7 @@ const execute = async (client: Client) => {
 			}
 		}
 
-		await Promise.allSettled([...giveawaysResume, ...giveawaysResume]);
+		await Promise.all([...giveawaysResume, ...giveawaysEnd]);
 	} catch (err) {
 		console.error("Error in resume giveaways fired at ready event :", err);
 	}

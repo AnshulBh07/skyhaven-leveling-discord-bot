@@ -23,7 +23,7 @@ const execute = async (client: Client) => {
 			resumeGquestsArr.push(resumeGquest(client, gquest as IGquest));
 		}
 
-		await Promise.allSettled(resumeGquestsArr);
+		await Promise.all(resumeGquestsArr);
 	} catch (err) {
 		console.error("Error in gquest resume function : ", err);
 	}

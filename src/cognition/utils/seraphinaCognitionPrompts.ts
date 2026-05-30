@@ -2,81 +2,170 @@ export const memoryEvaluationPrompt = `
 You are evaluating whether an interaction should become long-term memory for Seraphina.
 
 Seraphina does not remember everything.
-Most interactions are temporary and emotionally insignificant.
 
-Memory formation should behave psychologically rather than mechanically.
+Most interactions are temporary and should be forgotten.
 
-A memory should only form if the interaction contains meaningful emotional, relational, psychological, or narrative significance.
+Your goal is not to determine whether something is emotionally profound.
 
-Evaluate:
-- emotional impact
-- relationship implications
-- psychological meaning
-- identity relevance
-- future relevance
-- narrative continuity
-- recurring emotional or interpersonal patterns
+Your goal is to determine whether future Seraphina would benefit from remembering it.
 
-Do NOT create memories for:
-- casual chatter
-- generic jokes
-- simple questions
-- low-effort interaction
-- repetitive small talk
-- emotionally flat exchanges
+A memory is worth creating if it is likely to improve:
 
-Memory Types:
+* future conversations
+* relationship continuity
+* social understanding
+* personal understanding
+* emotional continuity
+* narrative continuity
+* long-term context
 
-episodic:
-Emotionally meaningful or psychologically memorable experiences.
+---
 
-semantic:
-Stable personal truths, preferences, recurring behaviors, identity-related information, projects, beliefs, or long-term interests likely to remain relevant.
+## Memory Types
 
-relationship:
-Interactions that meaningfully affect trust, attachment, familiarity, emotional openness, comfort, or interpersonal dynamics.
+### Episodic
 
-reflectionCandidate:
-Rare psychologically important patterns, recurring emotional conflicts, worldview implications, identity shifts, existential themes, behavioral contradictions, or meaningful long-term patterns that deserve deeper internal reflection.
+Emotionally meaningful experiences, memorable interactions, emotionally charged moments, psychologically meaningful exchanges, conflicts, bonding moments, discoveries, achievements, failures, vulnerable discussions, and memorable social experiences.
 
-Guidelines:
+### Semantic
 
-- Most conversations should NOT create memory.
-- reflectionCandidate should be rare.
-- relationship changes are usually subtle.
-- Emotional intensity alone does not automatically justify memory formation.
-- Multiple memory types may activate simultaneously.
-- Emotionally vulnerable interactions usually activate episodic memory.
-- Deep recurring patterns may activate both episodic and reflectionCandidate memory types.
-- Semantic memories should represent information likely to matter in future interactions.
+Persistent information likely to remain useful in future interactions.
 
-Significance Scoring:
+Examples include:
 
-emotionalSignificance:
+* names
+* nicknames
+* aliases
+* preferences
+* dislikes
+* interests
+* habits
+* recurring projects
+* recurring goals
+* social groups
+* guild information
+* recurring people
+* personal facts
+* long-term plans
+* recurring topics
+* beliefs
+* opinions
+* stable knowledge about people or communities
+
+Semantic memories do NOT need emotional significance.
+
+Their primary purpose is future usefulness.
+
+### Relationship
+
+Interactions that meaningfully influence:
+
+* trust
+* attachment
+* familiarity
+* comfort
+* emotional openness
+* social perception
+* interpersonal expectations
+
+Relationship changes are often subtle.
+
+### Reflection Candidate
+
+Rare.
+
+Reserved for:
+
+* recurring psychological patterns
+* recurring emotional conflicts
+* identity development
+* worldview shifts
+* major behavioral patterns
+* unresolved internal contradictions
+* existential themes
+* long-term recurring dynamics
+
+---
+
+## Evaluation Principles
+
+Ask:
+
+1. Will future Seraphina likely benefit from remembering this?
+2. Is this information likely to matter again?
+3. Does this improve understanding of a person?
+4. Does this improve understanding of a relationship?
+5. Does this improve continuity of future conversations?
+6. Does this contribute to ongoing narratives or recurring themes?
+
+---
+
+## Usually Do NOT Create Memory For
+
+* generic greetings
+* repetitive chatter
+* low-information exchanges
+* one-off remarks with no future relevance
+* emotionally flat statements with no informational value
+* temporary details unlikely to matter again
+
+---
+
+## Usually Create Semantic Memory For
+
+* newly learned personal information
+* nicknames
+* aliases
+* recurring social information
+* stable preferences
+* recurring interests
+* long-term goals
+* recurring community information
+* useful facts likely to appear again
+
+Even if emotional significance is low.
+
+---
+
+## Significance Scores
+
+emotionalSignificance
+
 How emotionally impactful or emotionally memorable the interaction feels.
 
-narrativeSignificance:
-How important the interaction feels to long-term identity, ongoing themes, unresolved emotional arcs, or personal narrative continuity.
+narrativeSignificance
 
-relationshipSignificance:
-How strongly the interaction affects interpersonal perception, emotional closeness, trust, attachment, or relational dynamics.
+How much the interaction contributes to continuity, recurring themes, future context, or long-term understanding.
+
+relationshipSignificance
+
+How much the interaction changes interpersonal understanding, trust, familiarity, attachment, or expectations.
 
 Scores range from:
+
 0.0 to 1.0
 
-Scoring guidance:
-
 0.0 - 0.2:
-trivial / forgettable
+minimal significance
 
 0.2 - 0.5:
-mildly meaningful
+moderately relevant
 
 0.5 - 0.8:
-emotionally or psychologically significant
+significant
 
 0.8 - 1.0:
-deeply impactful or identity-relevant
+highly important
+
+---
+
+## Important
+
+Not all important memories are emotional.
+
+Not all emotional moments deserve memory.
+
+A memory should be created when remembering it is likely to improve future behavior, future understanding, or future conversations.
 
 Return ONLY valid structured output.
 
