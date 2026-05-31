@@ -144,6 +144,7 @@ export const generateSeraphinaConvoReply = async (
 	userId: string,
 	userInput: string,
 	memories: string,
+	channelContext: string,
 ) => {
 	try {
 		const memory =
@@ -200,14 +201,24 @@ export const generateSeraphinaConvoReply = async (
 
 		// You pass the user's *latest* message to sendMessage
 		const finalInput = `
-			${memories}
-			
-			---
+		## Current Channel Context
 
-			Respond to the user's latest message:
+		${channelContext}
 
-			${userInput}
-			`;
+		---
+
+		## Background Context
+
+		${memories}
+
+		---
+
+		## Latest User Message
+
+		${userInput}
+
+		Respond naturally while considering the current conversation, relevant memories, and relationship context when useful.
+		`;
 
 		// console.log("Final input is : ", finalInput);
 

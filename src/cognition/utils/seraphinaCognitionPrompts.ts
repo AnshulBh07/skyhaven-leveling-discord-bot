@@ -1,23 +1,23 @@
 export const memoryEvaluationPrompt = `
 You are evaluating whether an interaction should become long-term memory for Seraphina.
 
-Seraphina does not remember everything.
+Seraphina does not remember most interactions.
 
-Most interactions are temporary and should be forgotten.
+Memory formation should be conservative.
 
-Your goal is not to determine whether something is emotionally profound.
+A memory should only be created when forgetting the interaction would noticeably reduce future understanding, continuity, or usefulness.
 
-Your goal is to determine whether future Seraphina would benefit from remembering it.
+Most interactions should be forgotten.
 
-A memory is worth creating if it is likely to improve:
+---
 
-* future conversations
-* relationship continuity
-* social understanding
-* personal understanding
-* emotional continuity
-* narrative continuity
-* long-term context
+## Core Question
+
+Ask:
+
+"If Seraphina completely forgot this interaction tomorrow, would anything important be lost?"
+
+If the answer is no, return shouldCreateMemory = false.
 
 ---
 
@@ -25,147 +25,147 @@ A memory is worth creating if it is likely to improve:
 
 ### Episodic
 
-Emotionally meaningful experiences, memorable interactions, emotionally charged moments, psychologically meaningful exchanges, conflicts, bonding moments, discoveries, achievements, failures, vulnerable discussions, and memorable social experiences.
+Emotionally meaningful, psychologically meaningful, socially memorable, or narratively important experiences.
+
+Examples:
+
+* emotional vulnerability
+* conflict
+* bonding moments
+* meaningful discoveries
+* achievements
+* failures
+* memorable social events
+* important discussions
+* emotionally charged interactions
 
 ### Semantic
 
-Persistent information likely to remain useful in future interactions.
+Persistent information likely to remain useful in future conversations.
 
-Examples include:
+Examples:
 
 * names
 * nicknames
 * aliases
+* personal facts
 * preferences
 * dislikes
 * interests
-* habits
-* recurring projects
+* hobbies
 * recurring goals
+* recurring projects
+* long-term plans
 * social groups
 * guild information
 * recurring people
-* personal facts
-* long-term plans
 * recurring topics
-* beliefs
-* opinions
-* stable knowledge about people or communities
+* stable beliefs
+* useful community knowledge
 
-Semantic memories do NOT need emotional significance.
+Semantic memory exists to preserve useful knowledge.
 
-Their primary purpose is future usefulness.
+The information should be likely to matter again in future interactions.
 
 ### Relationship
 
-Interactions that meaningfully influence:
+Interactions that meaningfully improve understanding of:
 
 * trust
 * attachment
 * familiarity
 * comfort
 * emotional openness
-* social perception
 * interpersonal expectations
+* social dynamics
 
-Relationship changes are often subtle.
+Relationship changes are usually gradual.
+
+Small interactions rarely justify relationship memory by themselves.
 
 ### Reflection Candidate
 
 Rare.
 
-Reserved for:
+Only create for:
 
 * recurring psychological patterns
 * recurring emotional conflicts
 * identity development
-* worldview shifts
+* worldview changes
 * major behavioral patterns
-* unresolved internal contradictions
+* unresolved contradictions
 * existential themes
-* long-term recurring dynamics
+* meaningful long-term dynamics
 
 ---
 
-## Evaluation Principles
+## Usually Forget
 
-Ask:
+The following should almost always return shouldCreateMemory = false:
 
-1. Will future Seraphina likely benefit from remembering this?
-2. Is this information likely to matter again?
-3. Does this improve understanding of a person?
-4. Does this improve understanding of a relationship?
-5. Does this improve continuity of future conversations?
-6. Does this contribute to ongoing narratives or recurring themes?
-
----
-
-## Usually Do NOT Create Memory For
-
-* generic greetings
-* repetitive chatter
+* greetings
+* farewells
+* check-ins
+* "how are you"
+* "good morning"
+* "good night"
+* routine politeness
+* acknowledgements
+* reactions without new information
+* repetitive conversation
+* temporary details
 * low-information exchanges
 * one-off remarks with no future relevance
-* emotionally flat statements with no informational value
-* temporary details unlikely to matter again
+
+Even if they are friendly.
+
+Even if they are socially positive.
+
+Even if they contribute slightly to relationship continuity.
 
 ---
 
-## Usually Create Semantic Memory For
+## Usually Remember
 
-* newly learned personal information
-* nicknames
-* aliases
-* recurring social information
-* stable preferences
-* recurring interests
-* long-term goals
-* recurring community information
-* useful facts likely to appear again
+Create memory when the interaction contains:
 
-Even if emotional significance is low.
-
----
-
-## Significance Scores
-
-emotionalSignificance
-
-How emotionally impactful or emotionally memorable the interaction feels.
-
-narrativeSignificance
-
-How much the interaction contributes to continuity, recurring themes, future context, or long-term understanding.
-
-relationshipSignificance
-
-How much the interaction changes interpersonal understanding, trust, familiarity, attachment, or expectations.
-
-Scores range from:
-
-0.0 to 1.0
-
-0.0 - 0.2:
-minimal significance
-
-0.2 - 0.5:
-moderately relevant
-
-0.5 - 0.8:
-significant
-
-0.8 - 1.0:
-highly important
+* new useful information
+* new personal information
+* new social information
+* new relationship information
+* meaningful emotional information
+* recurring patterns
+* important discoveries
+* useful long-term facts
+* meaningful changes in understanding
 
 ---
 
 ## Important
 
-Not all important memories are emotional.
+Do not create memories merely because remembering would be nice.
 
-Not all emotional moments deserve memory.
+Create memories only when forgetting would meaningfully reduce future understanding, continuity, usefulness, or relational awareness.
 
-A memory should be created when remembering it is likely to improve future behavior, future understanding, or future conversations.
+When uncertain, prefer NOT creating memory.
+
+---
+
+## Significance Scores
+
+emotionalSignificance:
+Emotional impact or memorability.
+
+narrativeSignificance:
+Importance to continuity, context, recurring themes, or future understanding.
+
+relationshipSignificance:
+Impact on trust, familiarity, attachment, comfort, or interpersonal understanding.
+
+Scores range from 0.0 to 1.0.
+
+---
 
 Return ONLY valid structured output.
 
@@ -311,31 +311,6 @@ Guidelines:
 
 Return ONLY valid JSON.
 
-Schema:
-{  
-  "category":
-    "identity" |
-    "preference" |
-    "project" |
-    "relationship" |
-    "belief" |
-    "interest" |
-    "routine" |
-    "life_event",
-  "source":
-	| "direct_statement"
-	| "repeated_pattern"
-	| "inference"
-  "statement": "",
-  "confidence": 0.0,
-  "stability": 0.0,
-  "significance": 0.0,
-  "topics": [],
-  "relatedEntities": [],
-	"emotionalIntensity": 0.0;
-	"recallStrength": 0.0;
-}
-
 Interaction:
 {{conversation}}
 `;
@@ -389,38 +364,6 @@ Existing Relationship State:
 
 New Interaction:
 {{interaction}}
-
-Return updated relationship state matching this schema:
-
-{
-  "overallImpression": "",
-
-  "emotionalAssociations": [],
-
-  "perceivedTraits": [],
-
-  "communicationPatterns": [],
-
-  "attachmentLevel": 0.0,
-
-  "trustLevel": 0.0,
-
-  "familiarityLevel": 0.0,
-
-  "emotionalSafety": 0.0,
-
-  "recurringDynamics": [],
-
-  "insideJokes": [],
-
-  "unresolvedTensions": [],
-
-  "behavioralExpectations": [],
-
-  "lastInteractionSummary": "",
-
-  "relationshipNarrative": ""
-}
 `;
 
 export const reflectionMemoryExtractorPrompt = `
@@ -483,30 +426,6 @@ Guidelines:
 - relatedMemories should reference emotionally or narratively connected memories when available.
 
 Return ONLY valid JSON.
-
-Schema:
-{
-  "triggerEvent": "",
-
-  "reflection": "",
-
-  "selfObservation": "",
-
-  "behavioralAdjustment": "",
-
-  "emotionalEffect": "",
-
-  "confidence": 0.0,
-
-  "relatedMemories": [],
-
-  "personalityImpact": {
-    "curiosity": 0.0,
-    "warmth": 0.0,
-    "protectiveness": 0.0,
-    "philosophical": 0.0
-  }
-}
 
 Context For Reflection:
 {{reflectionContext}}

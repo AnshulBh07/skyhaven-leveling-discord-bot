@@ -7,10 +7,10 @@ import {
 } from "../../utils/commandKnowledgeBaseUtils";
 import { generateCommandQueryReply } from "../../utils/LLMUtils/generateCommandQueryReply";
 import { seraphinaAnalyzeImage } from "../../utils/LLMUtils/seraphinaImageAnalysis";
-import { runCognition } from "../../cognition/vector/runCognition";
 import ChatMemory from "../../models/chatMemorySchema";
 import { StoredChatMemory } from "../../utils/interfaces";
 import { retriveRelatedMemories } from "../../cognition/vector/retrieveMemories";
+import { CognitionQueue } from "../../cognition/queues.ts/cognitionQueue";
 
 // Flow for cognition and reply is given below, we try to simulate human thinking
 // message
@@ -23,7 +23,7 @@ import { retriveRelatedMemories } from "../../cognition/vector/retrieveMemories"
 // ↓
 // send reply
 // ↓
-// run cognition pipeline
+// run cognition pipeline using a queueud worker
 
 const execute = async (client: Client, message: Message) => {
 	try {
@@ -138,19 +138,42 @@ const execute = async (client: Client, message: Message) => {
 			console.error("Memory retrieval failed : ", err);
 		}
 
+		// also retrieve channel history to give seraphina a better context
+		const recentMsgs = await channel.messages.fetch({ limit: 20 });
+
+		const channelContext = recentMsgs
+			.reverse()
+			.map((msg) => {
+				const speaker = msg.author.bot
+					? "Seraphina"
+					: msg.member?.displayName || msg.author.username;
+
+				return `${speaker} : ${msg.content.replace(/^!s/i, "")}`;
+			})
+			.join("\n");
+
 		// generate normal reply with convo prompt
 		const seraphinaReply = await generateSeraphinaConvoReply(
 			seraphinaMood,
 			message.author.id,
 			userMsg,
 			pastMemories,
+			channelContext,
 		);
 
 		await channel.send({ content: seraphinaReply });
 
-		// run cognition at last so that it doesnt block our reply
-		runCognition(interaction, message.author.id).catch((err) => {
-			console.error("Cognition failed : ", err);
+		if (CognitionQueue.length >= 100) {
+			console.warn("Cognition queue full, dropping job");
+			return;
+		}
+
+		// push cognition in queue
+		CognitionQueue.push({
+			id: crypto.randomUUID(),
+			userId: message.author.id,
+			interaction: interaction,
+			createdAt: Date.now(),
 		});
 	} catch (err) {
 		console.error("Error while talking to seraphina :", err);
