@@ -7,10 +7,10 @@ import {
 } from "../../utils/commandKnowledgeBaseUtils";
 import { generateCommandQueryReply } from "../../utils/LLMUtils/generateCommandQueryReply";
 import { seraphinaAnalyzeImage } from "../../utils/LLMUtils/seraphinaImageAnalysis";
-import { runCognition } from "../../cognition/vector/runCognition";
 import ChatMemory from "../../models/chatMemorySchema";
 import { StoredChatMemory } from "../../utils/interfaces";
 import { retriveRelatedMemories } from "../../cognition/vector/retrieveMemories";
+import { CognitionQueue } from "../../cognition/queues.ts/cognitionQueue";
 
 // Flow for cognition and reply is given below, we try to simulate human thinking
 // message
@@ -148,9 +148,12 @@ const execute = async (client: Client, message: Message) => {
 
 		await channel.send({ content: seraphinaReply });
 
-		// run cognition at last so that it doesnt block our reply
-		runCognition(interaction, message.author.id).catch((err) => {
-			console.error("Cognition failed : ", err);
+		// push cognition in queue
+		CognitionQueue.push({
+			id: crypto.randomUUID(),
+			userId: message.author.id,
+			interaction: interaction,
+			createdAt: Date.now(),
 		});
 	} catch (err) {
 		console.error("Error while talking to seraphina :", err);
