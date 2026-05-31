@@ -23,7 +23,7 @@ import { CognitionQueue } from "../../cognition/queues.ts/cognitionQueue";
 // ↓
 // send reply
 // ↓
-// run cognition pipeline
+// run cognition pipeline using a queueud worker
 
 const execute = async (client: Client, message: Message) => {
 	try {
@@ -138,15 +138,35 @@ const execute = async (client: Client, message: Message) => {
 			console.error("Memory retrieval failed : ", err);
 		}
 
+		// also retrieve channel history to give seraphina a better context
+		const recentMsgs = await channel.messages.fetch({ limit: 20 });
+
+		const channelContext = recentMsgs
+			.reverse()
+			.map((msg) => {
+				const speaker = msg.author.bot
+					? "Seraphina"
+					: msg.member?.displayName || msg.author.username;
+
+				return `${speaker} : ${msg.content.replace(/^!s/i, "")}`;
+			})
+			.join("\n");
+
 		// generate normal reply with convo prompt
 		const seraphinaReply = await generateSeraphinaConvoReply(
 			seraphinaMood,
 			message.author.id,
 			userMsg,
 			pastMemories,
+			channelContext,
 		);
 
 		await channel.send({ content: seraphinaReply });
+
+		if (CognitionQueue.length >= 100) {
+			console.warn("Cognition queue full, dropping job");
+			return;
+		}
 
 		// push cognition in queue
 		CognitionQueue.push({
