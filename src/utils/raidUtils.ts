@@ -118,13 +118,6 @@ export const attachRaidParticipationCollector = async (
 				),
 		});
 
-		let tanks: string[] = [],
-			dps: string[] = [],
-			supports: string[] = [],
-			waitlist_tanks: string[] = [],
-			waitlist_supports: string[] = [],
-			waitlist_dps: string[] = [];
-
 		const banner = new AttachmentBuilder(raid.bannerUrl).setName("raid.png");
 
 		// helper functions to add participant role and remove it
@@ -171,6 +164,20 @@ export const attachRaidParticipationCollector = async (
 					});
 					return;
 				}
+
+				const freshRaid = await Raid.findOne({
+					announcementMessageID: announceMsg.id,
+					serverID: raid.serverID,
+				});
+
+				if (!freshRaid) return;
+
+				let tanks: string[] = [...freshRaid.participants.tank],
+					dps: string[] = [...freshRaid.participants.dps],
+					supports: string[] = [...freshRaid.participants.support],
+					waitlist_tanks: string[] = [...freshRaid.waitlist.tank],
+					waitlist_supports: string[] = [...freshRaid.waitlist.support],
+					waitlist_dps: string[] = [...freshRaid.waitlist.dps];
 
 				// update the list of members on message
 				const ogEmbed = announceMsg.embeds[0];
