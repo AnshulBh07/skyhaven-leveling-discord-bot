@@ -9,139 +9,139 @@ import {
 } from "../../utils/raidUtils";
 import { IRaid } from "../../utils/interfaces";
 
-const safeTimeout = (fn: () => Promise<void>, delay: number) => {
-	setTimeout(
-		() => {
-			fn().catch((err) => {
-				console.error("Timer error:", err);
-			});
-		},
-		Math.max(1000, delay),
-	);
-};
-
-const fetchFreshRaid = (raid: IRaid) => {
-	return Raid.findOne({
-		announcementMessageID: raid.announcementMessageID,
-
-		serverID: raid.serverID,
-	});
-};
-
 const execute = async (client: Client) => {
 	try {
 		const currTime = Date.now();
 
-		const ongoingRaids = await Raid.find({
-			stage: {
-				$ne: "completed",
-			},
-
+		// fetch all ongoing raids
+		const ongoinRaids = await Raid.find({
+			stage: { $ne: "completed" },
 			"raidTimestamps.finishTime": null,
-		}).lean();
+		});
 
-		const collectorTasks: Promise<unknown>[] = [];
-
-		for (const raid of ongoingRaids) {
-			console.log("🔁 resuming raid:", raid.announcementMessageID);
-
+		for (const raid of ongoinRaids) {
+			console.log("🔁 resuming raid : ", raid.announcementMessageID);
+			// if the currtime is more than raid startTime and it is unfinished, simply finish it, this
+			// raid won't contribute to any of the scores for user
 			if (raid.raidTimestamps.startTime < currTime) {
-				collectorTasks.push(
-					Raid.updateOne(
-						{
-							_id: raid._id,
-						},
-						{
-							$set: {
-								"raidTimestamps.finishTime": currTime,
-							},
-						},
-					),
-				);
-
+				raid.raidTimestamps.finishTime = currTime;
+				await raid.save();
 				continue;
 			}
 
-			collectorTasks.push(
-				attachRaidParticipationCollector(client, raid as IRaid),
-			);
+			// attach collector as well so it remians functional
+			await attachRaidParticipationCollector(client, raid as IRaid);
 
 			const startTime = raid.raidTimestamps.startTime;
 
-			safeTimeout(
-				async () => {
-					const freshRaid = await fetchFreshRaid(raid as IRaid);
+			const scoutRemindTime = startTime - currTime - 24 * 60 * 60 * 1000;
+			const allocationTime = startTime - currTime - 60 * 60 * 1000;
+			const remindParticipantsTime = startTime - currTime - 30 * 60 * 1000;
+			const reviewReminder = startTime - currTime + 3 * 60 * 60 * 1000;
 
-					if (
-						freshRaid &&
-						(!freshRaid.bossBuffsImageUrl.length ||
-							!freshRaid.bossDebuffsImageUrl.length)
-					) {
-						await sendScoutReminder(client, freshRaid as IRaid);
-					}
-				},
+			const scoutTimers = new Set<string>(),
+				allocationTimers = new Set<string>(),
+				reminderTimers = new Set<string>(),
+				reviewTimers = new Set<string>();
 
-				startTime - currTime - 24 * 60 * 60 * 1000,
-			);
+			if (!scoutTimers.has(raid.announcementMessageID)) {
+				scoutTimers.add(raid.announcementMessageID);
 
-			safeTimeout(
-				async () => {
-					const freshRaid = await fetchFreshRaid(raid as IRaid);
+				setTimeout(
+					async () => {
+						try {
+							const freshRaid = await Raid.findOne({
+								announcementMessageID: raid.announcementMessageID,
+								serverID: raid.serverID,
+							});
 
-					if (freshRaid) {
-						await announceAllocation(client, freshRaid as IRaid);
-					}
-				},
+							if (
+								freshRaid &&
+								(!freshRaid.bossBuffsImageUrl.length ||
+									!freshRaid.bossDebuffsImageUrl.length)
+							)
+								await sendScoutReminder(client, freshRaid as IRaid);
+						} catch (err) {
+							console.error("Error in scout reminder timer : ", err);
+						}
+					},
+					scoutRemindTime < 0 ? 1000 : scoutRemindTime,
+				);
+			}
 
-				startTime - currTime - 60 * 60 * 1000,
-			);
+			if (!allocationTimers.has(raid.announcementMessageID)) {
+				allocationTimers.add(raid.announcementMessageID);
 
-			safeTimeout(
-				async () => {
-					const freshRaid = await fetchFreshRaid(raid as IRaid);
+				// allocate teams and send a message, do this 1 hr before raid
+				setTimeout(
+					async () => {
+						try {
+							const freshRaid = await Raid.findOne({
+								announcementMessageID: raid.announcementMessageID,
+								serverID: raid.serverID,
+							});
 
-					if (freshRaid) {
-						await raidRemindParticipants(client, freshRaid as IRaid);
-					}
-				},
+							if (freshRaid)
+								await announceAllocation(client, freshRaid as IRaid);
+						} catch (err) {
+							console.error("Error in team allocation timer : ", err);
+						}
+					},
+					allocationTime < 0 ? 1000 : allocationTime,
+				);
+			}
 
-				startTime - currTime - 30 * 60 * 1000,
-			);
+			if (!reminderTimers.has(raid.announcementMessageID)) {
+				reminderTimers.add(raid.announcementMessageID);
 
-			safeTimeout(
-				async () => {
-					const freshRaid = await Raid.findOneAndUpdate(
-						{
-							announcementMessageID: raid.announcementMessageID,
+				// send a reminder to all participants 30 minutes before raid
+				setTimeout(
+					async () => {
+						try {
+							const freshRaid = await Raid.findOne({
+								announcementMessageID: raid.announcementMessageID,
+								serverID: raid.serverID,
+							});
 
-							serverID: raid.serverID,
-						},
+							if (freshRaid)
+								await raidRemindParticipants(client, freshRaid as IRaid);
+						} catch (err) {
+							console.error("Error in raid reminder timer : ", err);
+						}
+					},
+					remindParticipantsTime < 0 ? 1000 : remindParticipantsTime,
+				);
+			}
 
-						{
-							$set: {
-								stage: "finished",
+			if (!reviewTimers.has(raid.announcementMessageID)) {
+				reviewTimers.add(raid.announcementMessageID);
 
-								"raidTimestamps.finishTime": Date.now(),
+				// timer for sending a review reminder, do this 3 hour after raid
+				setTimeout(
+					async () => {
+						const freshRaid = await Raid.findOneAndUpdate(
+							{
+								announcementMessageID: raid.announcementMessageID,
+								serverID: raid.serverID,
 							},
-						},
+							{
+								$set: {
+									stage: "finished",
+									"raidTimestamps.finishTime": Date.now(),
+								},
+							},
+							{ new: true },
+						);
 
-						{
-							new: true,
-						},
-					);
-
-					if (freshRaid && !freshRaid.raidTimestamps?.reviewTime) {
-						await raidReviewReminder(client, freshRaid as IRaid);
-					}
-				},
-
-				startTime - currTime + 3 * 60 * 60 * 1000,
-			);
+						if (freshRaid && !freshRaid.raidTimestamps?.reviewTime)
+							await raidReviewReminder(client, freshRaid as IRaid);
+					},
+					reviewReminder < 0 ? 1000 : reviewReminder,
+				);
+			}
 		}
-
-		await Promise.all(collectorTasks);
 	} catch (err) {
-		console.error("Error while resuming raids:", err);
+		console.error("Error while resuming raid on ready event : ", err);
 	}
 };
 
