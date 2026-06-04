@@ -1,6 +1,6 @@
 {
   "name": "skyhaven-bot",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "Bot that tracks guild member messages and levels them up based on texts sent",
   "license": "ISC",
   "author": "BARKYDLE",
