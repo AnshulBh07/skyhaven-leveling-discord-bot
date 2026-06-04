@@ -4,15 +4,15 @@ import timezone from "dayjs/plugin/timezone";
 import getAllFiles from "./getAllFiles";
 import path from "path";
 import {
-  ActionRowBuilder,
-  AttachmentBuilder,
-  ButtonBuilder,
-  ButtonStyle,
-  ChannelType,
-  Client,
-  DiscordAPIError,
-  EmbedBuilder,
-  MessageActionRowComponentBuilder,
+	ActionRowBuilder,
+	AttachmentBuilder,
+	ButtonBuilder,
+	ButtonStyle,
+	ChannelType,
+	Client,
+	DiscordAPIError,
+	EmbedBuilder,
+	MessageActionRowComponentBuilder,
 } from "discord.js";
 import { IRaid } from "./interfaces";
 import Config from "../models/configSchema";
@@ -20,810 +20,819 @@ import Raid from "../models/raidSchema";
 import { leaderboardThumbnail } from "../data/helperArrays";
 import User from "../models/userSchema";
 import { isUser } from "./permissionsCheck";
+import { fetchEmojis } from "./fetchEmojis";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
 export const getRelativeDiscordTime = (day: number, time: string): number => {
-  const [hour, minute] = time.split(":").map(Number);
+	const [hour, minute] = time.split(":").map(Number);
 
-  // Current JST time
-  const now = dayjs().tz("Asia/Tokyo");
+	// Current JST time
+	const now = dayjs().tz("Asia/Tokyo");
 
-  // Get next occurrence of specified day
-  let target = now.day(day).hour(hour).minute(minute).second(0).millisecond(0);
+	// Get next occurrence of specified day
+	let target = now.day(day).hour(hour).minute(minute).second(0).millisecond(0);
 
-  // If it's earlier in the week or same day but time already passed, add 7 days
-  if (target.isBefore(now)) {
-    target = target.add(7, "day");
-  }
+	// If it's earlier in the week or same day but time already passed, add 7 days
+	if (target.isBefore(now)) {
+		target = target.add(7, "day");
+	}
 
-  const unix = Math.floor(target.unix()); // Discord wants seconds, not ms
+	const unix = Math.floor(target.unix()); // Discord wants seconds, not ms
 
-  return unix; // Relative time format (e.g. "in 2 days")
+	return unix; // Relative time format (e.g. "in 2 days")
 };
 
 export const getRandomRaidImage = () => {
-  const allImages = getAllFiles(
-    path.join(__dirname, "..", "assets/images/raids_ss"),
-    false
-  );
+	const allImages = getAllFiles(
+		path.join(__dirname, "..", "assets/images/raids_ss"),
+		false,
+	);
 
-  const randomImage = allImages[Math.floor(Math.random() * allImages.length)];
+	const randomImage = allImages[Math.floor(Math.random() * allImages.length)];
 
-  const image = new AttachmentBuilder(randomImage).setName("raid.png");
+	const image = new AttachmentBuilder(randomImage).setName("raid.png");
 
-  return [image, randomImage];
+	return [image, randomImage];
 };
 
 const thumbnail = new AttachmentBuilder(leaderboardThumbnail).setName(
-  "thumbnail.png"
+	"thumbnail.png",
 );
 
 export const attachRaidParticipationCollector = async (
-  client: Client,
-  raid: IRaid
+	client: Client,
+	raid: IRaid,
 ) => {
-  try {
-    // fetch the message to attach collector on
-    const guild = await client.guilds.fetch(raid.serverID);
-    const channel = await guild.channels.fetch(raid.channelID, { force: true });
+	try {
+		// fetch the message to attach collector on
+		const guild = await client.guilds.fetch(raid.serverID);
+		const channel = await guild.channels.fetch(raid.channelID, { force: true });
 
-    if (!channel || channel.type !== ChannelType.GuildText) return;
+		if (!channel || channel.type !== ChannelType.GuildText) return;
 
-    const announceMsg = await channel.messages.fetch({
-      message: raid.announcementMessageID,
-      force: true,
-    });
+		const announceMsg = await channel.messages.fetch({
+			message: raid.announcementMessageID,
+			force: true,
+		});
 
-    const guildConfig = await Config.findOne({ serverID: guild.id });
+		const guildConfig = await Config.findOne({ serverID: guild.id });
 
-    if (!guildConfig) return;
+		if (!guildConfig) return;
 
-    const { raidConfig } = guildConfig;
-    const { tankEmojiID, supportEmojiID, dpsEmojiID, participantRole } =
-      raidConfig;
+		const { raidConfig } = guildConfig;
+		const { tankEmojiID, supportEmojiID, dpsEmojiID, participantRole } =
+			raidConfig;
 
-    const buttonRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
-      new ButtonBuilder()
-        .setCustomId("raid_tank")
-        .setEmoji(tankEmojiID)
-        .setStyle(ButtonStyle.Secondary),
-      new ButtonBuilder()
-        .setCustomId("raid_dps")
-        .setEmoji(dpsEmojiID)
-        .setStyle(ButtonStyle.Secondary),
-      new ButtonBuilder()
-        .setCustomId("raid_support")
-        .setEmoji(supportEmojiID)
-        .setStyle(ButtonStyle.Secondary),
-      new ButtonBuilder()
-        .setCustomId("raid_remove")
-        .setEmoji("❌")
-        .setStyle(ButtonStyle.Secondary)
-    );
+		const tankEmoji = fetchEmojis(client, tankEmojiID);
+		const dpsEmoji = fetchEmojis(client, dpsEmojiID);
+		const supportEmoji = fetchEmojis(client, supportEmojiID);
 
-    await announceMsg.edit({ components: [buttonRow] });
+		const buttonRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
+			new ButtonBuilder()
+				.setCustomId("raid_tank")
+				.setEmoji(tankEmoji)
+				.setStyle(ButtonStyle.Secondary),
+			new ButtonBuilder()
+				.setCustomId("raid_dps")
+				.setEmoji(dpsEmoji)
+				.setStyle(ButtonStyle.Secondary),
+			new ButtonBuilder()
+				.setCustomId("raid_support")
+				.setEmoji(supportEmoji)
+				.setStyle(ButtonStyle.Secondary),
+			new ButtonBuilder()
+				.setCustomId("raid_remove")
+				.setEmoji("❌")
+				.setStyle(ButtonStyle.Secondary),
+		);
 
-    const collector = announceMsg.createMessageComponentCollector({
-      time: 0,
-      filter: (i) =>
-        ["raid_tank", "raid_support", "raid_dps", "raid_remove"].includes(
-          i.customId
-        ),
-    });
+		await announceMsg.edit({ components: [buttonRow] });
 
-    let tanks: string[] = [],
-      dps: string[] = [],
-      supports: string[] = [],
-      waitlist_tanks: string[] = [],
-      waitlist_supports: string[] = [],
-      waitlist_dps: string[] = [];
+		const collector = announceMsg.createMessageComponentCollector({
+			time: 0,
+			filter: (i) =>
+				["raid_tank", "raid_support", "raid_dps", "raid_remove"].includes(
+					i.customId,
+				),
+		});
 
-    const banner = new AttachmentBuilder(raid.bannerUrl).setName("raid.png");
+		let tanks: string[] = [],
+			dps: string[] = [],
+			supports: string[] = [],
+			waitlist_tanks: string[] = [],
+			waitlist_supports: string[] = [],
+			waitlist_dps: string[] = [];
 
-    // helper functions to add participant role and remove it
-    const addParticipantRole = async (userID: string) => {
-      try {
-        const member = await guild.members.fetch({ user: userID, force: true });
+		const banner = new AttachmentBuilder(raid.bannerUrl).setName("raid.png");
 
-        const role = await guild.roles.fetch(participantRole, { force: true });
+		// helper functions to add participant role and remove it
+		const addParticipantRole = async (userID: string) => {
+			try {
+				const member = await guild.members.fetch({ user: userID, force: true });
 
-        if (!member || !role) return;
+				const role = await guild.roles.fetch(participantRole, { force: true });
 
-        // if the user doesn't have the role already
-        if (!member.roles.cache.has(role.id)) await member.roles.add(role);
-      } catch (err) {
-        console.error("Cannot add joiner role : ", err);
-      }
-    };
+				if (!member || !role) return;
 
-    const removeParticipantRole = async (userID: string) => {
-      try {
-        const member = await guild.members.fetch({ user: userID, force: true });
+				// if the user doesn't have the role already
+				if (!member.roles.cache.has(role.id)) await member.roles.add(role);
+			} catch (err) {
+				console.error("Cannot add joiner role : ", err);
+			}
+		};
 
-        const role = await guild.roles.fetch(participantRole, { force: true });
+		const removeParticipantRole = async (userID: string) => {
+			try {
+				const member = await guild.members.fetch({ user: userID, force: true });
 
-        if (!member || !role) return;
+				const role = await guild.roles.fetch(participantRole, { force: true });
 
-        // if user has the role
-        if (member.roles.cache.has(role.id)) await member.roles.remove(role);
-      } catch (err) {
-        console.error("Cannot remove joiner role : ", err);
-      }
-    };
+				if (!member || !role) return;
 
-    collector.on("collect", async (btnInt) => {
-      try {
-        // check if this is a valid interaction
-        // each user participating must have the required role
-        await btnInt.deferReply({ flags: "Ephemeral" });
+				// if user has the role
+				if (member.roles.cache.has(role.id)) await member.roles.remove(role);
+			} catch (err) {
+				console.error("Cannot remove joiner role : ", err);
+			}
+		};
 
-        if (!(await isUser(client, btnInt.user.id, guild.id, "raid"))) {
-          await btnInt.editReply({
-            content:
-              "You do not have the required role to perform this action.",
-          });
-          return;
-        }
+		collector.on("collect", async (btnInt) => {
+			try {
+				// check if this is a valid interaction
+				// each user participating must have the required role
+				await btnInt.deferReply({ flags: "Ephemeral" });
 
-        // update the list of members on message
-        const ogEmbed = announceMsg.embeds[0];
+				if (!(await isUser(client, btnInt.user.id, guild.id, "raid"))) {
+					await btnInt.editReply({
+						content:
+							"You do not have the required role to perform this action.",
+					});
+					return;
+				}
 
-        if (!ogEmbed) return;
+				// update the list of members on message
+				const ogEmbed = announceMsg.embeds[0];
 
-        const user = btnInt.user;
-        const totalRegistered = tanks.length + dps.length + supports.length;
+				if (!ogEmbed) return;
 
-        // now check which button is clicked
-        if (btnInt.customId === "raid_tank") {
-          if (totalRegistered < 16) {
-            supports = supports.filter((member) => member !== user.id);
-            dps = dps.filter((member) => member !== user.id);
+				const user = btnInt.user;
+				const totalRegistered = tanks.length + dps.length + supports.length;
 
-            if (!tanks.includes(user.id)) tanks.push(user.id);
-          } else {
-            waitlist_supports = waitlist_supports.filter(
-              (member) => member !== user.id
-            );
-            waitlist_dps = waitlist_dps.filter((member) => member !== user.id);
+				// now check which button is clicked
+				if (btnInt.customId === "raid_tank") {
+					if (totalRegistered < 16) {
+						supports = supports.filter((member) => member !== user.id);
+						dps = dps.filter((member) => member !== user.id);
 
-            if (!waitlist_tanks.includes(user.id)) waitlist_tanks.push(user.id);
-          }
+						if (!tanks.includes(user.id)) tanks.push(user.id);
+					} else {
+						waitlist_supports = waitlist_supports.filter(
+							(member) => member !== user.id,
+						);
+						waitlist_dps = waitlist_dps.filter((member) => member !== user.id);
 
-          await addParticipantRole(user.id);
+						if (!waitlist_tanks.includes(user.id)) waitlist_tanks.push(user.id);
+					}
 
-          await btnInt.editReply({
-            content:
-              totalRegistered < 16
-                ? "You registered as a tank for next raid."
-                : "Raid is full! You’ve been added to the waitlist.",
-          });
-        }
+					await addParticipantRole(user.id);
 
-        if (btnInt.customId === "raid_dps") {
-          if (totalRegistered < 16) {
-            tanks = tanks.filter((member) => member !== user.id);
-            supports = supports.filter((member) => member !== user.id);
+					await btnInt.editReply({
+						content:
+							totalRegistered < 16
+								? "You registered as a tank for next raid."
+								: "Raid is full! You’ve been added to the waitlist.",
+					});
+				}
 
-            if (!dps.includes(user.id)) dps.push(user.id);
-          } else {
-            waitlist_tanks = waitlist_tanks.filter(
-              (member) => member !== user.id
-            );
-            waitlist_supports = waitlist_supports.filter(
-              (member) => member !== user.id
-            );
+				if (btnInt.customId === "raid_dps") {
+					if (totalRegistered < 16) {
+						tanks = tanks.filter((member) => member !== user.id);
+						supports = supports.filter((member) => member !== user.id);
 
-            if (!waitlist_dps.includes(user.id)) waitlist_dps.push(user.id);
-          }
+						if (!dps.includes(user.id)) dps.push(user.id);
+					} else {
+						waitlist_tanks = waitlist_tanks.filter(
+							(member) => member !== user.id,
+						);
+						waitlist_supports = waitlist_supports.filter(
+							(member) => member !== user.id,
+						);
 
-          await addParticipantRole(user.id);
+						if (!waitlist_dps.includes(user.id)) waitlist_dps.push(user.id);
+					}
 
-          await btnInt.editReply({
-            content:
-              totalRegistered < 16
-                ? "You registered as a dps for next raid."
-                : "Raid is full! You’ve been added to the waitlist.",
-          });
-        }
+					await addParticipantRole(user.id);
 
-        if (btnInt.customId === "raid_support") {
-          if (totalRegistered < 16) {
-            dps = dps.filter((member) => member !== user.id);
-            tanks = tanks.filter((member) => member !== user.id);
+					await btnInt.editReply({
+						content:
+							totalRegistered < 16
+								? "You registered as a dps for next raid."
+								: "Raid is full! You’ve been added to the waitlist.",
+					});
+				}
 
-            if (!supports.includes(user.id)) supports.push(user.id);
-          } else {
-            waitlist_dps = waitlist_dps.filter((member) => member !== user.id);
-            waitlist_tanks = waitlist_tanks.filter(
-              (member) => member !== user.id
-            );
+				if (btnInt.customId === "raid_support") {
+					if (totalRegistered < 16) {
+						dps = dps.filter((member) => member !== user.id);
+						tanks = tanks.filter((member) => member !== user.id);
 
-            if (!waitlist_supports.includes(user.id))
-              waitlist_supports.push(user.id);
-          }
+						if (!supports.includes(user.id)) supports.push(user.id);
+					} else {
+						waitlist_dps = waitlist_dps.filter((member) => member !== user.id);
+						waitlist_tanks = waitlist_tanks.filter(
+							(member) => member !== user.id,
+						);
 
-          await addParticipantRole(user.id);
+						if (!waitlist_supports.includes(user.id))
+							waitlist_supports.push(user.id);
+					}
 
-          await btnInt.editReply({
-            content:
-              totalRegistered < 16
-                ? "You registered as a support for next raid."
-                : "Raid is full! You’ve been added to the waitlist.",
-          });
-        }
+					await addParticipantRole(user.id);
 
-        if (btnInt.customId === "raid_remove") {
-          tanks = tanks.filter((member) => member !== user.id);
-          supports = supports.filter((member) => member !== user.id);
-          dps = dps.filter((member) => member !== user.id);
-          waitlist_tanks = waitlist_tanks.filter(
-            (member) => member !== user.id
-          );
-          waitlist_supports = waitlist_supports.filter(
-            (member) => member !== user.id
-          );
-          waitlist_dps = waitlist_dps.filter((member) => member !== user.id);
+					await btnInt.editReply({
+						content:
+							totalRegistered < 16
+								? "You registered as a support for next raid."
+								: "Raid is full! You’ve been added to the waitlist.",
+					});
+				}
 
-          await removeParticipantRole(user.id);
+				if (btnInt.customId === "raid_remove") {
+					tanks = tanks.filter((member) => member !== user.id);
+					supports = supports.filter((member) => member !== user.id);
+					dps = dps.filter((member) => member !== user.id);
+					waitlist_tanks = waitlist_tanks.filter(
+						(member) => member !== user.id,
+					);
+					waitlist_supports = waitlist_supports.filter(
+						(member) => member !== user.id,
+					);
+					waitlist_dps = waitlist_dps.filter((member) => member !== user.id);
 
-          await btnInt.editReply({
-            content: "You are not a part of this raid anymore.",
-          });
-        }
+					await removeParticipantRole(user.id);
 
-        // update schema
-        await Raid.findOneAndUpdate(
-          {
-            announcementMessageID: announceMsg.id,
-            serverID: raid.serverID,
-          },
-          {
-            $set: {
-              "participants.tank": tanks,
-              "participants.support": supports,
-              "participants.dps": dps,
-              "waitlist.tank": waitlist_tanks,
-              "waitlist.support": waitlist_supports,
-              "waitlist.dps": waitlist_dps,
-            },
-          }
-        );
+					await btnInt.editReply({
+						content: "You are not a part of this raid anymore.",
+					});
+				}
 
-        const waitlisted = [
-          ...waitlist_dps,
-          ...waitlist_supports,
-          ...waitlist_tanks,
-        ];
+				// update schema
+				await Raid.findOneAndUpdate(
+					{
+						announcementMessageID: announceMsg.id,
+						serverID: raid.serverID,
+					},
+					{
+						$set: {
+							"participants.tank": tanks,
+							"participants.support": supports,
+							"participants.dps": dps,
+							"waitlist.tank": waitlist_tanks,
+							"waitlist.support": waitlist_supports,
+							"waitlist.dps": waitlist_dps,
+						},
+					},
+				);
 
-        const newEmbed = EmbedBuilder.from(ogEmbed);
+				const waitlisted = [
+					...waitlist_dps,
+					...waitlist_supports,
+					...waitlist_tanks,
+				];
 
-        const persistFields =
-          newEmbed.data.fields?.filter(
-            (field) =>
-              !["Tanks", "Supports", "DPS"].includes(field.name) &&
-              !field.value.includes("Total Participants")
-          ) || [];
+				const newEmbed = EmbedBuilder.from(ogEmbed);
 
-        newEmbed
-          .setFields([
-            ...persistFields,
-            {
-              name: "Tanks",
-              value: `${tanks.map((member) => `<@${member}>`).join("\n")}`,
-              inline: true,
-            },
-            {
-              name: "DPS",
-              value: `${dps.map((member) => `<@${member}>`).join("\n")}`,
-              inline: true,
-            },
-            {
-              name: "Supports",
-              value: `${supports.map((member) => `<@${member}>`).join("\n")}`,
-              inline: true,
-            },
-          ])
-          .setImage("attachment://raid.png")
-          .setFooter({
-            text: `${guild.name} Raids\nBuffs and debuffs will be announced soon.`,
-            iconURL: "attachment://thumbnail.png",
-          })
-          .setTimestamp();
+				const persistFields =
+					newEmbed.data.fields?.filter(
+						(field) =>
+							!["Tanks", "Supports", "DPS"].includes(field.name) &&
+							!field.value.includes("Total Participants"),
+					) || [];
 
-        if (waitlisted.length > 0) {
-          newEmbed.addFields({
-            name: "\u200b",
-            value: `${waitlisted.map((user) => `<@${user}>`).join("\n")}`,
-            inline: false,
-          });
-        }
+				newEmbed
+					.setFields([
+						...persistFields,
+						{
+							name: "Tanks",
+							value: `${tanks.map((member) => `<@${member}>`).join("\n")}`,
+							inline: true,
+						},
+						{
+							name: "DPS",
+							value: `${dps.map((member) => `<@${member}>`).join("\n")}`,
+							inline: true,
+						},
+						{
+							name: "Supports",
+							value: `${supports.map((member) => `<@${member}>`).join("\n")}`,
+							inline: true,
+						},
+					])
+					.setImage("attachment://raid.png")
+					.setFooter({
+						text: `${guild.name} Raids\nBuffs and debuffs will be announced soon.`,
+						iconURL: "attachment://thumbnail.png",
+					})
+					.setTimestamp();
 
-        newEmbed.addFields({
-          name: "\u200b",
-          value: `**Total Participants : **${
-            tanks.length + supports.length + dps.length + waitlisted.length
-          }`,
-          inline: false,
-        });
+				if (waitlisted.length > 0) {
+					newEmbed.addFields({
+						name: "\u200b",
+						value: `${waitlisted.map((user) => `<@${user}>`).join("\n")}`,
+						inline: false,
+					});
+				}
 
-        await announceMsg.edit({
-          embeds: [newEmbed],
-          files: [thumbnail, banner],
-        });
-      } catch (err) {
-        console.error("Error in collector on event : ", err);
-      }
-    });
+				newEmbed.addFields({
+					name: "\u200b",
+					value: `**Total Participants : **${
+						tanks.length + supports.length + dps.length + waitlisted.length
+					}`,
+					inline: false,
+				});
 
-    collector.on("end", async () => {
-      try {
-        await announceMsg.edit({
-          content: "This raid has already finished.",
-          components: [],
-        });
-      } catch (err) {
-        console.error("Error in collector end function : ", err);
-      }
-    });
-  } catch (err) {
-    console.error(
-      "Error in raid participation collector main function : ",
-      err
-    );
-  }
+				await announceMsg.edit({
+					embeds: [newEmbed],
+					files: [thumbnail, banner],
+				});
+			} catch (err) {
+				console.error("Error in collector on event : ", err);
+			}
+		});
+
+		collector.on("end", async () => {
+			try {
+				await announceMsg.edit({
+					content: "This raid has already finished.",
+					components: [],
+				});
+			} catch (err) {
+				console.error("Error in collector end function : ", err);
+			}
+		});
+	} catch (err) {
+		console.error(
+			"Error in raid participation collector main function : ",
+			err,
+		);
+	}
 };
 
 const bosses = [
-  "roaring_thruma",
-  "dark_skull",
-  "bison",
-  "chimera",
-  "celdyte",
-  "soteria_the_celestial_halo",
+	"roaring_thruma",
+	"dark_skull",
+	"bison",
+	"chimera",
+	"celdyte",
+	"soteria_the_celestial_halo",
 ];
 const bossElements = [
-  "Wind Element",
-  "Dark Element",
-  "Water Element",
-  "Earth Element",
-  "Fire Element",
-  "Light Element",
+	"Wind Element",
+	"Dark Element",
+	"Water Element",
+	"Earth Element",
+	"Fire Element",
+	"Light Element",
 ];
 
 export const sendScoutReminder = async (client: Client, raid: IRaid) => {
-  try {
-    const guild = await client.guilds.fetch({
-      guild: raid.serverID,
-      force: true,
-    });
+	try {
+		const guild = await client.guilds.fetch({
+			guild: raid.serverID,
+			force: true,
+		});
 
-    const guildConfig = await Config.findOne({ serverID: guild.id });
+		const guildConfig = await Config.findOne({ serverID: guild.id });
 
-    if (!guildConfig) return;
+		if (!guildConfig) return;
 
-    const { raidConfig } = guildConfig;
-    const { managerRoles } = raidConfig;
+		const { raidConfig } = guildConfig;
+		const { managerRoles } = raidConfig;
 
-    // fetch all users from guild that have any of the managerRoles
-    const admins = Array.from(guild.members.cache.entries())
-      .filter(([_, member]) => {
-        for (const role of managerRoles) {
-          if (member.roles.cache.get(role)) return true;
-        }
-        return false;
-      })
-      .map(([_, member]) => member.user);
+		// fetch all users from guild that have any of the managerRoles
+		const admins = Array.from(guild.members.cache.entries())
+			.filter(([_, member]) => {
+				for (const role of managerRoles) {
+					if (member.roles.cache.get(role)) return true;
+				}
+				return false;
+			})
+			.map(([_, member]) => member.user);
 
-    const uniqueAdmins = [
-      ...new Map(admins.map((admin) => [admin.id, admin])).values(),
-    ];
+		const uniqueAdmins = [
+			...new Map(admins.map((admin) => [admin.id, admin])).values(),
+		];
 
-    const reminderEmbed = new EmbedBuilder()
-      .setTitle("📣 Raid Scout Reminder")
-      .setDescription(
-        `A raid is scheduled and needs to be scouted.\n\n` +
-          `**Raid Bosses : **\n ${raid.bosses
-            .map(
-              (boss, idx) =>
-                `${idx + 1}. **${boss
-                  .split("_")
-                  .map((name) => name.at(0)?.toUpperCase() + name.slice(1))
-                  .join(" ")}** - ${bossElements[bosses.indexOf(boss)]}`
-            )
-            .join("\n")}\n` +
-          `**Scheduled Time:** <t:${Math.floor(
-            raid.raidTimestamps.startTime! / 1000
-          )}:F> (<t:${Math.floor(
-            raid.raidTimestamps.startTime! / 1000
-          )}:R>)\n\n` +
-          `Use \`/raid scout <raid_id>\` on designated guild channel`
-      )
-      .addFields({
-        name: "\u200b",
-        value: `**🪪 Raid ID ** : \`${raid.announcementMessageID}\``,
-        inline: false,
-      })
-      .setColor("Orange")
-      .setFooter({
-        text: "Please scout and update raid details promptly.",
-        iconURL: "attachment://thumbnail.png",
-      })
-      .setTimestamp();
+		const reminderEmbed = new EmbedBuilder()
+			.setTitle("📣 Raid Scout Reminder")
+			.setDescription(
+				`A raid is scheduled and needs to be scouted.\n\n` +
+					`**Raid Bosses : **\n ${raid.bosses
+						.map(
+							(boss, idx) =>
+								`${idx + 1}. **${boss
+									.split("_")
+									.map((name) => name.at(0)?.toUpperCase() + name.slice(1))
+									.join(" ")}** - ${bossElements[bosses.indexOf(boss)]}`,
+						)
+						.join("\n")}\n` +
+					`**Scheduled Time:** <t:${Math.floor(
+						raid.raidTimestamps.startTime! / 1000,
+					)}:F> (<t:${Math.floor(
+						raid.raidTimestamps.startTime! / 1000,
+					)}:R>)\n\n` +
+					`Use \`/raid scout <raid_id>\` on designated guild channel`,
+			)
+			.addFields({
+				name: "\u200b",
+				value: `**🪪 Raid ID ** : \`${raid.announcementMessageID}\``,
+				inline: false,
+			})
+			.setColor("Orange")
+			.setFooter({
+				text: "Please scout and update raid details promptly.",
+				iconURL: "attachment://thumbnail.png",
+			})
+			.setTimestamp();
 
-    // send this message as DM to all users
-    for (const admin of uniqueAdmins) {
-      try {
-        await admin.send({ embeds: [reminderEmbed], files: [thumbnail] });
-      } catch (err) {
-        if ((err as DiscordAPIError).code === 50007) {
-          console.warn(
-            `cannot send scout reminder DM to ${admin}, skipping admin`
-          );
-          continue;
-        } else throw err;
-      }
-    }
-  } catch (err) {
-    console.error("Error in scout reminder function : ", err);
-  }
+		// send this message as DM to all users
+		for (const admin of uniqueAdmins) {
+			try {
+				await admin.send({ embeds: [reminderEmbed], files: [thumbnail] });
+			} catch (err) {
+				if ((err as DiscordAPIError).code === 50007) {
+					console.warn(
+						`cannot send scout reminder DM to ${admin}, skipping admin`,
+					);
+					continue;
+				} else throw err;
+			}
+		}
+	} catch (err) {
+		console.error("Error in scout reminder function : ", err);
+	}
 };
 
 export const raidRemindParticipants = async (client: Client, raid: IRaid) => {
-  try {
-    const guild = await client.guilds.fetch(raid.serverID);
+	try {
+		const guild = await client.guilds.fetch(raid.serverID);
 
-    const allParticipants: string[] = [
-      ...raid.participants.tank,
-      ...raid.participants.support,
-      ...raid.participants.dps,
-    ];
+		const allParticipants: string[] = [
+			...raid.participants.tank,
+			...raid.participants.support,
+			...raid.participants.dps,
+		];
 
-    const banner = new AttachmentBuilder(raid.bannerUrl).setName("raid.png");
+		const banner = new AttachmentBuilder(raid.bannerUrl).setName("raid.png");
 
-    const embed = new EmbedBuilder()
-      .setTitle("⏰ Raid Reminder!")
-      .setDescription(
-        `Hey there, adventurer! This is a friendly reminder that a **guild raid** is approaching.\n\n` +
-          `Prepare your gear, sharpen your skills, and don't forget to show up!\n\n` +
-          `🗓️ **Raid Time : ** <t:${Math.floor(
-            raid.raidTimestamps.startTime! / 1000
-          )}:F>  (<t:${Math.floor(
-            raid.raidTimestamps.startTime! / 1000
-          )}:R>)\n` +
-          `👾 **Bosses : **\n ${raid.bosses
-            .map(
-              (boss, idx) =>
-                `${idx + 1}. **${boss
-                  .split("_")
-                  .map((name) => name.at(0)?.toUpperCase() + name.slice(1))
-                  .join(" ")}** - ${bossElements[bosses.indexOf(boss)]}`
-            )
-            .join("\n")}\n`
-      )
-      .setColor("Gold")
-      .setFooter({
-        text: `${guild.name} Guild • Let’s crush it together!`,
-        iconURL: "attachment://thumbnail.png",
-      })
-      .setImage("attachment://raid.png")
-      .setTimestamp();
+		const embed = new EmbedBuilder()
+			.setTitle("⏰ Raid Reminder!")
+			.setDescription(
+				`Hey there, adventurer! This is a friendly reminder that a **guild raid** is approaching.\n\n` +
+					`Prepare your gear, sharpen your skills, and don't forget to show up!\n\n` +
+					`🗓️ **Raid Time : ** <t:${Math.floor(
+						raid.raidTimestamps.startTime! / 1000,
+					)}:F>  (<t:${Math.floor(
+						raid.raidTimestamps.startTime! / 1000,
+					)}:R>)\n` +
+					`👾 **Bosses : **\n ${raid.bosses
+						.map(
+							(boss, idx) =>
+								`${idx + 1}. **${boss
+									.split("_")
+									.map((name) => name.at(0)?.toUpperCase() + name.slice(1))
+									.join(" ")}** - ${bossElements[bosses.indexOf(boss)]}`,
+						)
+						.join("\n")}\n`,
+			)
+			.setColor("Gold")
+			.setFooter({
+				text: `${guild.name} Guild • Let’s crush it together!`,
+				iconURL: "attachment://thumbnail.png",
+			})
+			.setImage("attachment://raid.png")
+			.setTimestamp();
 
-    for (const participant of allParticipants) {
-      const user = await client.users.fetch(participant);
+		for (const participant of allParticipants) {
+			const user = await client.users.fetch(participant);
 
-      const userDb = await User.findOne({ userID: participant });
+			const userDb = await User.findOne({ userID: participant });
 
-      if (userDb && userDb.raids.dmNotif)
-        try {
-          await user.send({ embeds: [embed], files: [thumbnail, banner] });
-        } catch (err) {
-          if ((err as DiscordAPIError).code === 50007) {
-            console.warn(
-              `Cannot send raid reminder DM to ${user.id}, skipping user...`
-            );
-          } else throw err;
-        }
-    }
-  } catch (err) {
-    console.error("Error in raid reminder function : ", err);
-  }
+			if (userDb && userDb.raids.dmNotif)
+				try {
+					await user.send({ embeds: [embed], files: [thumbnail, banner] });
+				} catch (err) {
+					if ((err as DiscordAPIError).code === 50007) {
+						console.warn(
+							`Cannot send raid reminder DM to ${user.id}, skipping user...`,
+						);
+					} else throw err;
+				}
+		}
+	} catch (err) {
+		console.error("Error in raid reminder function : ", err);
+	}
 };
 
 type Role = "tank" | "support" | "dps";
 
 interface RoledMember {
-  id: string;
-  role: Role;
+	id: string;
+	role: Role;
 }
 
 type Team = RoledMember[];
 
 interface AllocationResult {
-  teams: Team[];
-  waitlist: RoledMember[];
+	teams: Team[];
+	waitlist: RoledMember[];
 }
 
 function allocateRaidTeamsWithRoles(raid: IRaid): AllocationResult {
-  // Clone arrays to avoid mutation
-  const tanks = [...raid.participants.tank];
-  const supports = [...raid.participants.support];
-  const dps = [...raid.participants.dps];
+	// Clone arrays to avoid mutation
+	const tanks = [...raid.participants.tank];
+	const supports = [...raid.participants.support];
+	const dps = [...raid.participants.dps];
 
-  const teams: Team[] = [];
-  const used = new Set<string>();
+	const teams: Team[] = [];
+	const used = new Set<string>();
 
-  // 1. Build as many ideal teams as possible (1 tank, 1 support, 2 dps)
-  while (
-    teams.length < 4 &&
-    tanks.length >= 1 &&
-    supports.length >= 1 &&
-    dps.length >= 2
-  ) {
-    const team: Team = [
-      { id: tanks.shift()!, role: "tank" },
-      { id: supports.shift()!, role: "support" },
-      { id: dps.shift()!, role: "dps" },
-      { id: dps.shift()!, role: "dps" },
-    ];
-    team.forEach((m) => used.add(m.id));
-    teams.push(team);
-  }
+	// 1. Build as many ideal teams as possible (1 tank, 1 support, 2 dps)
+	while (
+		teams.length < 4 &&
+		tanks.length >= 1 &&
+		supports.length >= 1 &&
+		dps.length >= 2
+	) {
+		const team: Team = [
+			{ id: tanks.shift()!, role: "tank" },
+			{ id: supports.shift()!, role: "support" },
+			{ id: dps.shift()!, role: "dps" },
+			{ id: dps.shift()!, role: "dps" },
+		];
+		team.forEach((m) => used.add(m.id));
+		teams.push(team);
+	}
 
-  // 2. Create a lookup map for role tracking
-  const roleMap = new Map<string, Role>();
-  for (const id of tanks) roleMap.set(id, "tank");
-  for (const id of supports) roleMap.set(id, "support");
-  for (const id of dps) roleMap.set(id, "dps");
+	// 2. Create a lookup map for role tracking
+	const roleMap = new Map<string, Role>();
+	for (const id of tanks) roleMap.set(id, "tank");
+	for (const id of supports) roleMap.set(id, "support");
+	for (const id of dps) roleMap.set(id, "dps");
 
-  // 3. Remaining participants not in ideal teams
-  const allParticipants = new Set([
-    ...raid.participants.tank,
-    ...raid.participants.support,
-    ...raid.participants.dps,
-  ]);
+	// 3. Remaining participants not in ideal teams
+	const allParticipants = new Set([
+		...raid.participants.tank,
+		...raid.participants.support,
+		...raid.participants.dps,
+	]);
 
-  const unused = [...allParticipants].filter((id) => !used.has(id));
+	const unused = [...allParticipants].filter((id) => !used.has(id));
 
-  // 4. Fill remaining team spots (max 16 players total)
-  const maxSpots = 16 - teams.length * 4;
-  const fillers = unused.slice(0, maxSpots);
+	// 4. Fill remaining team spots (max 16 players total)
+	const maxSpots = 16 - teams.length * 4;
+	const fillers = unused.slice(0, maxSpots);
 
-  for (let i = 0; i < fillers.length; i += 4) {
-    const team: Team = fillers.slice(i, i + 4).map((id) => ({
-      id,
-      role: roleMap.get(id) || "dps", // default to dps if unknown
-    }));
-    team.forEach((m) => used.add(m.id));
-    teams.push(team);
-  }
+	for (let i = 0; i < fillers.length; i += 4) {
+		const team: Team = fillers.slice(i, i + 4).map((id) => ({
+			id,
+			role: roleMap.get(id) || "dps", // default to dps if unknown
+		}));
+		team.forEach((m) => used.add(m.id));
+		teams.push(team);
+	}
 
-  // 5. Waitlist: those beyond the 16-player cap, with their actual role
-  const waitlist = unused.slice(fillers.length).map((id) => ({
-    id,
-    role: roleMap.get(id) || "dps",
-  }));
+	// 5. Waitlist: those beyond the 16-player cap, with their actual role
+	const waitlist = unused.slice(fillers.length).map((id) => ({
+		id,
+		role: roleMap.get(id) || "dps",
+	}));
 
-  return { teams, waitlist };
+	return { teams, waitlist };
 }
 
 export const announceAllocation = async (client: Client, raid: IRaid) => {
-  try {
-    const guild = await client.guilds.fetch(raid.serverID);
+	try {
+		const guild = await client.guilds.fetch(raid.serverID);
 
-    const guildConfig = await Config.findOne({ serverID: guild.id });
+		const guildConfig = await Config.findOne({ serverID: guild.id });
 
-    if (!guildConfig) return;
+		if (!guildConfig) return;
 
-    const { raidConfig } = guildConfig;
-    const {
-      supportEmojiID,
-      tankEmojiID,
-      dpsEmojiID,
-      raidChannelID,
-      participantRole,
-    } = raidConfig;
+		const { raidConfig } = guildConfig;
+		const {
+			supportEmojiID,
+			tankEmojiID,
+			dpsEmojiID,
+			raidChannelID,
+			participantRole,
+		} = raidConfig;
 
-    const channel = await guild.channels.fetch(raidChannelID);
+		const channel = await guild.channels.fetch(raidChannelID);
 
-    if (!channel || channel.type !== ChannelType.GuildText) return;
+		if (!channel || channel.type !== ChannelType.GuildText) return;
 
-    const rolesEmojiMap = new Map<string, string>([
-      ["tank", `<:_:${tankEmojiID}>`],
-      ["support", `<:_:${supportEmojiID}>`],
-      ["dps", `<:_:${dpsEmojiID}>`],
-    ]);
+		const tankEmoji = fetchEmojis(client, tankEmojiID);
+		const dpsEmoji = fetchEmojis(client, dpsEmojiID);
+		const supportEmoji = fetchEmojis(client, supportEmojiID);
 
-    const { teams, waitlist } = allocateRaidTeamsWithRoles(raid);
+		const rolesEmojiMap = new Map<string, string>([
+			["tank", tankEmoji],
+			["support", supportEmoji],
+			["dps", dpsEmoji],
+		]);
 
-    const embed = new EmbedBuilder()
-      .setTitle("🛡️ Raid Team Allocation")
-      .setColor("Gold")
-      .setDescription(
-        `📢 **Raid team assignments are complete!**\n\n` +
-          `Each team consists of up to **4 adventurers**\n\n` +
-          `We've prioritized balanced roles wherever possible, but some teams may be more damage-heavy due to class availability.\n\n` +
-          `⏳ Players who registered but didn't make the main roster have been placed on the **waitlist** and may be subbed in if needed.\n\n` +
-          `Prepare yourselves — the raid begins soon!`
-      )
-      .addFields({
-        name: "\u200b",
-        value: `**🪪 Raid ID ** : \`${raid.announcementMessageID}\``,
-        inline: false,
-      })
-      .setFooter({
-        text: "If you die, it's probably your fault. Scouts out. Meet you guys at raid.",
-        iconURL: "attachment://thumbnail.png",
-      })
-      .setTimestamp();
+		const { teams, waitlist } = allocateRaidTeamsWithRoles(raid);
 
-    // Format each team
-    teams.forEach((team, idx) => {
-      const members = team
-        .map(
-          (member) => `${rolesEmojiMap.get(member.role) || ""} <@${member.id}>`
-        )
-        .join("\n");
+		const embed = new EmbedBuilder()
+			.setTitle("🛡️ Raid Team Allocation")
+			.setColor("Gold")
+			.setDescription(
+				`📢 **Raid team assignments are complete!**\n\n` +
+					`Each team consists of up to **4 adventurers**\n\n` +
+					`We've prioritized balanced roles wherever possible, but some teams may be more damage-heavy due to class availability.\n\n` +
+					`⏳ Players who registered but didn't make the main roster have been placed on the **waitlist** and may be subbed in if needed.\n\n` +
+					`Prepare yourselves — the raid begins soon!`,
+			)
+			.addFields({
+				name: "\u200b",
+				value: `**🪪 Raid ID ** : \`${raid.announcementMessageID}\``,
+				inline: false,
+			})
+			.setFooter({
+				text: "If you die, it's probably your fault. Scouts out. Meet you guys at raid.",
+				iconURL: "attachment://thumbnail.png",
+			})
+			.setTimestamp();
 
-      embed.addFields({
-        name: `Team ${idx + 1}`,
-        value: members,
-        inline: false,
-      });
-    });
+		// Format each team
+		teams.forEach((team, idx) => {
+			const members = team
+				.map(
+					(member) => `${rolesEmojiMap.get(member.role) || ""} <@${member.id}>`,
+				)
+				.join("\n");
 
-    // Waitlist
-    if (waitlist.length > 0) {
-      const waitlistStr = waitlist
-        .map(
-          (member) => `${rolesEmojiMap.get(member.role) || ""} <@${member.id}>`
-        )
-        .join("\n");
+			embed.addFields({
+				name: `Team ${idx + 1}`,
+				value: members,
+				inline: false,
+			});
+		});
 
-      embed.addFields({
-        name: "⏳ Waitlist",
-        value: waitlistStr,
-        inline: false,
-      });
-    }
+		// Waitlist
+		if (waitlist.length > 0) {
+			const waitlistStr = waitlist
+				.map(
+					(member) => `${rolesEmojiMap.get(member.role) || ""} <@${member.id}>`,
+				)
+				.join("\n");
 
-    const role_req = await guild.roles.fetch(participantRole, { force: true });
+			embed.addFields({
+				name: "⏳ Waitlist",
+				value: waitlistStr,
+				inline: false,
+			});
+		}
 
-    const allocationMsg = await channel.send({
-      content: role_req ? `${role_req}` : "",
-      allowedMentions: { roles: role_req ? [role_req.id] : [] },
-      embeds: [embed],
-      files: [thumbnail],
-    });
+		const role_req = await guild.roles.fetch(participantRole, { force: true });
 
-    // also change the original message of announcement, remove components and add link button to
-    // allocation message
-    // find the message
-    const announceMsg = await channel.messages.fetch(
-      raid.announcementMessageID
-    );
+		const allocationMsg = await channel.send({
+			content: role_req ? `${role_req}` : "",
+			allowedMentions: { roles: role_req ? [role_req.id] : [] },
+			embeds: [embed],
+			files: [thumbnail],
+		});
 
-    const link = `https://discord.com/channels/${guild.id}/${channel.id}/${allocationMsg.id}`;
+		// also change the original message of announcement, remove components and add link button to
+		// allocation message
+		// find the message
+		const announceMsg = await channel.messages.fetch(
+			raid.announcementMessageID,
+		);
 
-    const linkButton = new ActionRowBuilder<ButtonBuilder>().addComponents(
-      new ButtonBuilder()
-        .setLabel("Jumpt to team allocation")
-        .setStyle(ButtonStyle.Link)
-        .setURL(link)
-    );
+		const link = `https://discord.com/channels/${guild.id}/${channel.id}/${allocationMsg.id}`;
 
-    // only get the link button
-    const allActionRows = announceMsg.components.map((row) =>
-      ActionRowBuilder.from(row as any)
-    ) as ActionRowBuilder<MessageActionRowComponentBuilder>[];
+		const linkButton = new ActionRowBuilder<ButtonBuilder>().addComponents(
+			new ButtonBuilder()
+				.setLabel("Jumpt to team allocation")
+				.setStyle(ButtonStyle.Link)
+				.setURL(link),
+		);
 
-    // filter them now
-    const persistComponents = allActionRows
-      .map((row) => {
-        const filteredButtons = row.components.filter(
-          (component): component is ButtonBuilder => {
-            return (
-              component instanceof ButtonBuilder &&
-              component.data.style === ButtonStyle.Link
-            );
-          }
-        );
+		// only get the link button
+		const allActionRows = announceMsg.components.map((row) =>
+			ActionRowBuilder.from(row as any),
+		) as ActionRowBuilder<MessageActionRowComponentBuilder>[];
 
-        if (!filteredButtons.length) return null;
+		// filter them now
+		const persistComponents = allActionRows
+			.map((row) => {
+				const filteredButtons = row.components.filter(
+					(component): component is ButtonBuilder => {
+						return (
+							component instanceof ButtonBuilder &&
+							component.data.style === ButtonStyle.Link
+						);
+					},
+				);
 
-        return new ActionRowBuilder<ButtonBuilder>().addComponents(
-          filteredButtons
-        );
-      })
-      .filter((row): row is ActionRowBuilder<ButtonBuilder> => row !== null);
+				if (!filteredButtons.length) return null;
 
-    await announceMsg.edit({ components: [...persistComponents, linkButton] });
+				return new ActionRowBuilder<ButtonBuilder>().addComponents(
+					filteredButtons,
+				);
+			})
+			.filter((row): row is ActionRowBuilder<ButtonBuilder> => row !== null);
 
-    // update schema as well
-    await Raid.findOneAndUpdate(
-      {
-        announcementMessageID: raid.announcementMessageID,
-      },
-      {
-        $set: {
-          teamAllotmentMessageID: allocationMsg.id,
-          stage: "alloted",
-          "raidTimestamps.allotmentTime": Date.now(),
-        },
-      }
-    );
-  } catch (err) {
-    console.error("Error in allocation and annoucnement function");
-  }
+		await announceMsg.edit({ components: [...persistComponents, linkButton] });
+
+		// update schema as well
+		await Raid.findOneAndUpdate(
+			{
+				announcementMessageID: raid.announcementMessageID,
+			},
+			{
+				$set: {
+					teamAllotmentMessageID: allocationMsg.id,
+					stage: "alloted",
+					"raidTimestamps.allotmentTime": Date.now(),
+				},
+			},
+		);
+	} catch (err) {
+		console.error("Error in allocation and annoucnement function");
+	}
 };
 
 export const raidReviewReminder = async (client: Client, raid: IRaid) => {
-  try {
-    const guild = await client.guilds.fetch(raid.serverID);
-    const guildConfig = await Config.findOne({ serverID: guild.id });
+	try {
+		const guild = await client.guilds.fetch(raid.serverID);
+		const guildConfig = await Config.findOne({ serverID: guild.id });
 
-    if (!guildConfig) return;
+		if (!guildConfig) return;
 
-    const { raidConfig } = guildConfig;
-    const { managerRoles } = raidConfig;
+		const { raidConfig } = guildConfig;
+		const { managerRoles } = raidConfig;
 
-    // get all admins
-    const admins = Array.from(guild.members.cache.entries())
-      .map(([_, member]) => member)
-      .filter((member) => {
-        for (const role of managerRoles)
-          if (member.roles.cache.get(role)) return true;
+		// get all admins
+		const admins = Array.from(guild.members.cache.entries())
+			.map(([_, member]) => member)
+			.filter((member) => {
+				for (const role of managerRoles)
+					if (member.roles.cache.get(role)) return true;
 
-        return false;
-      })
-      .map((member) => member.user);
+				return false;
+			})
+			.map((member) => member.user);
 
-    const uniqueAdmins = [
-      ...new Map(admins.map((admin) => [admin.id, admin])).values(),
-    ];
+		const uniqueAdmins = [
+			...new Map(admins.map((admin) => [admin.id, admin])).values(),
+		];
 
-    const reviewEmbed = new EmbedBuilder()
-      .setTitle("📋 Raid Participation Review")
-      .setColor("Blue")
-      .setDescription(
-        `The raid has concluded. Please take a moment to review attendance and note any discrepancies between sign-ups and actual participation.\n\n` +
-          `🔍 **Action Required:**\n` +
-          `• Cross-check in-game attendance against the reaction list.\n` +
-          `• Mark any absentees who did not provide prior notice.\n` +
-          `• Record any substitutions or unexpected participants.\n\n` +
-          `Maintaining accurate records ensures smoother coordination and accountability for future events.\n` +
-          `Use command \`/raid review <raid_id>\` on the designated guild channel.`
-      )
-      .addFields({
-        name: "\u200b",
-        value: `**🪪 Raid ID : ${raid.announcementMessageID}`,
-        inline: false,
-      })
-      .setFooter({
-        text: "Thank you for your support and cooperation.",
-        iconURL: "attachment://thumbnail.png",
-      })
-      .setTimestamp();
+		const reviewEmbed = new EmbedBuilder()
+			.setTitle("📋 Raid Participation Review")
+			.setColor("Blue")
+			.setDescription(
+				`The raid has concluded. Please take a moment to review attendance and note any discrepancies between sign-ups and actual participation.\n\n` +
+					`🔍 **Action Required:**\n` +
+					`• Cross-check in-game attendance against the reaction list.\n` +
+					`• Mark any absentees who did not provide prior notice.\n` +
+					`• Record any substitutions or unexpected participants.\n\n` +
+					`Maintaining accurate records ensures smoother coordination and accountability for future events.\n` +
+					`Use command \`/raid review <raid_id>\` on the designated guild channel.`,
+			)
+			.addFields({
+				name: "\u200b",
+				value: `**🪪 Raid ID : ${raid.announcementMessageID}`,
+				inline: false,
+			})
+			.setFooter({
+				text: "Thank you for your support and cooperation.",
+				iconURL: "attachment://thumbnail.png",
+			})
+			.setTimestamp();
 
-    for (const admin of uniqueAdmins) {
-      try {
-        await admin.send({ embeds: [reviewEmbed] });
-      } catch (err) {
-        if ((err as DiscordAPIError).code === 50007) {
-          console.warn(
-            `Cannot send review reminder DM to ${admin.id}, skipping admin...`
-          );
-        } else throw err;
-      }
-    }
-  } catch (err) {
-    console.error("Error in raid review reminder function : ", err);
-  }
+		for (const admin of uniqueAdmins) {
+			try {
+				await admin.send({ embeds: [reviewEmbed] });
+			} catch (err) {
+				if ((err as DiscordAPIError).code === 50007) {
+					console.warn(
+						`Cannot send review reminder DM to ${admin.id}, skipping admin...`,
+					);
+				} else throw err;
+			}
+		}
+	} catch (err) {
+		console.error("Error in raid review reminder function : ", err);
+	}
 };
 
 export const calculateReliability = (completed: number, noShow: number) => {
-  const total = completed + noShow;
+	const total = completed + noShow;
 
-  return Math.round((completed / total) * 100);
+	return Math.round((completed / total) * 100);
 };
