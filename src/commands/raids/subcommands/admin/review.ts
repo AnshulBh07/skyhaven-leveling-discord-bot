@@ -52,7 +52,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
           //   find raid
           const raid = await Raid.findOne({
             announcementMessageID: raid_id,
-          });
+          }).lean();
 
           if (!raid) {
             await interaction.editReply({ content: "No raid found." });
@@ -69,15 +69,20 @@ const init = async (): Promise<ISubcommand | undefined> => {
             ...raid.participants.support,
           ];
 
-          //   get guild member object for each user
-          const participants: GuildMember[] = [];
-
           const guild = await client.guilds.fetch(raid.serverID);
 
-          for (const participant of allParticipants) {
-            const member = await guild.members.fetch(participant);
+          // fetch all participants concurrently without letting one missing member fail the rest
+          const memberResults = await Promise.allSettled(
+            allParticipants.map((participant) =>
+              guild.members.fetch(participant).catch(() => null)
+            )
+          );
 
-            if (member) participants.push(member);
+          const participants: GuildMember[] = [];
+          for (const result of memberResults) {
+            if (result.status === "fulfilled" && result.value) {
+              participants.push(result.value);
+            }
           }
 
           const thumbnail = new AttachmentBuilder(leaderboardThumbnail).setName(

@@ -60,12 +60,12 @@ const EpisodicMemorySchema = new Schema(
 		relationshipImpact: {
 			type: RelationshipImpactSchema,
 		},
-		topics: { type: [String], deafult: [] },
-		peopleInvolved: { type: [String], deafult: [] },
+		topics: { type: [String], default: [] },
+		peopleInvolved: { type: [String], default: [] },
 		significance: { type: Number, required: true },
 		recallStrength: { type: Number, required: true },
-		associatedMemories: { type: [String], deafult: [] },
-		narrativeTags: { type: [String], deafult: [] },
+		associatedMemories: { type: [String], default: [] },
+		narrativeTags: { type: [String], default: [] },
 		uncertainty: { type: Number, required: true },
 		retrievalMetadata: {
 			type: MetaDataSchema,
@@ -73,14 +73,16 @@ const EpisodicMemorySchema = new Schema(
 
 		// db only fields
 		user_id: { type: String, required: true },
-		createdAt: { type: Number, required: true, default: Date.now() },
-		updatedAt: { type: Number, required: true, default: Date.now() },
+		createdAt: { type: Number, required: true, default: Date.now },
+		updatedAt: { type: Number, required: true, default: Date.now },
 		times_recalled: { type: Number, required: true },
 		last_recalled: { type: Number },
 		vector_embed_id: { type: String },
 	},
 	{ timestamps: false, _v: false },
 );
+
+EpisodicMemorySchema.index({ vector_embed_id: 1 });
 
 const EpisodicMemoryModel = mongoose.model(
 	"EpisodicMemoryModel",

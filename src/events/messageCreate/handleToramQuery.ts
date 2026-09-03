@@ -1,5 +1,5 @@
 import { ChannelType, Client, Message } from "discord.js";
-import Config from "../../models/configSchema";
+import { getCachedGuildConfig } from "../../utils/configCache";
 import { matchPDFFile } from "../../utils/toramKnowledgeQueryUtils";
 import { generateToramReply } from "../../utils/LLMUtils/generateToramKnowledgeReply";
 
@@ -13,7 +13,7 @@ const execute = async (client: Client, message: Message) => {
 
     if (!guild || !channel || channel.type !== ChannelType.GuildText) return;
 
-    const guildConfig = await Config.findOne({ serverID: guild.id });
+    const guildConfig = await getCachedGuildConfig(guild.id);
 
     if (!guildConfig) return;
 

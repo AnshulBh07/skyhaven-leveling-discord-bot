@@ -145,9 +145,11 @@ export const generateSeraphinaConvoReply = async (
 	userInput: string,
 	memories: string,
 	channelContext: string,
+	existingMemory?: any,
 ) => {
 	try {
 		const memory =
+			existingMemory ||
 			(await ChatMemory.findOne({ userID: userId })) ||
 			new ChatMemory({ userID: userId, messages: [] });
 
@@ -159,7 +161,7 @@ export const generateSeraphinaConvoReply = async (
 
 		const chat = genAI.chats.create({
 			model: aiModel,
-			history: memory.messages.map((msg) => ({
+			history: memory.messages.map((msg: any) => ({
 				role: msg.role === "user" ? "user" : "model",
 				parts: [
 					{

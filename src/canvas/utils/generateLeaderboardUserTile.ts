@@ -1,38 +1,13 @@
 import { LeaderboardUserTileInfo } from "../../utils/interfaces";
-import { Client, Role } from "discord.js";
-import getAllFiles from "../../utils/getAllFiles";
-import path from "path";
+import { Client, Role, User } from "discord.js";
+import { Image, loadImage } from "canvas";
 import { getNextLvlXP } from "../../utils/getNextLevelXP";
+import { getStaticCanvasAssets } from "./staticAssetCache";
 
 export const getCrownImage = async (rank: number) => {
   try {
-    const { loadImage } = await import("canvas");
-
-    const allLogos = getAllFiles(
-      path.join(__dirname, "../..", "assets/logos"),
-      false
-    );
-
-    switch (rank) {
-      case 1: {
-        const crownPath = allLogos.find((logo) => logo.includes("gold_crown"));
-        return crownPath ? await loadImage(crownPath) : undefined;
-      }
-      case 2: {
-        const crownPath = allLogos.find((logo) =>
-          logo.includes("silver_crown")
-        );
-        return crownPath ? await loadImage(crownPath) : undefined;
-      }
-      case 3: {
-        const crownPath = allLogos.find((logo) =>
-          logo.includes("bronze_crown")
-        );
-        return crownPath ? await loadImage(crownPath) : undefined;
-      }
-      default:
-        return undefined;
-    }
+    const assets = await getStaticCanvasAssets();
+    return assets.crowns.get(rank);
   } catch (err) {
     console.error("Error loading crown image.", err);
     return undefined;
@@ -46,20 +21,16 @@ const formatXpToK = (xp: number): string => {
   return `${formatted}k`;
 };
 
-export const generateLeaderboardUserTile = async (
+export const fetchLeaderboardTileData = async (
   client: Client,
-  userInfo: LeaderboardUserTileInfo,
-  width: number,
-  height: number,
-  type: string,
-  role?: Role
-) => {
-  const { createCanvas, Image, loadImage } = await import("canvas");
-  const canvas = createCanvas(width, height);
-  const ctx = canvas.getContext("2d");
+  userInfo: LeaderboardUserTileInfo
+): Promise<{ user: User; avatar: Image }> => {
+  const assets = await getStaticCanvasAssets();
+  const defaultPfps = assets.defaultPfps;
+  const fallbackAvatar =
+    defaultPfps[Math.floor(Math.random() * defaultPfps.length)];
 
   try {
-    // get user avatar first
     const user = await client.users.fetch(userInfo.userID);
     const avatarUrl = user.displayAvatarURL({
       extension: "png",
@@ -67,26 +38,45 @@ export const generateLeaderboardUserTile = async (
     });
 
     const res = await fetch(avatarUrl);
-
-    let arrayBuffer: ArrayBuffer;
-    let buffer: Buffer<ArrayBuffer>;
-    let avatar: InstanceType<typeof Image>;
-
-    // get random default pfps
-    const defaultPfp = getAllFiles(
-      path.join(__dirname, "../..", "assets/images/default_pfp"),
-      false
-    );
-
     if (!res.ok) {
-      avatar = await loadImage(
-        defaultPfp[Math.floor(Math.random() * defaultPfp.length)]
-      );
-    } else {
-      arrayBuffer = await res.arrayBuffer();
-      buffer = Buffer.from(arrayBuffer);
-      avatar = await loadImage(buffer);
+      return { user, avatar: fallbackAvatar };
     }
+
+    const arrayBuffer = await res.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    const avatar = await loadImage(buffer);
+    return { user, avatar };
+  } catch (err) {
+    try {
+      const user = await client.users.fetch(userInfo.userID);
+      return { user, avatar: fallbackAvatar };
+    } catch {
+      // create fallback dummy user object if user fetch fails
+      const dummyUser = {
+        displayName: "Unknown",
+        username: "Unknown",
+      } as unknown as User;
+      return { user: dummyUser, avatar: fallbackAvatar };
+    }
+  }
+};
+
+export const generateLeaderboardUserTile = async (
+  client: Client,
+  userInfo: LeaderboardUserTileInfo,
+  width: number,
+  height: number,
+  type: string,
+  role?: Role,
+  preloadedData?: { user: User; avatar: Image }
+) => {
+  const { createCanvas } = await import("canvas");
+  const canvas = createCanvas(width, height);
+  const ctx = canvas.getContext("2d");
+
+  try {
+    const { user, avatar } =
+      preloadedData || (await fetchLeaderboardTileData(client, userInfo));
 
     // background
     const padding = 10;

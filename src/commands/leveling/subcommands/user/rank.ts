@@ -10,6 +10,7 @@ import {
   IUser,
 } from "../../../../utils/interfaces";
 import Config from "../../../../models/configSchema";
+import User from "../../../../models/userSchema";
 import { generateRankCard } from "../../../../canvas/generateRankCard";
 import { getNextLvlXP } from "../../../../utils/getNextLevelXP";
 
@@ -55,7 +56,7 @@ const init = async (): Promise<ISubcommand | undefined> => {
           // channel shouldn't be in blacklisted channels
           const guildConfig = await Config.findOne({
             serverID: guildID,
-          }).populate({ path: "users" });
+          }).lean();
 
           if (!guildConfig) {
             await interaction.editReply(
@@ -79,13 +80,6 @@ const init = async (): Promise<ISubcommand | undefined> => {
             return;
           }
 
-          if (!notifChannel) {
-            interaction.editReply(
-              "Incomplete bot configuration for leveling system. Please set the notification channel."
-            );
-            return;
-          }
-
           if (
             interaction.channel &&
             notifChannel.isTextBased() &&
@@ -97,42 +91,29 @@ const init = async (): Promise<ISubcommand | undefined> => {
             return;
           }
 
-          let users = guildConfig.users as unknown as IUser[];
+          const targetDoc = await User.findOne({
+            userID: targetUser.id,
+            serverID: guildID,
+          }).lean();
 
-          users = users.map((user) => {
-            return {
-              userID: user.userID,
-              serverID: user.serverID,
-              username: user.username,
-              nickname: user.nickname,
-              leveling: user.leveling,
-              giveaways: user.giveaways,
-              gquests: user.gquests,
-              mazes: user.mazes,
-              raids: user.raids,
-            };
-          });
-
-          const user = users.find(
-            (user) => String(user.userID) === String(targetUser.id)
-          );
-
-          if (!user) {
+          if (!targetDoc) {
             interaction.editReply("No user found");
             return;
           }
 
-          // sort users based on xp
-          users.sort((a, b) => b.leveling.totalXp - a.leveling.totalXp);
+          // count users in this server with higher totalXp to find rank (1-based)
+          const higherUsersCount = await User.countDocuments({
+            serverID: guildID,
+            "leveling.totalXp": { $gt: targetDoc.leveling.totalXp },
+          });
 
-          const userRank =
-            users.findIndex((user) => user.userID === targetUser.id) + 1;
+          const userRank = higherUsersCount + 1;
 
           const rankData: ICardRankData = {
             rank: userRank,
-            level: user.leveling.level,
-            currentXp: user.leveling.xp,
-            requiredXp: getNextLvlXP(user.leveling.level),
+            level: targetDoc.leveling.level,
+            currentXp: targetDoc.leveling.xp,
+            requiredXp: getNextLvlXP(targetDoc.leveling.level),
           };
 
           const rankCard = await generateRankCard(targetUser, guild, rankData);

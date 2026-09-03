@@ -27,21 +27,15 @@ const init = async (): Promise<ISubcommand | undefined> => {
             return;
           }
 
-          //   find users of guild
-          const guildConfig = await Config.findOne({
-            serverID: guild.id,
-          }).populate({ path: "users" });
-
-          if (!guildConfig) {
-            await interaction.editReply({ content: "Inavlid guild config" });
-            return;
-          }
-
-          const { users } = guildConfig;
+          //   find users of guild with lean and projection
+          const users = (await User.find(
+            { serverID: guild.id },
+            { userID: 1, gquests: 1 }
+          ).lean()) as unknown as IUser[];
 
           await getGquestMazeLeaderboard(
             client,
-            users as unknown as IUser[],
+            users,
             guild,
             "guild_quest",
             interaction,

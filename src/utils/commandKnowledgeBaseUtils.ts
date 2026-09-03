@@ -50,32 +50,32 @@ export const getIntentScore = (query: string): number => {
   return score;
 };
 
+const commands: CommandEntry[] = JSON.parse(
+  fs.readFileSync(
+    path.join(__dirname, "../data/commandKnowledgeBase.json"),
+    "utf-8"
+  )
+);
+
+const commandFuse = new Fuse(commands, {
+  keys: [
+    { name: "aliases", weight: 0.4 },
+    { name: "name", weight: 0.3 },
+    { name: "usage", weight: 0.1 },
+    { name: "description", weight: 0.1 },
+    { name: "examples", weight: 0.05 },
+    { name: "notes", weight: 0.03 },
+    { name: "category", weight: 0.02 },
+  ],
+  includeScore: true,
+  includeMatches: true,
+  threshold: 0.4,
+  ignoreLocation: true,
+  minMatchCharLength: 2,
+});
+
 export const matchCommand = (query: string): CommandEntry | null => {
-  const commands: CommandEntry[] = JSON.parse(
-    fs.readFileSync(
-      path.join(__dirname, "../data/commandKnowledgeBase.json"),
-      "utf-8"
-    )
-  );
-
-  const fuse = new Fuse(commands, {
-    keys: [
-      { name: "aliases", weight: 0.4 },
-      { name: "name", weight: 0.3 },
-      { name: "usage", weight: 0.1 },
-      { name: "description", weight: 0.1 },
-      { name: "examples", weight: 0.05 },
-      { name: "notes", weight: 0.03 },
-      { name: "category", weight: 0.02 },
-    ],
-    includeScore: true,
-    includeMatches: true,
-    threshold: 0.4,
-    ignoreLocation: true,
-    minMatchCharLength: 2,
-  });
-
-  const results = fuse.search(query);
+  const results = commandFuse.search(query);
 
   if (!results.length) return null;
 

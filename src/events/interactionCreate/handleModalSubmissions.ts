@@ -7,7 +7,7 @@ import {
 } from "discord.js";
 import User from "../../models/userSchema";
 import { leaderboardThumbnail } from "../../data/helperArrays";
-import Config from "../../models/configSchema";
+import { getCachedGuildConfig } from "../../utils/configCache";
 import GQuest from "../../models/guildQuestsSchema";
 import Maze from "../../models/mazeSchema";
 import { IGquest, IMaze } from "../../utils/interfaces";
@@ -28,7 +28,7 @@ const execute = async (client: Client, interaction: ModalSubmitInteraction) => {
 
 		// handle config checks here after user clicks submit button
 
-		const guildConfig = await Config.findOne({ serverID: guild.id });
+		const guildConfig = await getCachedGuildConfig(guild.id);
 
 		if (!guildConfig) {
 			await interaction.editReply("Guild config not found.");

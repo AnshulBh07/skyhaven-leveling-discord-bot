@@ -3,8 +3,14 @@ import path from "path";
 import getAllFiles from "./getAllFiles";
 import { ICommandObj } from "./interfaces";
 
+let cachedLocalCommands: ICommandObj[] | null = null;
+
 // exceptions contains the list of commands that we want to exclude
-const getLocalCommands = async (exceptions?: string[]) => {
+const getLocalCommands = async (exceptions?: string[], forceReload: boolean = false) => {
+  if (cachedLocalCommands && !forceReload && (!exceptions || exceptions.length === 0)) {
+    return cachedLocalCommands;
+  }
+
   let localCommands: ICommandObj[] = [];
 
   try {
@@ -43,6 +49,10 @@ const getLocalCommands = async (exceptions?: string[]) => {
         )
           localCommands.push(commandObj as ICommandObj);
       }
+    }
+
+    if (!exceptions || exceptions.length === 0) {
+      cachedLocalCommands = localCommands;
     }
   } catch (err) {
     console.error(err);

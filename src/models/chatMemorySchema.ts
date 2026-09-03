@@ -9,7 +9,7 @@ const MessageSchema = new Schema(
       required: true,
     },
     content: { type: String },
-    timeStamp: { type: Number, default: Date.now() },
+    timeStamp: { type: Number, default: Date.now },
   },
   { timestamps: false }
 );

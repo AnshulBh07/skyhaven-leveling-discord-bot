@@ -1,0 +1,530 @@
+[
+  {
+    "name": "/lvl rank",
+    "aliases": [
+      "show my level",
+      "my xp",
+      "rank card",
+      "check level",
+      "see my rank",
+      "what level am i",
+      "view my rank",
+      "level info",
+      "display xp",
+      "seraphina level"
+    ],
+    "category": "Leveling",
+    "description": "Displays your current XP, level, and rank on a personalized rank card.",
+    "usage": "/lvl rank",
+    "notes": "Includes your profile picture, username, XP progress, and overall server rank. Only works in enabled channels.",
+    "examples": [
+      "What's my level?",
+      "Seraphina, show my XP card.",
+      "Can I check my rank?",
+      "I want to see my rank",
+      "How much XP do I have?"
+    ]
+  },
+  {
+    "name": "/lvl leaderboard",
+    "aliases": [
+      "top levels",
+      "level leaderboard",
+      "xp leaderboard",
+      "who chats the most",
+      "top yappers",
+      "highest level",
+      "most xp",
+      "seraphina leaderboard"
+    ],
+    "category": "Leveling",
+    "description": "Displays the top users in the server by XP or level on a visual leaderboard card.",
+    "usage": "/lvl leaderboard",
+    "notes": "Shows avatars, usernames, levels, and XP for the top 10 users. Voice XP is also counted if enabled.",
+    "examples": [
+      "Who's top level?",
+      "Show leaderboard.",
+      "Top chatters in server?",
+      "Can I see the XP board?",
+      "Who has the most levels?"
+    ]
+  },
+  {
+    "name": "/ga start",
+    "aliases": [
+      "start giveaway",
+      "create giveaway",
+      "new giveaway",
+      "host a giveaway",
+      "giveaway start",
+      "launch giveaway",
+      "start ga",
+      "how to create giveaway"
+    ],
+    "category": "Giveaways",
+    "description": "Starts a new giveaway with customizable prize, duration, winner count, and more.",
+    "usage": "/ga start <prize> <duration> <winners> [role requirement] [image] [hosted_by]",
+    "notes": "Supports optional image, level/role requirements, and host tag. Duration format like `1h`, `30m`, etc.",
+    "examples": [
+      "How do I make a giveaway?",
+      "Start a giveaway for Nitro",
+      "Create giveaway with image",
+      "Seraphina, host a giveaway",
+      "Launch a GA for spina"
+    ]
+  },
+  {
+    "name": "/ga reroll",
+    "aliases": [
+      "reroll giveaway",
+      "pick new winner",
+      "redraw giveaway",
+      "reroll ga",
+      "select new winner"
+    ],
+    "category": "Giveaways",
+    "description": "Selects a new winner for a completed giveaway.",
+    "usage": "/ga reroll <giveaway_id>",
+    "notes": "Giveaway ID can be copied from the message footer or fetched via `/ga list`.",
+    "examples": [
+      "Reroll previous giveaway",
+      "Seraphina, pick new winner",
+      "Reroll GA 837",
+      "Choose another winner"
+    ]
+  },
+  {
+    "name": "/ga list",
+    "aliases": [
+      "list giveaways",
+      "active giveaways",
+      "show giveaways",
+      "ongoing giveaways",
+      "what giveaways are running",
+      "available giveaways"
+    ],
+    "category": "Giveaways",
+    "description": "Displays all active giveaways running in the server.",
+    "usage": "/ga list",
+    "notes": "Lists prize names, remaining time, and host for each ongoing giveaway.",
+    "examples": [
+      "Any giveaways now?",
+      "Show current giveaways",
+      "Active giveaways?",
+      "Seraphina, list all giveaways"
+    ]
+  },
+  {
+    "name": "/ga entries",
+    "aliases": [
+      "my giveaway entries",
+      "check entries",
+      "entered giveaways",
+      "giveaway participation",
+      "entries list",
+      "seraphina show entries"
+    ],
+    "category": "Giveaways",
+    "description": "Shows all giveaways a specific user has entered.",
+    "usage": "/ga entries <@user>",
+    "notes": "You can check for yourself or another member. Useful for verifying eligibility.",
+    "examples": [
+      "Which giveaways did I join?",
+      "Seraphina, my entries please.",
+      "Did I enter Nitro GA?",
+      "What giveaways did I participate in?"
+    ]
+  },
+  {
+    "name": "/ga wins",
+    "aliases": [
+      "my giveaway wins",
+      "giveaway history",
+      "what did i win",
+      "show wins",
+      "past giveaway wins"
+    ],
+    "category": "Giveaways",
+    "description": "Lists all giveaways a user has won in the past.",
+    "usage": "/ga wins <@user>",
+    "notes": "Helpful for tracking frequent winners and celebrating past prizes!",
+    "examples": [
+      "What giveaways did I win?",
+      "Seraphina, show my wins.",
+      "Did I ever win anything?",
+      "My giveaway history"
+    ]
+  },
+  {
+    "name": "/gq submit",
+    "aliases": [
+      "submit guild quest",
+      "gq submit",
+      "quest screenshot submission",
+      "upload quest proof",
+      "how to submit gq",
+      "send guild quest image"
+    ],
+    "category": "Guild Quests",
+    "description": "Submit proof of your completed Guild Quest to earn participation credit.",
+    "usage": "/gq submit <image> [user]",
+    "notes": "You can submit for yourself or on behalf of another user. Attach a valid screenshot showing completion.",
+    "examples": [
+      "How do I submit a guild quest?",
+      "Submit quest proof",
+      "Seraphina, gq submit",
+      "I want to send quest proof"
+    ]
+  },
+  {
+    "name": "/gq dm-notif",
+    "aliases": [
+      "quest dm toggle",
+      "enable quest dm",
+      "disable gq dms",
+      "turn on guild quest notifications",
+      "stop quest dms",
+      "toggle gq alerts",
+      "quest message alerts"
+    ],
+    "category": "Guild Quests",
+    "description": "Enable or disable direct message notifications for Guild Quest submission updates.",
+    "usage": "/gq dm-notif <true|false> [user]",
+    "notes": "You can toggle for yourself or another user if you're an admin.",
+    "examples": [
+      "Turn on DMs for guild quests",
+      "Disable quest alerts",
+      "Stop getting messages about quest rewards",
+      "Enable gq dms for @Minyu"
+    ]
+  },
+  {
+    "name": "/gq stats",
+    "aliases": [
+      "my quest stats",
+      "guild quest overview",
+      "gq history",
+      "quest record",
+      "how many quests have I done",
+      "gq progress",
+      "guild quest tracker"
+    ],
+    "category": "Guild Quests",
+    "description": "Displays your Guild Quest statistics, including rewarded, rejected, and pending submissions.",
+    "usage": "/gq stats [user]",
+    "notes": "You can check your own stats or someone else’s.",
+    "examples": [
+      "Show my quest progress",
+      "How many quests has @Yaze completed?",
+      "Check my gq stats",
+      "Guild quest history for me"
+    ]
+  },
+  {
+    "name": "/gq pending",
+    "aliases": [
+      "quest pending",
+      "pending guild quests",
+      "gq in review",
+      "unapproved quests",
+      "quests awaiting review"
+    ],
+    "category": "Guild Quests",
+    "description": "Lists all your Guild Quest submissions that are currently under review.",
+    "usage": "/gq pending [user]",
+    "notes": "Shows timestamps and images if available.",
+    "examples": [
+      "What quests are still pending?",
+      "Show my unreviewed quests",
+      "Seraphina, list my pending gqs",
+      "Pending guild quest submissions"
+    ]
+  },
+  {
+    "name": "/gq rewarded",
+    "aliases": [
+      "rewarded quests",
+      "approved quests",
+      "gq rewards",
+      "quests I got credit for",
+      "successful guild quests"
+    ],
+    "category": "Guild Quests",
+    "description": "Displays all approved and rewarded Guild Quest submissions.",
+    "usage": "/gq rewarded [user]",
+    "notes": "Includes dates, quest types, and reward values if available.",
+    "examples": [
+      "What quests did I get rewarded for?",
+      "Show my accepted gqs",
+      "List successful guild quests",
+      "Seraphina, what gqs got approved?"
+    ]
+  },
+  {
+    "name": "/gq rejected",
+    "aliases": [
+      "rejected quests",
+      "denied quest submissions",
+      "gq that failed",
+      "failed quest proof",
+      "quests that got rejected"
+    ],
+    "category": "Guild Quests",
+    "description": "View all rejected Guild Quest submissions and reasons if available.",
+    "usage": "/gq rejected [user]",
+    "notes": "Helps you improve future submissions.",
+    "examples": [
+      "Why was my quest denied?",
+      "List my rejected gqs",
+      "Show failed guild quest submissions",
+      "Any quests I messed up?"
+    ]
+  },
+  {
+    "name": "/gq find",
+    "aliases": [
+      "find quest submission",
+      "search gq",
+      "lookup gq id",
+      "locate guild quest entry",
+      "gq id search"
+    ],
+    "category": "Guild Quests",
+    "description": "Find a specific Guild Quest submission using its unique ID.",
+    "usage": "/gq find <gquest_id>",
+    "notes": "Helpful for references or inquiries.",
+    "examples": [
+      "Find gq 2741",
+      "Seraphina, search for quest ID 3005",
+      "Locate guild quest ID 442",
+      "Can you show me gq ID 209?"
+    ]
+  },
+  {
+    "name": "/gq leaderboard",
+    "aliases": [
+      "quest leaderboard",
+      "top guild questers",
+      "gq top list",
+      "who did most guild quests",
+      "guild quest rankings"
+    ],
+    "category": "Guild Quests",
+    "description": "Displays the top users ranked by rewarded Guild Quest submissions.",
+    "usage": "/gq leaderboard",
+    "notes": "Encourages healthy competition among guildmates.",
+    "examples": [
+      "Who's leading in guild quests?",
+      "Top quest contributors?",
+      "Seraphina, gq leaderboard",
+      "Show quest rankings"
+    ]
+  },
+  {
+    "name": "/gq delete",
+    "aliases": [
+      "delete quest submission",
+      "cancel gq",
+      "remove gq entry",
+      "undo guild quest submission",
+      "revoke pending gq"
+    ],
+    "category": "Guild Quests",
+    "description": "Deletes a pending Guild Quest submission using its ID.",
+    "usage": "/gq delete <gquest_id>",
+    "notes": "Only works for unreviewed submissions.",
+    "examples": [
+      "Delete gq ID 584",
+      "Cancel my last guild quest submission",
+      "Seraphina, undo pending quest",
+      "Remove guild quest 9031"
+    ]
+  },
+
+  {
+    "name": "/mz submit",
+    "aliases": [
+      "submit maze run",
+      "start maze submission",
+      "submit guild maze",
+      "how to submit maze",
+      "maze proof submission",
+      "send maze proof",
+      "submit maze",
+      "upload maze"
+    ],
+    "category": "Guild Maze",
+    "description": "Initiate a Guild Maze submission with a start and end floor. A thread will be created for you to upload proof.",
+    "usage": "/mz submit <start_floor> <end_floor> [user]",
+    "notes": "Submit for yourself or another user. Attach proof in the created thread.",
+    "examples": [
+      "How do I submit a maze?",
+      "Start a maze proof submission",
+      "Submit F1 to F50",
+      "Seraphina, mz submit",
+      "submit guild maze",
+      "I want to upload maze proof"
+    ]
+  },
+  {
+    "name": "/mz dm-notif",
+    "aliases": [
+      "maze dm toggle",
+      "maze notifications",
+      "enable maze dms",
+      "toggle maze updates",
+      "maze dm settings"
+    ],
+    "category": "Guild Maze",
+    "description": "Enable or disable DM notifications for maze submission updates.",
+    "usage": "/mz dm-notif <true|false> [user]",
+    "notes": "Helps you stay updated on your maze rewards or rejections.",
+    "examples": [
+      "Turn on maze DMs",
+      "Disable my maze notifications",
+      "Seraphina, enable maze updates",
+      "I want maze DM alerts",
+      "Turn off maze DMs"
+    ]
+  },
+  {
+    "name": "/mz stats",
+    "aliases": [
+      "my maze stats",
+      "maze history",
+      "maze record",
+      "check maze stats",
+      "maze progress"
+    ],
+    "category": "Guild Maze",
+    "description": "Shows your total maze submissions, rewarded floors, rejections, and more.",
+    "usage": "/mz stats [user]",
+    "notes": "Breakdown by floor ranges and approval status.",
+    "examples": [
+      "What's my maze progress?",
+      "Seraphina, show my maze stats",
+      "How many floors did I clear?",
+      "Check maze stats"
+    ]
+  },
+  {
+    "name": "/mz pending",
+    "aliases": [
+      "pending maze/mazes",
+      "unreviewed maze/mazes",
+      "mazes under review",
+      "mazes submissions waiting",
+      "what maze is pending"
+    ],
+    "category": "Guild Maze",
+    "description": "Lists all maze submissions that are currently waiting for review.",
+    "usage": "/mz pending [user]",
+    "notes": "Submission details may be visible in their respective threads.",
+    "examples": [
+      "Check pending maze/mazes",
+      "What maze/mazes is still in review?",
+      "Which mazes runs are waiting?",
+      "See my pending mazes"
+    ]
+  },
+  {
+    "name": "/mz rewarded",
+    "aliases": [
+      "rewarded maze/mazes",
+      "approved maze/mazes",
+      "maze/mazes rewards",
+      "accepted maze/mazes",
+      "cleared maze/mazes floors"
+    ],
+    "category": "Guild Maze",
+    "description": "Displays a list of all approved and rewarded maze submissions.",
+    "usage": "/mz rewarded [user]",
+    "notes": "Includes floor ranges, dates, and total rewarded floors.",
+    "examples": [
+      "Show my maze/mazes rewards",
+      "What floors were accepted?",
+      "Which maze/mazes runs got approved?",
+      "Seraphina, rewarded maze/mazes list"
+    ]
+  },
+  {
+    "name": "/mz rejected",
+    "aliases": [
+      "rejected maze/mazes",
+      "denied maze/mazes",
+      "failed maze/mazes submissions",
+      "maze/mazes got rejected",
+      "declined maze/mazes"
+    ],
+    "category": "Guild Maze",
+    "description": "View all rejected maze submissions and rejection reasons.",
+    "usage": "/mz rejected [user]",
+    "notes": "Useful for learning from past mistakes and avoiding repeated issues.",
+    "examples": [
+      "Maze/mazes rejections?",
+      "Which floors got denied?",
+      "Why was my maze/mazes rejected?",
+      "Show rejected maze/mazes"
+    ]
+  },
+  {
+    "name": "/mz find",
+    "aliases": [
+      "find maze submission",
+      "search maze/mazes",
+      "lookup maze/mazes id",
+      "locate maze/mazes submission",
+      "find specific maze/mazes"
+    ],
+    "category": "Guild Maze",
+    "description": "Find a specific maze submission by its unique ID.",
+    "usage": "/mz find <maze_id>",
+    "notes": "Helpful when following up on a review or issue.",
+    "examples": [
+      "Find maze ID 308",
+      "Seraphina, locate mz 992",
+      "Search for maze submission 1500",
+      "Look up a maze ID"
+    ]
+  },
+  {
+    "name": "/mz leaderboard",
+    "aliases": [
+      "maze leaderboard",
+      "top maze runners",
+      "who cleared most maze",
+      "maze rankings",
+      "best maze players"
+    ],
+    "category": "Guild Maze",
+    "description": "Shows the top users by total rewarded floors in the Guild Maze.",
+    "usage": "/mz leaderboard",
+    "notes": "Encourages friendly competition between maze runners.",
+    "examples": [
+      "Who's the top maze runner?",
+      "Show maze leaderboard",
+      "Best maze rank?",
+      "Top maze floors"
+    ]
+  },
+  {
+    "name": "/mz delete",
+    "aliases": [
+      "delete maze submission",
+      "cancel maze",
+      "remove maze entry",
+      "undo maze submission",
+      "withdraw maze proof"
+    ],
+    "category": "Guild Maze",
+    "description": "Deletes a pending maze submission by ID.",
+    "usage": "/mz delete <maze_id>",
+    "notes": "Only works for unreviewed submissions. Useful if you made a mistake.",
+    "examples": [
+      "Delete my maze submission",
+      "Cancel maze ID 2511",
+      "Remove maze 380",
+      "Seraphina, delete that maze run"
+    ]
+  }
+]

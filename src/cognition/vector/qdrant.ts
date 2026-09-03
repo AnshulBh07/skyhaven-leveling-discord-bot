@@ -80,11 +80,9 @@ export const searchVector = async (
 			limit: 15,
 		};
 
-		if (collectionName !== "semantic_memories") {
-			searchOptions.filter = {
-				must: [{ key: "userID", match: { value: user_id } }],
-			};
-		}
+		searchOptions.filter = {
+			must: [{ key: "userID", match: { value: user_id } }],
+		};
 
 		const results = await qdrant.search(collectionName, searchOptions);
 

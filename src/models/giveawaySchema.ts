@@ -19,9 +19,9 @@ const GiveawaySchema = new Schema(
     starterMessage: { type: String, default: "" },
 
     // will use custom time stamps
-    createdAt: { type: Number, required: true, default: Date.now() },
-    updatedAt: { type: Number, default: Date.now() },
-    endsAt: { type: Number, required: true, default: Date.now() + 1e9 },
+    createdAt: { type: Number, required: true, default: Date.now },
+    updatedAt: { type: Number, default: Date.now },
+    endsAt: { type: Number, required: true, default: () => Date.now() + 1e9 },
     isEnded: { type: Boolean, required: true, default: false },
     isPaused: { type: Boolean, default: false },
   },

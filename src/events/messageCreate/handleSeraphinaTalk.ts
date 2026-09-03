@@ -1,5 +1,5 @@
 import { ChannelType, Client, Message } from "discord.js";
-import Config from "../../models/configSchema";
+import { getCachedGuildConfig } from "../../utils/configCache";
 import { generateSeraphinaConvoReply } from "../../utils/LLMUtils/generateSeraphinaConvoReply";
 import {
 	getIntentScore,
@@ -41,7 +41,7 @@ const execute = async (client: Client, message: Message) => {
 
 		if (!msg.startsWith("s!") && !msg.startsWith("S!")) return;
 
-		const guildConfig = await Config.findOne({ serverID: guild.id });
+		const guildConfig = await getCachedGuildConfig(guild.id);
 
 		if (!guildConfig) return;
 
@@ -129,17 +129,19 @@ const execute = async (client: Client, message: Message) => {
 			`;
 		}
 
-		try {
-			pastMemories = await retriveRelatedMemories(
+		// parallelize memory retrieval and discord channel history fetch
+		const [pastMemoriesResult, recentMsgs] = await Promise.all([
+			retriveRelatedMemories(
 				interaction,
 				message.author.id,
-			);
-		} catch (err) {
-			console.error("Memory retrieval failed : ", err);
-		}
+			).catch((err) => {
+				console.error("Memory retrieval failed : ", err);
+				return "";
+			}),
+			channel.messages.fetch({ limit: 20 }),
+		]);
 
-		// also retrieve channel history to give seraphina a better context
-		const recentMsgs = await channel.messages.fetch({ limit: 20 });
+		pastMemories = pastMemoriesResult;
 
 		const channelContext = recentMsgs
 			.reverse()
@@ -148,17 +150,18 @@ const execute = async (client: Client, message: Message) => {
 					? "Seraphina"
 					: msg.member?.displayName || msg.author.username;
 
-				return `${speaker} : ${msg.content.replace(/^!s/i, "")}`;
+				return `${speaker} : ${msg.content.replace(/^s!/i, "")}`;
 			})
 			.join("\n");
 
-		// generate normal reply with convo prompt
+		// generate normal reply with convo prompt, reusing existing ChatMemory doc
 		const seraphinaReply = await generateSeraphinaConvoReply(
 			seraphinaMood,
 			message.author.id,
 			userMsg,
 			pastMemories,
 			channelContext,
+			userChats,
 		);
 
 		await channel.send({ content: seraphinaReply });

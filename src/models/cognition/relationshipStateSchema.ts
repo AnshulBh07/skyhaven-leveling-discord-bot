@@ -20,8 +20,8 @@ const RelationshipStateSchema = new Schema(
 
 		// required fields
 		user_id: { type: String, required: true, unique: true, index: true },
-		createdAt: { type: Number, required: true, default: Date.now() },
-		updatedAt: { type: Number, required: true, default: Date.now() },
+		createdAt: { type: Number, required: true, default: Date.now },
+		updatedAt: { type: Number, required: true, default: Date.now },
 	},
 	{ timestamps: false, _v: false },
 );

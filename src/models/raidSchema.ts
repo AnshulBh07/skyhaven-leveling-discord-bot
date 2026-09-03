@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const TimestampsSchema = new Schema(
   {
-    announcementTime: { type: Number, required: true, default: Date.now() },
+    announcementTime: { type: Number, required: true, default: Date.now },
     startTime: { type: Number, required: true, default: 0 },
     scoutTime: { type: Number, default: 0 },
     allotmentTime: { type: Number, default: 0 },
@@ -21,7 +21,7 @@ const RaidSchema = new Schema(
     announcementMessageID: { type: String, required: true, default: "" },
     scoutMessageID: { type: String, required: true, default: "" },
     teamAllotmentMessageID: { type: String, required: true, default: "" },
-    bannerUrl: { type: String, rquired: true, default: "" },
+    bannerUrl: { type: String, required: true, default: "" },
     bosses: {
       //the first element will be the boss that is to be scouted
       type: [

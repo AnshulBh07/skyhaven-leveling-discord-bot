@@ -33,14 +33,16 @@ const SemanticMemorySchema = new Schema(
 		recallStrength: { type: Number, required: true },
 
 		user_id: { type: String, required: true },
-		createdAt: { type: Number, required: true, default: Date.now() },
-		updatedAt: { type: Number, required: true, default: Date.now() },
+		createdAt: { type: Number, required: true, default: Date.now },
+		updatedAt: { type: Number, required: true, default: Date.now },
 		times_recalled: { type: Number, required: true },
 		last_recalled: { type: Number },
 		vector_embed_id: { type: String },
 	},
 	{ timestamps: false, _v: false },
 );
+
+SemanticMemorySchema.index({ vector_embed_id: 1 });
 
 const SemanticMemoryModel = mongoose.model(
 	"SemanticMemoryModel",

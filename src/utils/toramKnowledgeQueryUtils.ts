@@ -18,29 +18,29 @@ function cleanQuery(query: string): string {
     .join(" ");
 }
 
+const toramFiles: ToramKnowledgeEntry[] = JSON.parse(
+  fs.readFileSync(
+    path.join(__dirname, "../data/toramKnowledgeBase.json"),
+    "utf-8"
+  )
+);
+
+const toramFuse = new Fuse(toramFiles, {
+  keys: [
+    { name: "keywords", weight: 1 },
+    { name: "aliases", weight: 0.8 },
+    { name: "allText", weight: 0.3 },
+  ],
+  includeScore: true,
+  includeMatches: true,
+  threshold: 0.4,
+  ignoreLocation: true,
+  minMatchCharLength: 2,
+});
+
 export const matchPDFFile = (query: string): ToramKnowledgeEntry | null => {
-  const files: ToramKnowledgeEntry[] = JSON.parse(
-    fs.readFileSync(
-      path.join(__dirname, "../data/toramKnowledgeBase.json"),
-      "utf-8"
-    )
-  );
-
-  const fuse = new Fuse(files, {
-    keys: [
-      { name: "keywords", weight: 1 },
-      { name: "aliases", weight: 0.8 },
-      { name: "allText", weight: 0.3 },
-    ],
-    includeScore: true,
-    includeMatches: true,
-    threshold: 0.4,
-    ignoreLocation: true,
-    minMatchCharLength: 2,
-  });
-
   const cleaned = cleanQuery(query);
-  const results = fuse.search(cleaned);
+  const results = toramFuse.search(cleaned);
 
   if (!results.length) return null;
 

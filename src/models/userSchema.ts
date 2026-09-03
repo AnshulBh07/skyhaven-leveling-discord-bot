@@ -6,7 +6,7 @@ const Leveling = new Schema(
     textXp: { type: Number, default: 0 },
     voiceXp: { type: Number, default: 0 },
     totalXp: { type: Number, default: 0 },
-    xpPerDay: { type: Map, of: Number, defaultL: {}, required: true },
+    xpPerDay: { type: Map, of: Number, default: {}, required: true },
     level: { type: Number, default: 1 },
     lastMessageTimestamp: { type: Date, default: Date.now },
     lastPromotionTimestamp: { type: Date, default: Date.now },
@@ -78,6 +78,9 @@ const UserSchema = new Schema(
   },
   { timestamps: true },
 );
+
+UserSchema.index({ userID: 1, serverID: 1 }, { unique: true });
+UserSchema.index({ serverID: 1, "leveling.totalXp": -1 });
 
 const User = model("User", UserSchema);
 

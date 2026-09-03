@@ -1,6 +1,6 @@
 // a generic function that handles messageCreate events
 import { Client, Message } from "discord.js";
-import Config from "../../models/configSchema";
+import { getCachedGuildConfig } from "../../utils/configCache";
 import { countEmojis } from "../../utils/countEmojis";
 import User from "../../models/userSchema";
 import { ILevelRoles } from "../../utils/interfaces";
@@ -15,7 +15,7 @@ const execute = async (client: Client, message: Message) => {
 
     if (!guildID) return;
 
-    const guildConfig = await Config.findOne({ serverID: guildID });
+    const guildConfig = await getCachedGuildConfig(guildID);
 
     if (!guildConfig) return;
 

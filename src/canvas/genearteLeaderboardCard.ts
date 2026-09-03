@@ -1,12 +1,15 @@
 import { AttachmentBuilder, Client, Role } from "discord.js";
-import { generateLeaderboardUserTile } from "./utils/generateLeaderboardUserTile";
+import {
+  fetchLeaderboardTileData,
+  generateLeaderboardUserTile,
+} from "./utils/generateLeaderboardUserTile";
 import { LeaderboardUserTileInfo } from "../utils/interfaces";
 
 export const generateLeaderboardCanvas = async (
   client: Client,
   leaderboardList: LeaderboardUserTileInfo[],
   type: string,
-  randomBg: string,
+  bgImage: any,
   roles: Role[]
 ) => {
   const { createCanvas, loadImage } = await import("canvas");
@@ -16,8 +19,16 @@ export const generateLeaderboardCanvas = async (
   const ctx = canvas.getContext("2d");
 
   try {
-    const bgImage = await loadImage(randomBg);
-    ctx.drawImage(bgImage, 0, 0, width, height);
+    const loadedBg =
+      typeof bgImage === "string" ? await loadImage(bgImage) : bgImage;
+    ctx.drawImage(loadedBg, 0, 0, width, height);
+
+    // Parallelize user info + avatar network downloads across all tiles
+    const preloadedTilesData = await Promise.all(
+      leaderboardList.map((userInfo) =>
+        fetchLeaderboardTileData(client, userInfo)
+      )
+    );
 
     const columns = 2;
     const rows = 5;
@@ -43,7 +54,8 @@ export const generateLeaderboardCanvas = async (
         tileWidth,
         tileHeight,
         type,
-        role
+        role,
+        preloadedTilesData[i]
       );
 
       ctx.drawImage(tileCanvas, x, y, tileWidth, tileHeight);

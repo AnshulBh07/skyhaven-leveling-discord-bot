@@ -18,11 +18,13 @@ const eventHandler = (client: Client) => {
     if (!eventName) continue;
 
     client.on(eventName, async (...args) => {
-      // iterate over event files and execute them
-      for (const eventFile of eventFiles) {
-        const module = await import(eventFile);
-        await module.default(client, ...args);
-      }
+      // execute event files concurrently so long-running operations do not block independent handlers
+      await Promise.all(
+        eventFiles.map(async (eventFile) => {
+          const module = await import(eventFile);
+          await module.default(client, ...args);
+        })
+      );
     });
   }
 };

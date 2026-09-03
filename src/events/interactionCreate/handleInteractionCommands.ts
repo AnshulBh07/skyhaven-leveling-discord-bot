@@ -6,7 +6,7 @@ import {
   PermissionResolvable,
 } from "discord.js";
 import getLocalCommands from "../../utils/getLocalCommands";
-import Config from "../../models/configSchema";
+import { getCachedGuildConfig } from "../../utils/configCache";
 import { guildConfigCheck } from "../../utils/configurationCheck";
 import { IConfig } from "../../utils/interfaces";
 
@@ -28,7 +28,7 @@ const execute = async (client: Client, interaction: Interaction) => {
       await interaction.deferReply({ flags: "Ephemeral" });
     }
 
-    const guildConfig = await Config.findOne({ serverID: guild.id });
+    const guildConfig = await getCachedGuildConfig(guild.id);
 
     if (!guildConfig) {
       await interaction.editReply({
@@ -126,7 +126,7 @@ const execute = async (client: Client, interaction: Interaction) => {
       const memberID = interaction.member?.user.id!;
 
       //   check devs only
-      if (!devsID.includes(memberID)) {
+      if (!(devsID || []).includes(memberID)) {
         await interaction.editReply({
           content: "❌ You don't have access to this command.",
         });

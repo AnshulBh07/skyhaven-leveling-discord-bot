@@ -114,7 +114,7 @@ const getRelationshipContext = async (user_id: string) => {
 	try {
 		const relationshipState = (await RelationshipStateModel.findOne({
 			user_id: user_id,
-		})) as StoredRelationshipMemory;
+		}).lean()) as StoredRelationshipMemory;
 
 		if (!relationshipState) return "";
 
@@ -165,7 +165,8 @@ const getReflectionContext = async (user_id: string) => {
 			user_id: user_id,
 		})
 			.sort({ updatedAt: -1 })
-			.limit(3)) as StoredReflectionMemory[];
+			.limit(3)
+			.lean()) as StoredReflectionMemory[];
 
 		if (!reflectionMemories.length) return "";
 

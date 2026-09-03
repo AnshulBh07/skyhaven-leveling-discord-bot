@@ -2,13 +2,14 @@
 // each supposed minibot is represented as a new sub subsystem for core bot
 // therefore contains config for each system
 import mongoose from "mongoose";
+import { invalidateGuildConfigCache } from "../utils/configCache";
 
 const Schema = mongoose.Schema;
 
 const LevelRolesSchema = new Schema(
 	{
-		minLevel: { type: Number, requird: true },
-		maxLevel: { type: Number, requird: true },
+		minLevel: { type: Number, required: true },
+		maxLevel: { type: Number, required: true },
 		roleID: { type: String, required: true },
 	},
 	{ timestamps: false, _id: false, _v: false },
@@ -26,7 +27,7 @@ const BanSchema = new Schema(
 	{
 		userID: { type: String, required: true, default: "" },
 		reason: { type: String, default: "" },
-		banDate: { type: Date, required: true, default: new Date() },
+		banDate: { type: Date, required: true, default: Date.now },
 		banBy: { type: String, required: true, default: "" }, //user who banned, stores user id
 	},
 	{ timestamps: false, _id: false, _v: false },
@@ -36,7 +37,7 @@ const KickSchema = new Schema(
 	{
 		userID: { type: String, required: true, default: "" },
 		reason: { type: String, default: "" },
-		kickDate: { type: Date, required: true, default: new Date() },
+		kickDate: { type: Date, required: true, default: Date.now },
 		kickBy: { type: String, required: true, default: "" }, //user who banned, stores user id
 	},
 	{ timestamps: false, _id: false, _v: false },
@@ -185,6 +186,20 @@ const ConfigSchema = new Schema(
 	},
 	{ timestamps: true },
 );
+
+ConfigSchema.post("save", function (doc) {
+	if (doc && doc.serverID) {
+		invalidateGuildConfigCache(doc.serverID);
+	}
+});
+
+ConfigSchema.post(["findOneAndUpdate", "updateOne", "findOneAndDelete"], function (res: any) {
+	const filter = (this as any).getFilter ? (this as any).getFilter() : {};
+	const serverID = filter.serverID || (res && res.serverID);
+	if (serverID) {
+		invalidateGuildConfigCache(serverID);
+	}
+});
 
 const Config = mongoose.model("Config", ConfigSchema);
 

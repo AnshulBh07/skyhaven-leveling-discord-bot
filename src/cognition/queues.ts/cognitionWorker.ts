@@ -6,16 +6,20 @@ let isProcessing = false;
 export const processQueue = async () => {
 	if (isProcessing) return;
 
-	// shift onto next job if not processing
-	const job = CognitionQueue.shift();
-
-	if (!job) return;
+	isProcessing = true;
 
 	try {
-		console.log(`🧠 Processing cognition job ${job.id}`);
-		await runCognition(job.interaction, job.userId);
-	} catch (err) {
-		console.error(`Cognition failed, skipping job ${job.id} : `, err);
+		while (CognitionQueue.length > 0) {
+			const job = CognitionQueue.shift();
+			if (!job) break;
+
+			try {
+				console.log(`🧠 Processing cognition job ${job.id}`);
+				await runCognition(job.interaction, job.userId);
+			} catch (err) {
+				console.error(`Cognition failed, skipping job ${job.id} : `, err);
+			}
+		}
 	} finally {
 		isProcessing = false;
 	}

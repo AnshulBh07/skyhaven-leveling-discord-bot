@@ -17,9 +17,8 @@ import {
 } from "../../../../utils/interfaces";
 import { leaderboardThumbnail } from "../../../../data/helperArrays";
 import { getWeekOfYear } from "../../../../utils/getDateString";
-import getAllFiles from "../../../../utils/getAllFiles";
-import path from "path";
 import { generateLeaderboardCanvas } from "../../../../canvas/genearteLeaderboardCard";
+import { getStaticCanvasAssets } from "../../../../canvas/utils/staticAssetCache";
 import User from "../../../../models/userSchema";
 
 const leaderboardTypes = [
@@ -75,8 +74,11 @@ const init = async (): Promise<ISubcommand | undefined> => {
             return;
           }
 
-          // get all users for current guild
-          const users = await User.find({ serverID: guild.id });
+          // get all users for current guild with lean and projection
+          const users = (await User.find(
+            { serverID: guild.id },
+            { userID: 1, leveling: 1 }
+          ).lean()) as unknown as IUser[];
 
           // initial states for leaderboard
           let page = 0;
@@ -219,14 +221,12 @@ const init = async (): Promise<ISubcommand | undefined> => {
             type
           );
 
-          // first we will get a random image out of all the images meant for bg
-          const allImages = getAllFiles(
-            path.join(__dirname, "../../../..", "assets/images/leaderboard_bg"),
-            false
-          );
-
+          // get random background from cached static images
+          const staticAssets = await getStaticCanvasAssets();
           const randomBg =
-            allImages[Math.floor(Math.random() * allImages.length)];
+            staticAssets.leaderboardBgs[
+              Math.floor(Math.random() * staticAssets.leaderboardBgs.length)
+            ];
 
           // get all roles for the guild
           const roles = Array.from(guild.roles.cache).map(([_, role]) => role);

@@ -2,6 +2,7 @@ import { ApplicationCommandOptionType, ChannelType } from "discord.js";
 import { ISubcommand, IUser } from "../../../../utils/interfaces";
 import { getGquestMazeLeaderboard } from "../../../../utils/gquestUtils";
 import Config from "../../../../models/configSchema";
+import User from "../../../../models/userSchema";
 
 const init = async (): Promise<ISubcommand | undefined> => {
   try {
@@ -27,21 +28,15 @@ const init = async (): Promise<ISubcommand | undefined> => {
             return;
           }
 
-          //   make leaderbaord
-          const guildConfig = await Config.findOne({
-            serverID: guild.id,
-          }).populate({ path: "users" });
-
-          if (!guildConfig) {
-            await interaction.editReply({ content: "Inavlid guild config" });
-            return;
-          }
-
-          const { users } = guildConfig;
+          //   make leaderboard with lean and projection
+          const users = (await User.find(
+            { serverID: guild.id },
+            { userID: 1, mazes: 1 }
+          ).lean()) as unknown as IUser[];
 
           await getGquestMazeLeaderboard(
             client,
-            users as unknown as IUser[],
+            users,
             guild,
             "maze",
             interaction,
