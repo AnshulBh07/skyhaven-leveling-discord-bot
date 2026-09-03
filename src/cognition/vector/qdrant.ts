@@ -66,6 +66,20 @@ export const insertVector = async (
 		});
 	} catch (err) {
 		console.error("Error while inserting in qdrant db : ", err);
+		throw err;
+	}
+};
+
+export const deleteVector = async (
+	collectionName: string,
+	vectorID: string,
+) => {
+	try {
+		await qdrant.delete(collectionName, {
+			points: [vectorID],
+		});
+	} catch (err) {
+		console.error("Error while deleting vector point from qdrant : ", err);
 	}
 };
 

@@ -94,10 +94,15 @@ const handleEpisodicMemory = (interaction, user_id) => __awaiter(void 0, void 0,
                         userID: user_id,
                         type: "episodic",
                     };
-                    yield Promise.all([
-                        (0, qdrant_1.insertVector)(vectorEmbed, "episodic_memories", vectorID, qdrant_payload),
-                        episodicMemorySchema_1.default.create(Object.assign(Object.assign({}, memory), { times_recalled: 0, createdAt: Date.now(), updatedAt: Date.now(), user_id: user_id, vector_embed_id: vectorID })),
-                    ]);
+                    yield (0, qdrant_1.insertVector)(vectorEmbed, "episodic_memories", vectorID, qdrant_payload);
+                    try {
+                        yield episodicMemorySchema_1.default.create(Object.assign(Object.assign({}, memory), { times_recalled: 0, createdAt: Date.now(), updatedAt: Date.now(), user_id: user_id, vector_embed_id: vectorID }));
+                    }
+                    catch (mongoErr) {
+                        console.error("MongoDB write failed for episodic memory; rolling back Qdrant vector:", mongoErr);
+                        yield (0, qdrant_1.deleteVector)("episodic_memories", vectorID);
+                        throw mongoErr;
+                    }
                 }
             }
         }
@@ -130,10 +135,15 @@ const handleSemanticMemory = (interaction, user_id) => __awaiter(void 0, void 0,
                             userID: user_id,
                             type: "semantic",
                         };
-                        yield Promise.all([
-                            (0, qdrant_1.insertVector)(vectorEmbed, "semantic_memories", vectorID, qdrant_payload),
-                            semanticMemorySchema_1.default.create(Object.assign(Object.assign({}, semanticResult), { times_recalled: 0, createdAt: Date.now(), updatedAt: Date.now(), user_id: user_id, vector_embed_id: vectorID })),
-                        ]);
+                        yield (0, qdrant_1.insertVector)(vectorEmbed, "semantic_memories", vectorID, qdrant_payload);
+                        try {
+                            yield semanticMemorySchema_1.default.create(Object.assign(Object.assign({}, semanticResult), { times_recalled: 0, createdAt: Date.now(), updatedAt: Date.now(), user_id: user_id, vector_embed_id: vectorID }));
+                        }
+                        catch (mongoErr) {
+                            console.error("MongoDB write failed for semantic memory; rolling back Qdrant vector:", mongoErr);
+                            yield (0, qdrant_1.deleteVector)("semantic_memories", vectorID);
+                            throw mongoErr;
+                        }
                     }
                 }
             }

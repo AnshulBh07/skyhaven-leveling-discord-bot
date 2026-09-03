@@ -18,13 +18,17 @@ const eventHandler = (client: Client) => {
     if (!eventName) continue;
 
     client.on(eventName, async (...args) => {
-      // execute event files concurrently so long-running operations do not block independent handlers
-      await Promise.all(
-        eventFiles.map(async (eventFile) => {
-          const module = await import(eventFile);
-          await module.default(client, ...args);
-        })
-      );
+      try {
+        // execute event files concurrently so long-running operations do not block independent handlers
+        await Promise.all(
+          eventFiles.map(async (eventFile) => {
+            const module = await import(eventFile);
+            await module.default(client, ...args);
+          })
+        );
+      } catch (err) {
+        console.error(`Unhandled error executing event '${eventName}':`, err);
+      }
     });
   }
 };

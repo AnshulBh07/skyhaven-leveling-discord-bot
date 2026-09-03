@@ -60,11 +60,16 @@ const eventHandler = (client) => {
         if (!eventName)
             continue;
         client.on(eventName, (...args) => __awaiter(void 0, void 0, void 0, function* () {
-            // execute event files concurrently so long-running operations do not block independent handlers
-            yield Promise.all(eventFiles.map((eventFile) => __awaiter(void 0, void 0, void 0, function* () {
-                const module = yield Promise.resolve(`${eventFile}`).then(s => __importStar(require(s)));
-                yield module.default(client, ...args);
-            })));
+            try {
+                // execute event files concurrently so long-running operations do not block independent handlers
+                yield Promise.all(eventFiles.map((eventFile) => __awaiter(void 0, void 0, void 0, function* () {
+                    const module = yield Promise.resolve(`${eventFile}`).then(s => __importStar(require(s)));
+                    yield module.default(client, ...args);
+                })));
+            }
+            catch (err) {
+                console.error(`Unhandled error executing event '${eventName}':`, err);
+            }
         }));
     }
 };

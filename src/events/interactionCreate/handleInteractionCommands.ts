@@ -158,6 +158,16 @@ const execute = async (client: Client, interaction: Interaction) => {
     await commandObject.callback(client, interaction, seraphinaMood);
   } catch (err) {
     console.error("Error in chat input command interaction handler : ", err);
+
+    if (interaction.isRepliable() && interaction.deferred && !interaction.replied) {
+      await interaction
+        .editReply({
+          content: "⚠️ An error occurred while executing this command. Please try again later.",
+        })
+        .catch((replyErr) => {
+          console.error("Failed to send error reply to interaction:", replyErr);
+        });
+    }
   }
 };
 

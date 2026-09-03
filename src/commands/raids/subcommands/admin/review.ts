@@ -178,14 +178,26 @@ const init = async (): Promise<ISubcommand | undefined> => {
                 await i.editReply({ content: "Users marked absent." });
               }
 
-              const present = await Promise.all(
-                [...presentIDs].map((id) => client.users.fetch(id))
+              const fetchUserSafely = async (id: string) => {
+                const cached = client.users.cache.get(id);
+                if (cached) return cached;
+                return client.users.fetch(id).catch(() => null);
+              };
+
+              const [presentUsers, absentUsers] = await Promise.all([
+                Promise.all([...presentIDs].map((id) => fetchUserSafely(id))),
+                Promise.all([...absentIDs].map((id) => fetchUserSafely(id))),
+              ]);
+
+              const present = presentUsers.filter(
+                (u): u is DiscordUser => u !== null
               );
-              const absent = await Promise.all(
-                [...absentIDs].map((id) => client.users.fetch(id))
+              const absent = absentUsers.filter(
+                (u): u is DiscordUser => u !== null
               );
 
-              for (const user of present) {
+              // Update attendee and absentee reliability concurrently
+              const updatePresentTasks = present.map(async (user) => {
                 const updatedUser = await User.findOneAndUpdate(
                   { userID: user.id },
                   {
@@ -202,9 +214,9 @@ const init = async (): Promise<ISubcommand | undefined> => {
                   );
                   await updatedUser.save();
                 }
-              }
+              });
 
-              for (const user of absent) {
+              const updateAbsentTasks = absent.map(async (user) => {
                 const updatedUser = await User.findOneAndUpdate(
                   { userID: user.id },
                   {
@@ -221,7 +233,9 @@ const init = async (): Promise<ISubcommand | undefined> => {
                   );
                   await updatedUser.save();
                 }
-              }
+              });
+
+              await Promise.all([...updatePresentTasks, ...updateAbsentTasks]);
 
               reviewEmbed.setFields(
                 {

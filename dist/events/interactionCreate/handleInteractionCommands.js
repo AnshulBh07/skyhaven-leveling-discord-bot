@@ -131,6 +131,15 @@ const execute = (client, interaction) => __awaiter(void 0, void 0, void 0, funct
     }
     catch (err) {
         console.error("Error in chat input command interaction handler : ", err);
+        if (interaction.isRepliable() && interaction.deferred && !interaction.replied) {
+            yield interaction
+                .editReply({
+                content: "⚠️ An error occurred while executing this command. Please try again later.",
+            })
+                .catch((replyErr) => {
+                console.error("Failed to send error reply to interaction:", replyErr);
+            });
+        }
     }
 });
 exports.default = execute;

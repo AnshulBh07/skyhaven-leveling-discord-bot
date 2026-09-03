@@ -45,10 +45,19 @@ const main = async () => {
 		// await insertUsers();
 		// console.log("users added");
 	} catch (err) {
-		console.error(err);
-		process.exit(0);
+		console.error("Fatal startup failure during initialization:", err);
+		process.exit(1);
 	}
 };
+
+process.on("unhandledRejection", (reason) => {
+	console.error("Unhandled Promise Rejection:", reason);
+});
+
+process.on("uncaughtException", (err) => {
+	console.error("Uncaught Exception encountered:", err);
+	process.exit(1);
+});
 
 main();
 

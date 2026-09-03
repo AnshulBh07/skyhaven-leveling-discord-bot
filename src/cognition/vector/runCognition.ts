@@ -12,7 +12,7 @@ import { reflectiveMemorySchema } from "../zodValidation/inferReflectionMemory";
 import { relationshipMemorySchema } from "../zodValidation/inferRelationshipState";
 import { semanticMemorySchema } from "../zodValidation/inferSemanticMemory";
 import { generateEmbedding } from "./generateEmbedding";
-import { insertVector, VECTOR_SIZE } from "./qdrant";
+import { deleteVector, insertVector, VECTOR_SIZE } from "./qdrant";
 import {
 	QdrantPayload,
 	StoredRelationshipMemory,
@@ -98,22 +98,30 @@ const handleEpisodicMemory = async (interaction: string, user_id: string) => {
 						type: "episodic",
 					};
 
-					await Promise.all([
-						insertVector(
-							vectorEmbed,
-							"episodic_memories",
-							vectorID,
-							qdrant_payload,
-						),
-						EpisodicMemoryModel.create({
+					await insertVector(
+						vectorEmbed,
+						"episodic_memories",
+						vectorID,
+						qdrant_payload,
+					);
+
+					try {
+						await EpisodicMemoryModel.create({
 							...memory,
 							times_recalled: 0,
 							createdAt: Date.now(),
 							updatedAt: Date.now(),
 							user_id: user_id,
 							vector_embed_id: vectorID,
-						}),
-					]);
+						});
+					} catch (mongoErr) {
+						console.error(
+							"MongoDB write failed for episodic memory; rolling back Qdrant vector:",
+							mongoErr,
+						);
+						await deleteVector("episodic_memories", vectorID);
+						throw mongoErr;
+					}
 				}
 			}
 		}
@@ -158,22 +166,30 @@ const handleSemanticMemory = async (interaction: string, user_id: string) => {
 							type: "semantic",
 						};
 
-						await Promise.all([
-							insertVector(
-								vectorEmbed,
-								"semantic_memories",
-								vectorID,
-								qdrant_payload,
-							),
-							SemanticMemoryModel.create({
+						await insertVector(
+							vectorEmbed,
+							"semantic_memories",
+							vectorID,
+							qdrant_payload,
+						);
+
+						try {
+							await SemanticMemoryModel.create({
 								...semanticResult,
 								times_recalled: 0,
 								createdAt: Date.now(),
 								updatedAt: Date.now(),
 								user_id: user_id,
 								vector_embed_id: vectorID,
-							}),
-						]);
+							});
+						} catch (mongoErr) {
+							console.error(
+								"MongoDB write failed for semantic memory; rolling back Qdrant vector:",
+								mongoErr,
+							);
+							await deleteVector("semantic_memories", vectorID);
+							throw mongoErr;
+						}
 					}
 				}
 			}

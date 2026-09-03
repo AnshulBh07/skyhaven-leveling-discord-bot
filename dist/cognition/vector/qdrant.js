@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.searchVector = exports.insertVector = exports.setupQdrant = exports.VECTOR_SIZE = exports.qdrant = void 0;
+exports.searchVector = exports.deleteVector = exports.insertVector = exports.setupQdrant = exports.VECTOR_SIZE = exports.qdrant = void 0;
 const js_client_rest_1 = require("@qdrant/js-client-rest");
 const dotenv_1 = __importDefault(require("dotenv"));
 const envFile = `.env.${process.env.NODE_ENV || "development"}`;
@@ -65,9 +65,21 @@ const insertVector = (embed, collectionName, vectorID, payload) => __awaiter(voi
     }
     catch (err) {
         console.error("Error while inserting in qdrant db : ", err);
+        throw err;
     }
 });
 exports.insertVector = insertVector;
+const deleteVector = (collectionName, vectorID) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        yield exports.qdrant.delete(collectionName, {
+            points: [vectorID],
+        });
+    }
+    catch (err) {
+        console.error("Error while deleting vector point from qdrant : ", err);
+    }
+});
+exports.deleteVector = deleteVector;
 const searchVector = (embed, user_id, collectionName) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const searchOptions = {

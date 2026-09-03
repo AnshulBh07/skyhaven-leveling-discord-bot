@@ -144,9 +144,20 @@ const init = () => __awaiter(void 0, void 0, void 0, function* () {
                                     presentIDs.delete(id);
                                 yield i.editReply({ content: "Users marked absent." });
                             }
-                            const present = yield Promise.all([...presentIDs].map((id) => client.users.fetch(id)));
-                            const absent = yield Promise.all([...absentIDs].map((id) => client.users.fetch(id)));
-                            for (const user of present) {
+                            const fetchUserSafely = (id) => __awaiter(void 0, void 0, void 0, function* () {
+                                const cached = client.users.cache.get(id);
+                                if (cached)
+                                    return cached;
+                                return client.users.fetch(id).catch(() => null);
+                            });
+                            const [presentUsers, absentUsers] = yield Promise.all([
+                                Promise.all([...presentIDs].map((id) => fetchUserSafely(id))),
+                                Promise.all([...absentIDs].map((id) => fetchUserSafely(id))),
+                            ]);
+                            const present = presentUsers.filter((u) => u !== null);
+                            const absent = absentUsers.filter((u) => u !== null);
+                            // Update attendee and absentee reliability concurrently
+                            const updatePresentTasks = present.map((user) => __awaiter(void 0, void 0, void 0, function* () {
                                 const updatedUser = yield userSchema_1.default.findOneAndUpdate({ userID: user.id }, {
                                     $addToSet: { "raids.completed": raid._id },
                                     $pull: { "raids.noShows": raid._id },
@@ -155,8 +166,8 @@ const init = () => __awaiter(void 0, void 0, void 0, function* () {
                                     updatedUser.raids.reliability = (0, raidUtils_1.calculateReliability)(updatedUser.raids.completed.length, updatedUser.raids.noShows.length);
                                     yield updatedUser.save();
                                 }
-                            }
-                            for (const user of absent) {
+                            }));
+                            const updateAbsentTasks = absent.map((user) => __awaiter(void 0, void 0, void 0, function* () {
                                 const updatedUser = yield userSchema_1.default.findOneAndUpdate({ userID: user.id }, {
                                     $addToSet: { "raids.noShows": raid._id },
                                     $pull: { "raids.completed": raid._id },
@@ -165,7 +176,8 @@ const init = () => __awaiter(void 0, void 0, void 0, function* () {
                                     updatedUser.raids.reliability = (0, raidUtils_1.calculateReliability)(updatedUser.raids.completed.length, updatedUser.raids.noShows.length);
                                     yield updatedUser.save();
                                 }
-                            }
+                            }));
+                            yield Promise.all([...updatePresentTasks, ...updateAbsentTasks]);
                             reviewEmbed.setFields({
                                 name: "\u200b",
                                 value: `**Present : **\n${present.map((m) => m.displayName).join("\n") || "None"}`,
