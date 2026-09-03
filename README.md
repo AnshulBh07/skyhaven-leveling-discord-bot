@@ -1,147 +1,203 @@
-# Seraphina Discord Bot
+﻿# Seraphina Discord Bot
 
-Seraphina is a TypeScript Discord bot for Toram Online guild communities. It combines server moderation and engagement tools with leveling, giveaways, guild-activity workflows, raid coordination, and an AI-powered Seraphina assistant.
+Seraphina is an intelligent Discord bot tailored for gaming communities and Toram Online guilds. Built with TypeScript, Node.js, Discord.js v14, MongoDB, and Qdrant Vector Database, Seraphina combines automated server operations with an evolving, multi-layered cognitive AI assistant.
 
-## Features
+---
 
-- **Leveling and ranks:** Awards XP for eligible messages and voice participation, applies level roles, sends level-up notifications, and generates rank and leaderboard cards.
-- **Guild operations:** Manages giveaways, guild-quest and guild-maze submissions/reviews, raid coordination, and community-support campaigns.
-- **Moderation and member events:** Provides bot-admin moderation commands plus welcome, farewell, and server-boost messages.
-- **Toram assistance:** `t!` queries select a bundled Toram guide and ask Gemini to answer from its PDF content.
-- **Seraphina assistant:** `s!` messages support conversational replies, command help, image analysis, mood-based responses, chat history, and a background memory pipeline.
-- **Persistent recovery:** On startup, the bot restores active giveaways, pending guild-quest/maze reviews, raids, and support campaigns from MongoDB.
+## Key Features
 
-## How it works
+* **Cognitive AI Assistant (`s! <message>`)**:
+  * Powered by Google Gemini 2.5 Flash and OpenAI.
+  * Long-term personalized memory using Qdrant vector retrieval and MongoDB.
+  * Multi-layer cognitive architecture tracking episodic experiences, semantic beliefs, interpersonal relationship bonds (trust, attachment), and self-reflections.
+  * 17 dynamic mood personalities (e.g. *serene*, *tsundere*, *divinePride*, *playful*) rotating daily or configurable by administrators.
+* **Toram Online Guide Assistant (`t! <question>`)**:
+  * Semantic and fuzzy knowledge lookup across bundled guide PDFs in `src/data/guides/` answering player build and game mechanics queries.
+* **Server Leveling & Activity Rewards (`/lvl`)**:
+  * Automatic XP calculation for text, attachments, reactions, emojis, and voice channel participation.
+  * Customizable cooldowns, role progression tiers, and notification channels.
+  * High-resolution canvas-rendered rank cards and interactive top-10 leaderboards.
+* **Guild Operations & Coordination**:
+  * **/raid**: 12-player boss raid coordination with role allotment (Tank, DPS, Support), automated countdown reminders (scouting, participation, review), and attendance reliability scoring.
+  * **/gq & /mz**: Submission and review workflows for guild quests and maze runs, utilizing perceptual image hashing to detect duplicate screenshots.
+  * **/ga**: Automated giveaway management with level-based role access checks and reroll features.
+  * **/community-support**: Crowdfunded community support campaigns and donation tracking.
+* **Moderation & Community Management (`/mod`)**:
+  * Interactive configuration checklist (`/mod setup`), bot admin delegations, welcome/farewell cards, boost notifications, and ban/kick logging.
 
-`src/index.ts` loads `.env.<NODE_ENV>` (defaulting to `.env.development`), creates the Discord client, connects to MongoDB, initializes Qdrant collections, and logs in. The event handler dynamically loads the modules in `src/events/`.
+---
 
-Guild settings and activity data are stored in MongoDB through Mongoose models. On first seeing a guild, the bot creates a configuration record, creates or reuses its default leveling and giveaway roles, and creates user records for non-bot members. Slash commands are discovered from `src/commands/` and registered on the `ready` event:
+## Architectural Overview
 
-- In development (`NODE_ENV` is anything other than `production`), commands are registered only in the guild named `Seraphina Development Server`.
-- In production, commands are registered globally; Discord notes this may take up to an hour to propagate.
+Seraphina separates high-throughput Discord gateway events and immediate conversational responses from CPU-intensive graphics rendering and background cognitive synthesis:
 
-The cognition system stores structured memories in MongoDB and embeddings in Qdrant. A background worker processes one queued interaction every five minutes.
-
-## Tech stack
-
-- Node.js and TypeScript (CommonJS)
-- Discord.js v14
-- MongoDB with Mongoose
-- Qdrant vector database
-- Google Gemini (`@google/genai`) and OpenAI SDK
-- Canvas rendering with `@napi-rs/canvas` / `canvas`
-- `node-cron` for daily mood and giveaway-rank jobs
-
-## Requirements
-
-- Node.js 20 or newer
-- A Discord application and bot token
-- MongoDB connection URI
-- A reachable Qdrant instance and API key
-- Google Gemini API key
-- OpenAI API key
-
-The Discord application must be configured to allow the gateway intents requested by the bot: Guilds, Guild Members, Guild Messages, Message Content, Guild Presences, Guild Voice States, and Guild Message Reactions. The bot also needs Discord permissions appropriate for the features you enable, including sending messages, managing roles, and creating threads.
-
-## Installation
-
-```bash
-git clone <repository-url>
-cd discord-bot
-npm install
+```mermaid
+flowchart TD
+    Discord["Discord Gateway / REST API"] --> Events["Event & Interaction Routers"]
+    
+    subgraph CoreServices["Seraphina Core Services"]
+        Events --> ConfigCache["Guild Config Cache (60s TTL)"]
+        Events --> Leveling["Leveling & XP Engine"]
+        Events --> CommandExec["Slash Command Execution"]
+        Events --> AIConversation["Seraphina Assistant (s!)"]
+        Events --> ToramAssistant["Toram Guide Assistant (t!)"]
+    end
+    
+    subgraph CanvasPipeline["Canvas Graphics Engine"]
+        CommandExec --> CanvasEngine["Canvas Graphics Engine (Rank & Leaderboards)"]
+        CanvasEngine <--> StaticAssets["In-Memory Decoded Asset Cache"]
+    end
+    
+    subgraph DataStorage["Persistence Layer"]
+        ConfigCache <--> MongoDB[("MongoDB (Mongoose)")]
+        Leveling <--> MongoDB
+        CommandExec <--> MongoDB
+        AIConversation <--> MongoDB
+        AIConversation <--> Qdrant[("Qdrant Vector DB")]
+    end
+    
+    subgraph BackgroundWorkers["Background Asynchronous Workers"]
+        AIConversation -.-> CognitionQueue["Cognition Queue"]
+        CronWorker["5-Minute Cron Worker"] --> CognitionQueue
+        CronWorker --> MemoryExtractors["OpenAI Memory Extraction"]
+        MemoryExtractors --> Qdrant
+        MemoryExtractors --> MongoDB
+    end
 ```
 
-## Configuration
+For in-depth architectural details, refer to the [System Architecture Guide](docs/ARCHITECTURE.md).
 
-The application reads a file named `.env.<NODE_ENV>`. With no `NODE_ENV` already set, it loads `.env.development`; use `NODE_ENV=production` to load `.env.production`.
+---
 
-Create the selected file with the variables used by the source code:
-
-```dotenv
-NODE_ENV=development
-DISCORD_BOT_TOKEN=
-ATLAS_URI=
-GEMINI_API_KEY=
-VECTOR_DB_URI=
-VECTOR_DB_KEY=
-OPENAI_API_KEY=
-```
-
-| Variable | Purpose |
-| --- | --- |
-| `DISCORD_BOT_TOKEN` | Authenticates the Discord bot. |
-| `ATLAS_URI` | MongoDB connection string used for guild configuration, users, activity, and chat/memory records. |
-| `GEMINI_API_KEY` | Used for Seraphina replies, image/guide assistance, rank-up messages, and embeddings. |
-| `VECTOR_DB_URI` | Qdrant server URL. |
-| `VECTOR_DB_KEY` | Qdrant API key. |
-| `OPENAI_API_KEY` | Used by the cognition pipeline. |
-
-Do not commit secrets. The repository ignores `.env`, `.env.development`, and `.env.production`.
-
-### Per-server setup
-
-When the bot is ready, it creates a default configuration for each guild it belongs to and makes the guild owner a bot admin. Use `/mod setup` to view the configuration checklist, then configure the relevant channels, manager roles, rewards, raid roles, and raid emojis with the commands below. Most non-admin commands are restricted to their configured feature channel.
-
-## Commands
-
-Commands are registered dynamically, so this is a group-level map rather than a duplicate of Discord’s command UI.
-
-| Command | Purpose |
-| --- | --- |
-| `/ping` | Connectivity check. |
-| `/mod` | Bot-admin setup, admin roles, moderation log channels, ban/kick actions, and welcome/farewell configuration. |
-| `/lvl` | XP configuration and administration; rank and leaderboard views. |
-| `/ga` | Giveaway setup, creation, entries, rerolls, winner history, and giveaway bans. |
-| `/gq` | Guild-quest setup, screenshot submissions, review workflow, status, statistics, and leaderboards. |
-| `/mz` | Guild-maze setup, submissions, review workflow, status, statistics, and leaderboards. |
-| `/raid` | Raid setup, scheduling, scouting, participation, allocation/review, postponement, cancellation, and bans. |
-| `/community-support` | Community-support channel/manager setup and support campaign creation. |
-
-Text triggers are `t! <question>` for Toram guide queries and `s! <message>` for the Seraphina assistant. They are handled in guild text channels.
-
-## Running the project
-
-```bash
-# Run TypeScript directly
-npm start
-
-# Run with nodemon; watches src/**/*.ts
-npm run dev
-```
-
-## Development and build commands
-
-| Command | What it does |
-| --- | --- |
-| `npm start` | Runs `ts-node src/index.ts`. |
-| `npm run dev` | Runs the same entry point through nodemon. |
-| `npm run build` | Compiles TypeScript to `dist/`, then copies `src/assets` and JSON files from `src/data`. |
-| `npm run copy-assets` | Runs only the asset/JSON copy step. |
-| `npm run count` | Runs `count-code-line`. |
-| `npm test` | Currently exits with “no test specified”; there is no test suite configured. |
-
-The current build copy step does **not** copy the PDF files under `src/data/guides`. Those PDFs are read by the `t!` feature, so make them available under `dist/data/guides` when running compiled output.
-
-## Project structure
+## Project Structure
 
 ```text
 src/
-├── index.ts                 # Environment loading, database setup, Discord login
-├── commands/                # Dynamic slash-command groups and subcommands
-├── events/                  # Discord event handlers and ready-time restoration
-├── models/                  # Mongoose schemas for config, users, workflows, memories
-├── cognition/               # Queue, memory extraction, embeddings, Qdrant retrieval
-├── canvas/                  # Rank, level-up, and leaderboard image generation
-├── jobs/cron/               # Daily mood and giveaway-role jobs
-├── utils/                   # Shared command, permission, workflow, and LLM utilities
-├── data/                    # Knowledge bases, mood data, and Toram guide PDFs
-└── assets/                  # Images, logos, backgrounds, badges, and documents
+├── index.ts                 # Application entry point: env loading, DB connect, bot login
+├── commands/                # Slash command definitions organized by subsystem
+│   ├── community-support/   # Community fundraising campaigns
+│   ├── giveaways/           # Giveaways and role raffles
+│   ├── gquests/             # Guild quest screenshot submissions & reviews
+│   ├── leveling/            # Leveling administration, rank cards, leaderboards
+│   ├── maze/                # Maze climb submissions & leaderboards
+│   ├── moderation/          # Bot admins, welcome/farewell channels, bans/kicks
+│   └── raids/               # Boss raid scheduling, scouting, team review
+├── events/                  # Discord gateway event handlers
+│   ├── messageCreate/       # XP tracking (handleMessageEvents) and AI chat triggers
+│   ├── interactionCreate/   # Slash command routing and modal submission handlers
+│   ├── voiceStateUpdate/    # Voice activity XP tracking
+│   └── ready/               # Command registration and state recovery
+├── cognition/               # Memory architecture and cognition pipeline
+│   ├── queues.ts/           # Cognition FIFO queue and scheduled worker
+│   ├── vector/              # Qdrant client, Gemini embeddings, memory retrieval
+│   └── zodValidation/       # Zod schemas validating structured memory extraction
+├── models/                  # Mongoose schemas (Config, User, Raid, Memories, Quests)
+├── canvas/                  # Canvas rendering for rank cards and leaderboards
+├── jobs/cron/               # Cron jobs: daily mood, giveaway role checks, cognition worker
+├── data/                    # JSON knowledge bases, mood definitions, and Toram guide PDFs
+└── utils/                   # Shared helpers: config cache, permissions, raid timers
 ```
 
-## Contributing
+---
 
-Keep changes focused, use the configured TypeScript compiler settings, and test the affected behavior in a development guild named `Seraphina Development Server`. Command and event modules are loaded from the filesystem, so follow the existing directory conventions when adding them.
+## Installation & Setup
+
+### Prerequisites
+* **Node.js**: Version `>= 20.0.0`
+* **MongoDB**: A running MongoDB instance (e.g. MongoDB Atlas)
+* **Qdrant**: A running Qdrant vector database instance (cloud or self-hosted)
+* **API Keys**:
+  * Discord Bot Token (with all Privileged Gateway Intents enabled)
+  * Google Gemini API Key
+  * OpenAI API Key
+
+### Installation Steps
+
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd discord-bot
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Configure environment variables:
+   Create a `.env.development` or `.env.production` file in the project root:
+   ```dotenv
+   NODE_ENV=development
+   DISCORD_BOT_TOKEN=your_discord_bot_token_here
+   ATLAS_URI=mongodb+srv://user:pass@cluster.mongodb.net/seraphina?retryWrites=true&w=majority
+   GEMINI_API_KEY=your_gemini_api_key_here
+   VECTOR_DB_URI=https://your-qdrant-cluster.qdrant.tech:6333
+   VECTOR_DB_KEY=your_qdrant_api_key_here
+   OPENAI_API_KEY=your_openai_api_key_here
+   ```
+
+---
+
+## Environment Variables Reference
+
+| Variable | Required | Description |
+|---|:---:|---|
+| `NODE_ENV` | No | Specifies environment (`development` or `production`). Defaults to `development`. Controls command registration scope. |
+| `DISCORD_BOT_TOKEN` | Yes | Discord Bot Application Token for gateway authentication. |
+| `ATLAS_URI` | Yes | MongoDB connection string for all relational and memory models. |
+| `GEMINI_API_KEY` | Yes | Google Gemini API key used for conversational AI (`s!`), Toram queries (`t!`), vision analysis, and text embeddings (`text-embedding-004`). |
+| `VECTOR_DB_URI` | Yes | Endpoint URL for the Qdrant vector database cluster. |
+| `VECTOR_DB_KEY` | Yes | API authorization key for Qdrant. |
+| `OPENAI_API_KEY` | Yes | OpenAI API key used by background memory extraction agents. |
+
+---
+
+## Running the Bot
+
+```bash
+# Run in development mode (watches src/**/*.ts with nodemon)
+npm run dev
+
+# Run directly via ts-node
+npm start
+
+# Compile TypeScript to dist/ and bundle assets
+npm run build
+```
+
+> **Note on Production Builds**: The `npm run build` script compiles TypeScript into `dist/` and copies `src/assets` and JSON data files. To use the `t!` Toram guide query system in production, verify that `src/data/guides/*.pdf` are copied or symlinked to `dist/data/guides/`.
+
+---
+
+## Discord Commands Summary
+
+| Command | Purpose | Access Level |
+|---|---|---|
+| `/lvl rank` | Displays current level, total XP, and server rank card. | Public |
+| `/lvl leaderboard` | Interactive canvas leaderboard with XP filter and pagination. | Public |
+| `/raid start` | Schedules a 12-player guild raid with role reactions and timers. | Raid Manager |
+| `/raid review` | Interactive attendance review thread and reliability scoring. | Raid Manager |
+| `/gq submit` | Submits guild quest screenshot for reward review. | Public |
+| `/mz submit` | Submits maze run screenshot for reward review. | Public |
+| `/ga create` | Creates a scheduled role-eligible giveaway. | Giveaway Manager |
+| `/mod setup` | Diagnostic checklist of guild channel and role configurations. | Server Owner |
+| `/mod mood` | Views or manually overrides Seraphina's active personality mood. | Bot Admin |
+| `s! <message>` | Engages Seraphina in AI conversation with personal memory. | Public |
+| `t! <query>` | Answers Toram Online gameplay questions from bundled guide PDFs. | Public |
+
+For detailed options, arguments, and permission rules, see [Command Documentation](docs/COMMANDS.md).
+
+---
+
+## Complete Documentation Links
+
+* [System Architecture & Lifecycle](docs/ARCHITECTURE.md)
+* [Cognitive Pipeline & Memory Architecture](docs/COGNITIVE_BEHAVIOR.md)
+* [Database Architecture & Mongoose/Qdrant Schemas](docs/DATABASE.md)
+* [Command Subsystems & Permissions Reference](docs/COMMANDS.md)
+
+---
 
 ## License
 
-ISC, as declared in `package.json`.
+ISC License declared in `package.json`.
