@@ -8,44 +8,32 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateSeraphinaRankUpMessage = void 0;
-const axios_1 = __importDefault(require("axios"));
 const seraphinaPrompt_1 = require("./seraphinaPrompt");
 const helperArrays_1 = require("../../data/helperArrays");
 const generateSeraphinaRankUpMessage = (mood, role_name, userID) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e, _f, _g;
+    var _a;
     try {
-        const apiKey = process.env.GEMINI_API_KEY;
         const model = "gemini-2.5-flash-lite";
-        const response = yield axios_1.default.post(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
+        const promptText = seraphinaPrompt_1.yappingRolePrompt
+            .replace("${mood}", mood)
+            .replace("{yap_role}", role_name);
+        const response = yield seraphinaPrompt_1.genAI.models.generateContent({
+            model: model,
             contents: [
                 {
                     role: "user",
-                    parts: [
-                        {
-                            text: seraphinaPrompt_1.yappingRolePrompt
-                                .replace("${mood}", mood)
-                                .replace("{yap_role}", role_name),
-                        },
-                    ],
+                    parts: [{ text: promptText }],
                 },
             ],
-        }, {
-            headers: {
-                "Content-Type": "application/json",
-            },
         });
-        const reply = ((_f = (_e = (_d = (_c = (_b = (_a = response.data.candidates) === null || _a === void 0 ? void 0 : _a[0]) === null || _b === void 0 ? void 0 : _b.content) === null || _c === void 0 ? void 0 : _c.parts) === null || _d === void 0 ? void 0 : _d[0]) === null || _e === void 0 ? void 0 : _e.text) === null || _f === void 0 ? void 0 : _f.trim()) ||
+        const reply = ((_a = response.text) === null || _a === void 0 ? void 0 : _a.trim()) ||
             "⚠️ Seraphina stares blankly — the stars offered no wisdom.";
         return reply;
     }
     catch (err) {
-        const error = err;
-        console.error("Error generating Seraphina role up reply with Gemini:", ((_g = error.response) === null || _g === void 0 ? void 0 : _g.data) || error);
+        console.error("Error generating Seraphina role up reply with Gemini:", err);
         return helperArrays_1.rolePromotionMessages[Math.floor(Math.random() * helperArrays_1.rolePromotionMessages.length)]
             .replace("{user}", `<@${userID}>`)
             .replace("{role}", role_name);

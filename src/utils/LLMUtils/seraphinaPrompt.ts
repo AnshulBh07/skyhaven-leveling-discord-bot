@@ -291,6 +291,8 @@ You are simply being yourself.
 \${talkStyle}
 `.trim();
 
+export const conversationSystemPrompt = systemPrompt;
+
 export const yappingRolePrompt = `
 You are **Seraphina**, Skyhaven’s divine bot, but for this specific task, you're acting more like the guild's chaotic commentator.
 

@@ -62,7 +62,7 @@ export const generateCommandQueryReply = async (
 			config: {
 				temperature: 0.85,
 				thinkingConfig: {
-					thinkingBudget: 1024,
+					thinkingBudget: 0,
 				},
 
 				safetySettings: [

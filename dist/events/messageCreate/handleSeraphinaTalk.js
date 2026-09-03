@@ -98,25 +98,47 @@ const execute = (client, message) => __awaiter(void 0, void 0, void 0, function*
 			${userMsg}
 			`;
         }
-        // parallelize memory retrieval and discord channel history fetch
+        // Check if message is a trivial greeting/acknowledgment to skip expensive memory embedding & search
+        const normalizedForCheck = userMsg.toLowerCase().replace(/[^\w\s]/g, "").trim();
+        const trivialGreetings = new Set([
+            "hi", "hello", "hey", "heya", "yo", "sup",
+            "gm", "gn", "good morning", "good night",
+            "ok", "okay", "k", "kk", "cool", "nice",
+            "ty", "thx", "thanks", "thank you",
+            "bye", "cya", "gnite"
+        ]);
+        const isTrivial = trivialGreetings.has(normalizedForCheck);
+        // parallelize memory retrieval (if not trivial) and discord channel history fetch
         const [pastMemoriesResult, recentMsgs] = yield Promise.all([
-            (0, retrieveMemories_1.retriveRelatedMemories)(interaction, message.author.id).catch((err) => {
-                console.error("Memory retrieval failed : ", err);
-                return "";
-            }),
+            isTrivial
+                ? Promise.resolve("")
+                : (0, retrieveMemories_1.retriveRelatedMemories)(interaction, message.author.id).catch((err) => {
+                    console.error("Memory retrieval failed : ", err);
+                    return "";
+                }),
             channel.messages.fetch({ limit: 20 }),
         ]);
         pastMemories = pastMemoriesResult;
-        const channelContext = recentMsgs
+        // Deduplicate: Direct conversation between user and Seraphina is already provided via
+        // ChatMemory.history in generateSeraphinaConvoReply. Filter out the current user's and
+        // bot's own recent messages from channelContext to preserve only other guild members' context.
+        const otherMemberMsgs = Array.from(recentMsgs.values())
             .reverse()
-            .map((msg) => {
+            .filter((msg) => {
             var _a;
-            const speaker = msg.author.bot
-                ? "Seraphina"
-                : ((_a = msg.member) === null || _a === void 0 ? void 0 : _a.displayName) || msg.author.username;
-            return `${speaker} : ${msg.content.replace(/^s!/i, "")}`;
-        })
-            .join("\n");
+            return msg.id !== message.id &&
+                msg.author.id !== message.author.id &&
+                msg.author.id !== ((_a = client.user) === null || _a === void 0 ? void 0 : _a.id);
+        });
+        const channelContext = otherMemberMsgs.length
+            ? otherMemberMsgs
+                .map((msg) => {
+                var _a;
+                const speaker = ((_a = msg.member) === null || _a === void 0 ? void 0 : _a.displayName) || msg.author.username;
+                return `${speaker} : ${msg.content.replace(/^s!/i, "")}`;
+            })
+                .join("\n")
+            : "";
         // generate normal reply with convo prompt, reusing existing ChatMemory doc
         const seraphinaReply = yield (0, generateSeraphinaConvoReply_1.generateSeraphinaConvoReply)(seraphinaMood, message.author.id, userMsg, pastMemories, channelContext, userChats);
         yield channel.send({ content: seraphinaReply });

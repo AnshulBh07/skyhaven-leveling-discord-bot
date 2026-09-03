@@ -131,7 +131,7 @@ const generateSeraphinaConvoReply = (mood, userId, userInput, memories, channelC
             (yield chatMemorySchema_1.default.findOne({ userID: userId })) ||
             new chatMemorySchema_1.default({ userID: userId, messages: [] });
         // Construct the system instruction based on mood and user ID
-        const fullSystemPrompt = seraphinaPrompt_1.systemPrompt
+        const fullSystemPrompt = seraphinaPrompt_1.conversationSystemPrompt
             .replace("${mood}", mood)
             .replace("${talkStyle}", (_a = exports.moodStyles[mood]) !== null && _a !== void 0 ? _a : "Now speak")
             .replace("${userID}", userId);
@@ -149,7 +149,7 @@ const generateSeraphinaConvoReply = (mood, userId, userInput, memories, channelC
             config: {
                 temperature: 0.7,
                 thinkingConfig: {
-                    thinkingBudget: 256,
+                    thinkingBudget: 0,
                 },
                 safetySettings: [
                     {
@@ -175,25 +175,15 @@ const generateSeraphinaConvoReply = (mood, userId, userInput, memories, channelC
             },
         });
         // You pass the user's *latest* message to sendMessage
-        const finalInput = `
-			## Current Channel Context
-
-			${channelContext}
-
-			---
-
-			## Background Context
-
-			${memories}
-
-			---
-
-			## Latest User Message
-
-			${userInput}
-
-			Respond naturally while considering the current conversation, relevant memories, and relationship context when useful.
-			`;
+        const sections = [];
+        if (channelContext && channelContext.trim().length > 0) {
+            sections.push(`## Current Channel Context\n\n${channelContext.trim()}`);
+        }
+        if (memories && memories.trim().length > 0) {
+            sections.push(`## Background Context\n\n${memories.trim()}`);
+        }
+        sections.push(`## Latest User Message\n\n${userInput}\n\nRespond naturally while considering the current conversation, relevant memories, and relationship context when useful.`);
+        const finalInput = sections.join("\n\n---\n\n");
         // console.log("Final input is : ", finalInput);
         const result = yield chat.sendMessage({
             message: finalInput,

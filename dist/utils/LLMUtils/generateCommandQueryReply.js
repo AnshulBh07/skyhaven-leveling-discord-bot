@@ -62,7 +62,7 @@ const generateCommandQueryReply = (msg, command, mood, userID) => __awaiter(void
             config: {
                 temperature: 0.85,
                 thinkingConfig: {
-                    thinkingBudget: 1024,
+                    thinkingBudget: 0,
                 },
                 safetySettings: [
                     {

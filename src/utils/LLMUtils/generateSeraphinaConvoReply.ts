@@ -1,6 +1,6 @@
 import ChatMemory from "../../models/chatMemorySchema";
 import { moodType } from "../interfaces";
-import { aiModel, genAI, systemPrompt } from "./seraphinaPrompt";
+import { aiModel, conversationSystemPrompt, genAI } from "./seraphinaPrompt";
 // Correct import: GoogleGenerativeAI, not GoogleGenAI
 import { Content, HarmBlockThreshold, HarmCategory } from "@google/genai";
 
@@ -154,7 +154,7 @@ export const generateSeraphinaConvoReply = async (
 			new ChatMemory({ userID: userId, messages: [] });
 
 		// Construct the system instruction based on mood and user ID
-		const fullSystemPrompt = systemPrompt
+		const fullSystemPrompt = conversationSystemPrompt
 			.replace("${mood}", mood)
 			.replace("${talkStyle}", moodStyles[mood] ?? "Now speak")
 			.replace("${userID}", userId);
@@ -173,7 +173,7 @@ export const generateSeraphinaConvoReply = async (
 			config: {
 				temperature: 0.7,
 				thinkingConfig: {
-					thinkingBudget: 256,
+					thinkingBudget: 0,
 				},
 
 				safetySettings: [
@@ -202,25 +202,21 @@ export const generateSeraphinaConvoReply = async (
 		});
 
 		// You pass the user's *latest* message to sendMessage
-		const finalInput = `
-			## Current Channel Context
+		const sections: string[] = [];
 
-			${channelContext}
+		if (channelContext && channelContext.trim().length > 0) {
+			sections.push(`## Current Channel Context\n\n${channelContext.trim()}`);
+		}
 
-			---
+		if (memories && memories.trim().length > 0) {
+			sections.push(`## Background Context\n\n${memories.trim()}`);
+		}
 
-			## Background Context
+		sections.push(
+			`## Latest User Message\n\n${userInput}\n\nRespond naturally while considering the current conversation, relevant memories, and relationship context when useful.`
+		);
 
-			${memories}
-
-			---
-
-			## Latest User Message
-
-			${userInput}
-
-			Respond naturally while considering the current conversation, relevant memories, and relationship context when useful.
-			`;
+		const finalInput = sections.join("\n\n---\n\n");
 
 		// console.log("Final input is : ", finalInput);
 

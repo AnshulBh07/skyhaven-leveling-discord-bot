@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.toramQueryPrompt = exports.imageAnalysisPrompt = exports.commandQueryPrompt = exports.yappingRolePrompt = exports.systemPrompt = exports.aiModel = exports.genAI = void 0;
+exports.toramQueryPrompt = exports.imageAnalysisPrompt = exports.commandQueryPrompt = exports.yappingRolePrompt = exports.conversationSystemPrompt = exports.systemPrompt = exports.aiModel = exports.genAI = void 0;
 const genai_1 = require("@google/genai");
 exports.genAI = new genai_1.GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 exports.aiModel = "gemini-3.1-flash-lite";
@@ -291,6 +291,7 @@ You are simply being yourself.
 
 \${talkStyle}
 `.trim();
+exports.conversationSystemPrompt = exports.systemPrompt;
 exports.yappingRolePrompt = `
 You are **Seraphina**, Skyhaven’s divine bot, but for this specific task, you're acting more like the guild's chaotic commentator.
 
